@@ -6,7 +6,7 @@ function Routing() {
     return(
     <Router>
         <Routes>
-            <Route path="/" element={<Inicio />} />
+            <Route path="/inicio" element={<Inicio />} />
         </Routes>
     </Router>
     )   

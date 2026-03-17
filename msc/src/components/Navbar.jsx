@@ -1,8 +1,9 @@
 import React from 'react';
-import './Navbar.css';
+import '../styles/Navbar.css';
 
 const Navbar = () => {
   return (
+    <>
     <nav className="custom-navbar">
       <a href="/" className="navbar-brand-custom">
         <div className="logo-container">
@@ -26,6 +27,7 @@ const Navbar = () => {
         Reportar Incidente
       </button>
     </nav>
+    </>
   );
 };
 
