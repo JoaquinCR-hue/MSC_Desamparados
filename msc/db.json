@@ -1,0 +1,15 @@
+{
+  "usuarios": [
+    {
+      "id": "7389",
+      "nombreUsu": "dpessoa",
+      "pass": "123456",
+      "confirmarContra": "123456",
+      "nombre": "David Chavarria Pessoa",
+      "telefono": "70121314",
+      "role": "admin"
+    }
+  ],
+  "reportes": [],
+  "$schema": "./node_modules/json-server/schema.json"
+}
