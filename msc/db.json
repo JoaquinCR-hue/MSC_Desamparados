@@ -8,6 +8,15 @@
       "nombre": "David Chavarria Pessoa",
       "telefono": "70121314",
       "role": "admin"
+    },
+    {
+      "id": "7238",
+      "nombreUsu": "Joaco",
+      "pass": "123456",
+      "confirmarContra": "123456",
+      "nombre": "Joaco",
+      "telefono": "71104970",
+      "role": "ciudadano"
     }
   ],
   "reportes": [],

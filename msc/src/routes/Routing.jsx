@@ -5,7 +5,7 @@ import Registrarse from '../pages/Registrarse';
 import ViewAdmin from '../pages/ViewAdmin'; 
 import ViewCiudadano from '../pages/ViewCiudadano';
 import ViewJefaPolicia from '../pages/ViewJefaPolicia';
-
+import ReportarIncidente from '../pages/ReportarIncidente';
 
 function Routing() {
     return(
@@ -17,6 +17,7 @@ function Routing() {
             <Route path="/VistaAdmin" element={<ViewAdmin />} />
             <Route path="/VistaCiudadano" element={<ViewCiudadano />} />
             <Route path="/VistaJefaPolicia" element={<ViewJefaPolicia />} />
+            <Route path="/reportar-incidente" element={<ReportarIncidente />} />
         </Routes>
     </Router>
     )   
