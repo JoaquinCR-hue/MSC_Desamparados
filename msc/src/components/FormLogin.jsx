@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ServiceUsuarios from '../services/ServiceUsuarios'
 import Swal from 'sweetalert2';
+import '../styles/Login.css';
 
 function FormLogin() {
   const [nameUsuario, setNameUsuario] = useState("")

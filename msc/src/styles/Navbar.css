@@ -139,3 +139,98 @@
 .btn-icon-white {
   fill: #ffffff;
 }
+
+/* Custom Menu Dropdown Styles */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.menu-dropdown-container {
+  position: relative;
+}
+
+.menu-button {
+  background: transparent;
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.menu-button:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+.menu-icon {
+  font-size: 1.1rem;
+}
+
+.dropdown-menu-custom {
+  position: absolute;
+  top: calc(100% + 15px);
+  right: 0;
+  background-color: #1a1c22;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  z-index: 1050;
+  animation: dropdownFadeIn 0.2s ease forwards;
+}
+
+.dropdown-item {
+  color: #cbd5e1;
+  text-decoration: none;
+  padding: 14px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #2a3441;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item i {
+  font-size: 1.1rem;
+  color: #f25c05;
+  width: 20px;
+  text-align: center;
+}
+
+.dropdown-item:hover {
+  background-color: #2a3441;
+  color: #ffffff;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
