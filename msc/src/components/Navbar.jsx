@@ -4,9 +4,7 @@ import '../styles/Navbar.css';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isEmergencyMenuOpen, setIsEmergencyMenuOpen] = useState(false);
   const menuRef = useRef(null);
-  const emergencyMenuRef = useRef(null);
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -17,9 +15,6 @@ const Navbar = () => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsMenuOpen(false);
-      }
-      if (emergencyMenuRef.current && !emergencyMenuRef.current.contains(event.target)) {
-        setIsEmergencyMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -43,46 +38,10 @@ const Navbar = () => {
       <div className="nav-links-custom" style={{ display: 'flex', alignItems: 'center' }}>
         <a href="/" className="nav-link-custom">Inicio</a>
         
-        <div className="menu-dropdown-container" ref={emergencyMenuRef}>
-          <button 
-            className="nav-link-custom" 
-            style={{ background: 'transparent', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', outline: 'none' }}
-            onClick={() => setIsEmergencyMenuOpen(!isEmergencyMenuOpen)}
-          >
-            <i className="fa-solid fa-phone"></i>
-            Números de Emergencia
-            <i className={`fa-solid fa-chevron-down ${isEmergencyMenuOpen ? 'fa-rotate-180' : ''}`} style={{ transition: 'transform 0.3s ease', fontSize: '0.8rem' }}></i>
-          </button>
-          
-          {isEmergencyMenuOpen && (
-            <div className="dropdown-menu-custom" style={{ top: 'calc(100% + 15px)', left: '50%', right: 'auto', transform: 'translateX(-50%)', width: '280px' }}>
-              <a href="tel:911" className="dropdown-item">
-                <i className="fa-solid fa-phone-volume"></i>
-                911 - Emergencias
-              </a>
-              <a href="tel:128" className="dropdown-item">
-                <i className="fa-solid fa-truck-medical"></i>
-                128 - Cruz Roja
-              </a>
-              <a href="tel:117" className="dropdown-item">
-                <i className="fa-solid fa-building-shield"></i>
-                117 - Fuerza Pública
-              </a>
-              <a href="tel:118" className="dropdown-item">
-                <i className="fa-solid fa-fire-extinguisher"></i>
-                118 - Bomberos
-              </a>
-              <a href="tel:8008000645" className="dropdown-item">
-                <i className="fa-solid fa-user-secret"></i>
-                800-8000-645 - OIJ
-              </a>
-              <a href="/emergencias" className="dropdown-item" style={{ borderTop: '1px solid #334155', marginTop: '4px', paddingTop: '10px' }}>
-                <i className="fa-solid fa-map-location-dot"></i>
-                Mapa Web de Seguridad
-              </a>
-            </div>
-          )}
-        </div>
+        <a href="/emergencias" className="nav-link-custom" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <i className="fa-solid fa-phone"></i>
+          Números de Emergencia
+        </a>
       </div>
 
       <div className="nav-actions">

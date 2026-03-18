@@ -7,7 +7,8 @@
   border-bottom: 2px solid #334155;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   width: 100%;
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 1000;
   min-height: 70px;
   visibility: visible !important;

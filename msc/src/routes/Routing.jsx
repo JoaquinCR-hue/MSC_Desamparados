@@ -6,6 +6,7 @@ import ViewAdmin from '../pages/ViewAdmin';
 import ViewCiudadano from '../pages/ViewCiudadano';
 import ViewJefaPolicia from '../pages/ViewJefaPolicia';
 import ReportarIncidente from '../pages/ReportarIncidente';
+import Emergencias from '../pages/Emergencias';
 
 const ProtectedRoute = ({ children }) => {
   const user = localStorage.getItem('user');
@@ -26,6 +27,7 @@ function Routing() {
             <Route path="/VistaCiudadano" element={<ViewCiudadano />} />
             <Route path="/VistaJefaPolicia" element={<ViewJefaPolicia />} />
             <Route path="/reportar-incidente" element={<ProtectedRoute><ReportarIncidente /></ProtectedRoute>} />
+            <Route path="/emergencias" element={<Emergencias />} />
         </Routes>
     </Router>
     )   
