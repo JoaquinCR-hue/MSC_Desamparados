@@ -2,20 +2,50 @@
   "usuarios": [
     {
       "id": "7389",
-      "nombreUsu": "dpessoa",
-      "pass": "123456",
-      "confirmarContra": "123456",
-      "nombre": "David Chavarria Pessoa",
+      "email": "jbrionesfwdcostarica@gmail.com",
+      "pass": "pvvyhe",
+      "nombre": "John Briones Araica",
       "telefono": "70121314",
       "role": "admin"
     },
     {
       "id": "7238",
-      "nombreUsu": "Joaco",
+      "email": "jaguilarfwdcostarica@gmail.com",
       "pass": "123456",
-      "confirmarContra": "123456",
       "nombre": "Joaco",
       "telefono": "71104970",
+      "role": "ciudadano"
+    },
+    {
+      "id": "8091",
+      "email": "dchavarriafwdcostarica@gmail.com",
+      "pass": "123456",
+      "nombre": "David Chavarria",
+      "telefono": "70121314",
+      "role": "ciudadano"
+    },
+    {
+      "id": "7dc0",
+      "email": "dauhbc",
+      "pass": "mmmmmm",
+      "nombre": "david",
+      "telefono": "12345678",
+      "role": "ciudadano"
+    },
+    {
+      "id": "3c7b",
+      "email": "yfyda",
+      "pass": "mmmmmm",
+      "nombre": "David",
+      "telefono": "12345678",
+      "role": "ciudadano"
+    },
+    {
+      "id": "8cae",
+      "email": "aaa",
+      "pass": "mmmmmm",
+      "nombre": "david",
+      "telefono": "12345678",
       "role": "ciudadano"
     }
   ],
@@ -29,6 +59,18 @@
       "direccion_exacta": "en el parque",
       "fecha": "2026-03-10T13:50",
       "id_creador": "65df",
+      "estado": "Pendiente"
+    },
+    {
+      "id": "f4b9",
+      "tipo": "Robo o asalto",
+      "descripcion": "fafaf",
+      "distrito": "San Rafael Abajo",
+      "barrio": "Centro",
+      "direccion_exacta": "La iglesia Ciudad del este",
+      "fecha": "2026-02-27T17:42",
+      "id_creador": "8cae",
+      "nombre_creador": "david",
       "estado": "Pendiente"
     }
   ],
