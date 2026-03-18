@@ -48,30 +48,47 @@ const RegistroForm = () => {
     });
     return;
   }
+    try {
+    // 2. VALIDACIÓN DE EXISTENCIA: Traer todos los usuarios para comparar
+    const usuariosExistentes = await ServiceUsuarios.getUsuarios();
+    
+    const existe = usuariosExistentes.find(u => u.email === correoUsuario);
+
+    if (existe) {
+      Swal.fire({
+        title: 'Error',
+        text: 'Este correo electrónico ya está registrado 💜',
+        icon: 'error'
+      });
+      return; // Detenemos la ejecución aquí
+    }
+
+    // 3. Si no existe, procedemos a crear el objeto y enviarlo
     const nuevoUsuario = {
       email: correoUsuario,
       pass: contra,
       nombre: nombre,
       telefono: telefono,
-      role: role 
+      role: role // Rol automático
     };
 
-    try {
-      await ServiceUsuarios.postUsuarios(nuevoUsuario);
-      Swal.fire({
-        title: '¡Éxito!',
-        text: 'Registro exitoso. ¡Bienvenido a la familia!',
-        icon: 'success'
-      });
-      navigate('/Login');
-    } catch (error) {
-      Swal.fire({
-        title: 'Error',
-        text: 'No se pudo realizar el registro',
-        icon: 'error'
-      });
-    }
-  };
+    await ServiceUsuarios.postUsuarios(nuevoUsuario);
+    
+    Swal.fire({
+      title: '¡Éxito!',
+      text: 'Registro exitoso. ¡Bienvenido a la familia!',
+      icon: 'success'
+    });
+    navigate('/Login');
+
+  } catch (error) {
+    Swal.fire({
+      title: 'Error',
+      text: 'No se pudo verificar la información o realizar el registro',
+      icon: 'error'
+    });
+  }
+};
 
   return (
     <div className="auth-card">
