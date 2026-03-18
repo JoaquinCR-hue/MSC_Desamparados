@@ -164,3 +164,20 @@
   color: #ffffff;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
 }
+
+/* Contenedor de la página entera para la imagen de fondo */
+.auth-page-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: linear-gradient(rgba(17, 24, 39, 0.75), rgba(17, 24, 39, 0.85)), url('../Img/mapa_desamparados_generado.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  padding: 20px;
+}
+
+.auth-page-container .auth-card {
+  margin: 0;
+}
