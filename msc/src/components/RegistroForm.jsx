@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import '../styles/Registro.css';
 
 const RegistroForm = () => {
-  const [nameUsuario, setNameUsuario] = useState("");
+  const [correoUsuario, setCorreoUsuario] = useState("");
   const [contra, setContra] = useState("");
   const [confirmarContra, setConfirmarContra] = useState("");
   const [nombre, setNombre] = useState("");
@@ -22,7 +22,7 @@ const RegistroForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!nombre || !telefono || !nameUsuario || !contra || !confirmarContra || !role) {
+    if (!nombre || !telefono || !correoUsuario || !contra || !confirmarContra || !role) {
       Swal.fire({
         title: 'Error',
         text: 'Todos los campos son obligatorios y no pueden estar vacíos 💜',
@@ -48,31 +48,47 @@ const RegistroForm = () => {
     });
     return;
   }
-    const nuevoUsuario = {
-      nombreUsu: nameUsuario,
-      pass: contra,
-      confirmarContra: confirmarContra,
-      nombre: nombre,
-      telefono: telefono,
-      role: role 
-    };
-
     try {
-      await ServiceUsuarios.postUsuarios(nuevoUsuario);
-      Swal.fire({
-        title: '¡Éxito!',
-        text: 'Registro exitoso. ¡Bienvenido a la familia!',
-        icon: 'success'
-      });
-      navigate('/Login');
-    } catch (error) {
+    // 2. VALIDACIÓN DE EXISTENCIA: Traer todos los usuarios para comparar
+    const usuariosExistentes = await ServiceUsuarios.getUsuarios();
+    
+    const existe = usuariosExistentes.find(u => u.email === correoUsuario);
+
+    if (existe) {
       Swal.fire({
         title: 'Error',
-        text: 'No se pudo realizar el registro',
+        text: 'Este correo electrónico ya está registrado 💜',
         icon: 'error'
       });
+      return; // Detenemos la ejecución aquí
     }
-  };
+
+    // 3. Si no existe, procedemos a crear el objeto y enviarlo
+    const nuevoUsuario = {
+      email: correoUsuario,
+      pass: contra,
+      nombre: nombre,
+      telefono: telefono,
+      role: role // Rol automático
+    };
+
+    await ServiceUsuarios.postUsuarios(nuevoUsuario);
+    
+    Swal.fire({
+      title: '¡Éxito!',
+      text: 'Registro exitoso. ¡Bienvenido a la familia!',
+      icon: 'success'
+    });
+    navigate('/Login');
+
+  } catch (error) {
+    Swal.fire({
+      title: 'Error',
+      text: 'No se pudo verificar la información o realizar el registro',
+      icon: 'error'
+    });
+  }
+};
 
   return (
     <div className="auth-card">
@@ -100,20 +116,11 @@ const RegistroForm = () => {
         </div>
 
         <div className="input-group">
-          <label>Rol</label>
-          <select value={role} onChange={(e) => setRole(e.target.value)} className="form-select">
-            <option value="ciudadano">Ciudadano</option>
-            <option value="admin">Administrador</option>
-            <option value="jefaturaPolicia">Jefatura de Policía</option>
-          </select>
-        </div>
-
-        <div className="input-group">
-          <label>Nombre de Usuario</label>
+          <label>Correo Electronico</label>
           <input
             type="text"
-            value={nameUsuario}
-            onChange={(e) => setNameUsuario(e.target.value)}
+            value={correoUsuario}
+            onChange={(e) => setCorreoUsuario(e.target.value)}
           />
         </div>
 

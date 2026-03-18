@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ServiceUsuarios from '../services/ServiceUsuarios'
+import emailjs from '@emailjs/browser'
 import Swal from 'sweetalert2';
-import '../styles/Login.css';
 
 function FormLogin() {
-  const [nameUsuario, setNameUsuario] = useState("")
+  const [correoUsuario, setCorreoUsuario] = useState("")
   const [contra, setContra] = useState("")
   const [usuarios, setUsuarios] = useState([])
   const [verPass, setVerPass] = useState(false);
@@ -31,7 +31,7 @@ function FormLogin() {
   const validarInicio = (e) => {
     e.preventDefault();
 
-    if (!nameUsuario || !contra) {
+    if (!correoUsuario || !contra) {
       Swal.fire({
         title: 'Error',
         text: 'Todos los campos son obligatorios y no pueden estar vacíos 💜',
@@ -39,8 +39,8 @@ function FormLogin() {
       });
       return;
     }
-
-    const usuarioValido = usuarios.find((u) => u.nombreUsu === nameUsuario && u.pass === contra)
+    
+    const usuarioValido = usuarios.find((u) => u.email === correoUsuario && u.pass === contra)
 
     if (usuarioValido) {
       localStorage.setItem('user', JSON.stringify(usuarioValido));
@@ -57,7 +57,7 @@ function FormLogin() {
         } else if (usuarioValido.role === 'ciudadano') {
           navigate('/VistaCiudadano');
         } else {
-          navigate('/VistaJefaPolicia');
+          navigate('/VistaFuncionario');
         }
       });
     } else {
@@ -68,7 +68,50 @@ function FormLogin() {
       })
     }
   }
+//Función para recuperar contraseña
+ const recuperarContrasena = async () => {
+  const { value: emailIngresado } = await Swal.fire({
+    title: 'Recuperar Contraseña',
+    input: 'email',
+    inputLabel: 'Ingresa el correo asociado a tu cuenta',
+    showCancelButton: true,
+    confirmButtonText: 'Enviar nueva clave',
+    cancelButtonText: 'Cancelar'
+  })
 
+  if (emailIngresado) {// 1. Buscar si el usuario existe en db.json (usando el estado 'usuarios')
+    const usuarioEncontrado = usuarios.find(u => u.email === emailIngresado);
+
+    if (usuarioEncontrado) {// 2. Generar una clave temporal (ej: 6 letras/números)
+      const nuevaClave = Math.random().toString(36).slice(-6);
+
+      try {
+        // --- LLAMADA AL SERVICIO --- 3. Actualizar la clave en el db.json (JSON-SERVER)
+        await ServiceUsuarios.recuperarContra(usuarioEncontrado.id, { pass: nuevaClave });
+
+        // Enviar el correo con EmailJS
+        const templateParams = {
+          nombre: usuarioEncontrado.nombreUsu,
+          password: nuevaClave,
+          email_to: emailIngresado,
+        };
+
+        await emailjs.send(
+          'service_p81mum2',
+          'template_h4avnom',
+          templateParams,
+          'gYn0FdHihGBZzj5vp'
+        );
+
+        Swal.fire('¡Éxito!', 'Revisa tu correo con tu nueva contraseña temporal.', 'success')
+      } catch (error) {
+        Swal.fire('Error', 'No se pudo procesar la solicitud', 'error')
+      }
+    } else {
+      Swal.fire('Error', 'Ese correo no está registrado', 'error')
+    }
+  }
+}
   return (
     <div className="auth-card">
       <div className="auth-header">
@@ -78,11 +121,11 @@ function FormLogin() {
 
       <form onSubmit={validarInicio}>
         <div className="input-group">
-          <label>Nombre de Usuario</label>
+          <label>Correo Electronico</label>
           <input
             type='text'
-            value={nameUsuario}
-            onChange={(evento) => setNameUsuario(evento.target.value)}
+            value={correoUsuario}
+            onChange={(evento) => setCorreoUsuario(evento.target.value)}
           />
         </div>
 
@@ -107,6 +150,11 @@ function FormLogin() {
 
         <button type="submit" className="btn-auth">INICIAR SESIÓN</button>
       </form>
+      <p className="forgot-password">
+        <span onClick={recuperarContrasena} className="forgot-password-link">
+          ¿Olvidaste tu contraseña?
+        </span>
+      </p>  
 
       <p className="auth-footer">
         ¿No eres miembro? <Link to="/Registrarse">Registrate</Link>

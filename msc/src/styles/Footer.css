@@ -1,7 +1,83 @@
-.bg-body-tertiary{
-    background-color: #545454;
-    padding: 20px 0;
+.custom-footer {
+    background-color: #1a1c22;
+    padding: 40px 0 0 0;
+    color: #cbd5e1;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    border-top: 2px solid #334155;
+    margin-top: auto;
+}
+
+.footer-logo-container {
+    background-color: #f25c05;
+    width: 65px;
+    height: 65px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 15px rgba(242, 92, 5, 0.4);
+    flex-shrink: 0;
+}
+
+.footer-logo-icon {
+    font-size: 32px;
+    color: #ffffff;
+}
+
+.footer-logo-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-logo-main {
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 1.55rem;
+    line-height: 1.1;
+}
+
+.footer-about-text {
+    color: #94a3b8;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-top: 15px;
+    text-align: justify;
+}
+
+.footer-title {
+    color: #f25c05;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    letter-spacing: 0.05em;
+}
+
+.footer-links li {
+    margin-bottom: 12px;
+}
+
+.footer-links a, .footer-links span {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.footer-links a:hover {
+    color: #f25c05;
+}
+
+.footer-links i {
+    color: #f25c05;
+    width: 20px;
     text-align: center;
-    color: #fc7e00;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.footer-copyright {
+    background-color: #0f1115;
+    padding: 20px 0;
+    margin-top: 40px;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.9rem;
 }

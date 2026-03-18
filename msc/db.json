@@ -2,21 +2,35 @@
   "usuarios": [
     {
       "id": "7389",
-      "nombreUsu": "dpessoa",
-      "pass": "123456",
-      "confirmarContra": "123456",
-      "nombre": "David Chavarria Pessoa",
+      "email": "jbrionesfwdcostarica@gmail.com",
+      "pass": "pvvyhe",
+      "nombre": "John Briones Araica",
       "telefono": "70121314",
       "role": "admin"
     },
     {
       "id": "7238",
-      "nombreUsu": "Joaco",
+      "email": "joaquin252217@gmail.com",
       "pass": "123456",
-      "confirmarContra": "123456",
       "nombre": "Joaco",
       "telefono": "71104970",
       "role": "ciudadano"
+    },
+    {
+      "id": "3b98",
+      "email": "jaguilarfwdcostarica@gmail.com",
+      "pass": "mse33o",
+      "nombre": "Tita",
+      "telefono": "86151611",
+      "role": "ciudadano"
+    },
+    {
+      "id": "ae0c",
+      "nombre": "David",
+      "email": "david@gmail.cim",
+      "telefono": "88889923",
+      "role": "funcionario",
+      "pass": "123456"
     }
   ],
   "reportes": [

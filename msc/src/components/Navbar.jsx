@@ -35,12 +35,17 @@ const Navbar = () => {
         </div>
       </a>
 
-      <div className="nav-links-custom" style={{ display: 'flex', alignItems: 'center' }}>
+      <div className="nav-links-custom">
         <a href="/" className="nav-link-custom">Inicio</a>
         
-        <a href="/emergencias" className="nav-link-custom" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <a href="/emergencias" className="nav-link-custom">
           <i className="fa-solid fa-phone"></i>
           Números de Emergencia
+        </a>
+
+        <a href="/gestion-usuarios" className="nav-link-custom">
+          <i className="fa-solid fa-users-gear"></i>
+          Gestión Usuarios
         </a>
       </div>
 
