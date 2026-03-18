@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Outfit:wght@300;400;600;700&display=swap');
+
+.emergencias-page {
+    min-height: 100vh;
+    background: #ffffff;
+    padding-top: 0;
+    padding-bottom: 50px;
+    padding-inline: 20px;
+    font-family: 'Outfit', sans-serif;
+    color: #334155;
+}
+
+.emergencias-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 40px;
+}
+
+.emergencias-header {
+    text-align: center;
+    margin-bottom: 60px;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.emergencias-header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3rem;
+    color: #f25c05;
+    background: none;
+    -webkit-text-fill-color: initial;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.emergencias-header p {
+    font-size: 1.2rem;
+    color: #64748b;
+}
+
+.categorized-container {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    margin-bottom: 80px;
+}
+
+.category-group {
+    animation: fadeInUp 0.8s ease-out both;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid rgba(242, 92, 5, 0.2);
+    width: fit-content;
+}
+
+.category-header i {
+    font-size: 1.8rem;
+    color: #f25c05;
+}
+
+.category-header h2 {
+    font-size: 1.8rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: 0.5px;
+}
+
+.numbers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.emergency-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+    animation: fadeInUp 0.6s ease-out both;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.emergency-card:hover {
+    transform: translateY(-10px);
+    background: #ffffff;
+    border-color: #f25c05;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 0 15px rgba(242, 92, 5, 0.1);
+}
+
+.emergency-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.emergency-card:hover::before {
+    opacity: 1;
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #f25c05;
+    transition: transform 0.3s;
+}
+
+.emergency-card:hover .card-icon {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.card-number {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #1e293b;
+    text-decoration: none;
+    transition: color 0.3s, transform 0.3s;
+    display: block;
+}
+
+.card-number:hover {
+    color: #f25c05;
+    transform: scale(1.05);
+}
+
+.card-numbers-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.card-label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.map-section {
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 40px;
+    text-align: center;
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.map-section h2 {
+    font-size: 2rem;
+    margin-bottom: 15px;
+    color: #f8fafc;
+}
+
+.map-section p {
+    color: #94a3b8;
+    margin-bottom: 30px;
+    max-width: 600px;
+    margin-inline: auto;
+}
+
+.btn-map {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: linear-gradient(135deg, #f25c05, #d94e04);
+    color: white;
+    padding: 16px 40px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(242, 92, 5, 0.3);
+}
+
+.btn-map:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(242, 92, 5, 0.4);
+    background: linear-gradient(135deg, #fa7e36, #f25c05);
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+    .emergencias-header h1 { font-size: 2.2rem; }
+    .card-number { font-size: 2rem; }
+}
