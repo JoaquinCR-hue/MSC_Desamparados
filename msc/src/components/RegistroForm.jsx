@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ServiceUsuarios from '../services/ServiceUsuarios';
 import Swal from 'sweetalert2';
+import '../styles/Registro.css';
 
 const RegistroForm = () => {
-  const [nameUsuario, setNameUsuario] = useState("");
+  const [correoUsuario, setCorreoUsuario] = useState("");
   const [contra, setContra] = useState("");
   const [confirmarContra, setConfirmarContra] = useState("");
   const [nombre, setNombre] = useState("");
@@ -21,7 +22,7 @@ const RegistroForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!nombre || !telefono || !nameUsuario || !contra || !confirmarContra || !role) {
+    if (!nombre || !telefono || !correoUsuario || !contra || !confirmarContra || !role) {
       Swal.fire({
         title: 'Error',
         text: 'Todos los campos son obligatorios y no pueden estar vacíos 💜',
@@ -48,9 +49,8 @@ const RegistroForm = () => {
     return;
   }
     const nuevoUsuario = {
-      nombreUsu: nameUsuario,
+      email: correoUsuario,
       pass: contra,
-      confirmarContra: confirmarContra,
       nombre: nombre,
       telefono: telefono,
       role: role 
@@ -99,20 +99,11 @@ const RegistroForm = () => {
         </div>
 
         <div className="input-group">
-          <label>Rol</label>
-          <select value={role} onChange={(e) => setRole(e.target.value)} className="form-select">
-            <option value="ciudadano">Ciudadano</option>
-            <option value="admin">Administrador</option>
-            <option value="jefaturaPolicia">Jefatura de Policía</option>
-          </select>
-        </div>
-
-        <div className="input-group">
-          <label>Nombre de Usuario</label>
+          <label>Correo Electronico</label>
           <input
             type="text"
-            value={nameUsuario}
-            onChange={(e) => setNameUsuario(e.target.value)}
+            value={correoUsuario}
+            onChange={(e) => setCorreoUsuario(e.target.value)}
           />
         </div>
 

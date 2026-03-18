@@ -2,12 +2,19 @@
   "usuarios": [
     {
       "id": "7389",
-      "nombreUsu": "dpessoa",
-      "pass": "123456",
-      "confirmarContra": "123456",
-      "nombre": "David Chavarria Pessoa",
+      "email": "jbrionesfwdcostarica@gmail.com",
+      "pass": "pvvyhe",
+      "nombre": "John Briones Araica",
       "telefono": "70121314",
       "role": "admin"
+    },
+    {
+      "id": "8091",
+      "email": "dchavarriafwdcostarica@gmail.com",
+      "pass": "123456",
+      "nombre": "David Chavarria",
+      "telefono": "70121314",
+      "role": "ciudadano"
     }
   ],
   "reportes": [],

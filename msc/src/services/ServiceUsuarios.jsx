@@ -98,4 +98,26 @@ async function deleteUsuarios(id){
         console.error("Error al Eliminar el registro", error);
     }
 }
-export default{getUsuarios,postUsuarios,putUsuarios,deleteUsuarios}
+ 
+
+async function recuperarContra(id, datosActualizados) {
+    try {
+        const respuesta = await fetch(`http://localhost:3001/usuarios/${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(datosActualizados)
+        });
+
+        if (!respuesta.ok) throw new Error("No se pudo actualizar el usuario");
+        
+        return await respuesta.json();
+    } catch (error) {
+        console.error("Error en patchUsuario:", error);
+        throw error;
+    }
+}
+
+
+export default {getUsuarios, postUsuarios, putUsuarios, deleteUsuarios,recuperarContra};

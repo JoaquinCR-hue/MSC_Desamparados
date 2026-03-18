@@ -1,0 +1,166 @@
+/* Contenedor principal de la tarjeta de registro */
+.auth-card {
+  background-color: #1a1c22;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+  margin: 50px auto;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #cbd5e1;
+}
+
+/* Encabezado del formulario de registro */
+.auth-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.auth-header h2 {
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+  letter-spacing: -0.025em;
+}
+
+.auth-header p {
+  color: #cbd5e1;
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Grupos de inputs */
+.input-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: 0.05em;
+}
+
+.input-group input,
+.input-group select {
+  background-color: #2a3441;
+  border: 1px solid #334155;
+  color: #ffffff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  outline: none;
+  appearance: none; /* Para limpiar el diseño genérico del select */
+}
+
+/* Ajustes específicos para el select */
+.input-group select.form-select {
+  cursor: pointer;
+}
+
+.input-group select option {
+  background-color: #1a1c22;
+  color: #ffffff;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+  border-color: #f25c05;
+  box-shadow: 0 0 8px rgba(242, 92, 5, 0.3);
+}
+
+/* Contenedor para contraseña e icono */
+.password-wrapper {
+  position: relative;
+}
+
+.input-with-icon {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.input-with-icon input {
+  width: 100%;
+  padding-right: 40px; /* Espacio para el botón de visibilidad */
+}
+
+/* Botón de visibilidad de contraseña */
+.btn-eye {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #cbd5e1;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+  padding: 0;
+}
+
+.btn-eye:hover {
+  color: #ffffff;
+}
+
+/* Botón principal de registro */
+.btn-auth {
+  width: 100%;
+  background-color: #f25c05;
+  color: #ffffff;
+  border: none;
+  padding: 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  box-shadow: 0 0 10px rgba(242, 92, 5, 0.3);
+  margin-top: 15px;
+}
+
+.btn-registro {
+  /* Puede agregarse algun color o gradiente extra para el registro si es necesario */
+  background-color: #f25c05;
+}
+
+.btn-auth:hover {
+  background-color: #d94e04;
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(242, 92, 5, 0.5);
+}
+
+/* Pie del formulario (link para login) */
+.auth-footer {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+}
+
+.auth-footer a {
+  color: #f25c05;
+  text-decoration: none;
+  font-weight: 700;
+  margin-left: 5px;
+  transition: color 0.3s ease;
+}
+
+.auth-footer a:hover {
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
