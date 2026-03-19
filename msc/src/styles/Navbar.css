@@ -188,12 +188,16 @@
   border: 1px solid #334155;
   border-radius: 8px;
   width: 220px;
-  display: flex;
+  display: none; /* Oculto por defecto */
   flex-direction: column;
   overflow: hidden;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   z-index: 1050;
   animation: dropdownFadeIn 0.2s ease forwards;
+}
+
+.dropdown-menu-custom.show {
+  display: flex !important; /* Mostrar cuando tiene la clase 'show' */
 }
 
 .dropdown-item {

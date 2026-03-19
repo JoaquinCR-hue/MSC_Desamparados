@@ -8,6 +8,8 @@
 
 .carousel-item img {
   border-radius: 30px;
+  object-fit: cover;
+  height: 600px;
 }
 
 .carousel-caption {

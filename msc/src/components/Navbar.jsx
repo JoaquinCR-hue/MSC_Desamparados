@@ -57,7 +57,7 @@ const Navbar = () => {
             Menú
           </button>
           
-          <div className={`dropdown-menu-custom ${isMenuOpen ? 'show' : ''}`} style={{ display: isMenuOpen ? 'flex' : 'none' }}>
+          <div className={`dropdown-menu-custom ${isMenuOpen ? 'show' : ''}`}>
             {!user ? (
               <>
                 <a href="/login" className="dropdown-item">

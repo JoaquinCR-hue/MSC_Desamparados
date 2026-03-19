@@ -1,37 +1,6 @@
 {
   "usuarios": [
-    {
-      "id": "7389",
-      "email": "jbrionesfwdcostarica@gmail.com",
-      "pass": "pvvyhe",
-      "nombre": "John Briones Araica",
-      "telefono": "70121314",
-      "role": "admin"
-    },
-    {
-      "id": "7238",
-      "email": "joaquin252217@gmail.com",
-      "pass": "123456",
-      "nombre": "Joaco",
-      "telefono": "71104970",
-      "role": "ciudadano"
-    },
-    {
-      "id": "3b98",
-      "email": "jaguilarfwdcostarica@gmail.com",
-      "pass": "mse33o",
-      "nombre": "Tita",
-      "telefono": "86151611",
-      "role": "ciudadano"
-    },
-    {
-      "id": "ae0c",
-      "nombre": "David",
-      "email": "david@gmail.cim",
-      "telefono": "88889923",
-      "role": "funcionario",
-      "pass": "123456"
-    }
+    
   ],
   "reportes": [
     {
@@ -43,6 +12,18 @@
       "direccion_exacta": "en el parque",
       "fecha": "2026-03-10T13:50",
       "id_creador": "65df",
+      "estado": "Pendiente"
+    },
+    {
+      "id": "f4b9",
+      "tipo": "Robo o asalto",
+      "descripcion": "fafaf",
+      "distrito": "San Rafael Abajo",
+      "barrio": "Centro",
+      "direccion_exacta": "La iglesia Ciudad del este",
+      "fecha": "2026-02-27T17:42",
+      "id_creador": "8cae",
+      "nombre_creador": "david",
       "estado": "Pendiente"
     }
   ],
