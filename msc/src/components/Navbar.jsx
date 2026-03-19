@@ -48,6 +48,11 @@ const Navbar = () => {
           <i className="fa-solid fa-users-gear"></i>
           Gestión Usuarios
         </a>
+
+        <a href="/estadisticas" className="nav-link-custom">
+          <i className="fa-solid fa-chart-line"></i>
+          Estadísticas
+        </a>
       </div>
 
       <div className="nav-actions">

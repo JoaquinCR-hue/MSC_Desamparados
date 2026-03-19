@@ -8,6 +8,7 @@ import ViewFuncionario from '../pages/ViewFuncionario';
 import ReportarIncidente from '../pages/ReportarIncidente';
 import Emergencias from '../pages/Emergencias';
 import GestionUsuarios from '../pages/GestionUsuarios';
+import Estadisticas from '../pages/Estadisticas';
 
 const ProtectedRoute = ({ children }) => {
   const user = localStorage.getItem('user');
@@ -30,6 +31,7 @@ function Routing() {
             <Route path="/reportar-incidente" element={<ProtectedRoute><ReportarIncidente /></ProtectedRoute>} />
             <Route path="/emergencias" element={<Emergencias />} />
             <Route path="/gestion-usuarios" element={<GestionUsuarios />} />
+            <Route path="/estadisticas" element={<Estadisticas />} />
         </Routes>
     </Router>
     )   
