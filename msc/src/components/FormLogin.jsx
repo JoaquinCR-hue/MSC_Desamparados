@@ -57,7 +57,7 @@ function FormLogin() {
         } else if (usuarioValido.role === 'ciudadano') {
           navigate('/VistaCiudadano');
         } else {
-          navigate('/VistaJefaPolicia');
+          navigate('/VistaFuncionario');
         }
       });
     } else {
@@ -150,8 +150,8 @@ function FormLogin() {
 
         <button type="submit" className="btn-auth">INICIAR SESIÓN</button>
       </form>
-      <p className="forgot-password" style={{ textAlign: 'center', marginTop: '10px' }}>
-        <span onClick={recuperarContrasena} style={{ color: '#6a11cb', cursor: 'pointer', textDecoration: 'underline' }}>
+      <p className="forgot-password">
+        <span onClick={recuperarContrasena} className="forgot-password-link">
           ¿Olvidaste tu contraseña?
         </span>
       </p>  
