@@ -37,7 +37,16 @@ const Navbar = () => {
 
       <div className="nav-links-custom">
         <a href="/" className="nav-link-custom">Inicio</a>
-        <a href="/emergencias" className="nav-link-custom">Emergencias</a>
+        
+        <a href="/emergencias" className="nav-link-custom">
+          <i className="fa-solid fa-phone"></i>
+          Números de Emergencia
+        </a>
+
+        <a href="/gestion-usuarios" className="nav-link-custom">
+          <i className="fa-solid fa-users-gear"></i>
+          Gestión Usuarios
+        </a>
       </div>
 
       <div className="nav-actions">

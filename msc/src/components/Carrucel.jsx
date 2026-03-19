@@ -1,29 +1,30 @@
 import Carousel from 'react-bootstrap/Carousel';
+import '../styles/Carrucel.css';
 
 function Carrucel() {
   return (
     <Carousel>
       <Carousel.Item>
-        <img src="../src/Img/map_421190519.png" alt="First slide" />
+        <img src="../src/Img/mapa_desamparados_generado.png" alt="First slide" className="d-block w-100 carousel-img"  />
         <Carousel.Caption>
-          <h3>First slide label</h3>
-          <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
-        </Carousel.Caption>
-      </Carousel.Item>
-      <Carousel.Item>
-        <img src="../src/Img/map_421190519.png" alt="Second slide" />
-        <Carousel.Caption>
-          <h3>Second slide label</h3>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-        </Carousel.Caption>
-      </Carousel.Item>
-      <Carousel.Item>
-        <img src="../src/Img/map_421190519.png" alt="Third slide" />
-        <Carousel.Caption>
-          <h3>Third slide label</h3>
+          <h3>Mapa de Incidencias</h3>
           <p>
-            Praesent commodo cursus magna, vel scelerisque nisl consectetur.
+            Monitoreo en tiempo real de zonas de atención prioritaria en Desamparados.
           </p>
+        </Carousel.Caption>
+      </Carousel.Item>
+      <Carousel.Item>
+        <img src="../src/Img/carrucel_2_hiq.png" alt="Second slide" className="d-block w-100 carousel-img"  />
+        <Carousel.Caption>
+          <h3>Gestión Municipal</h3>
+          <p>Implementando tecnología para un Desamparados más seguro e inteligente.</p>
+        </Carousel.Caption>
+      </Carousel.Item>
+      <Carousel.Item>
+        <img src="../src/Img/carrucel_1.jpg" alt="Third slide" className="d-block w-100 carousel-img"  />
+        <Carousel.Caption>
+          <h3>Emergencias Policiales</h3>
+          <p>Atención inmediata y patrullaje preventivo en el cantón.</p>
         </Carousel.Caption>
       </Carousel.Item>
     </Carousel>

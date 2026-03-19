@@ -9,14 +9,42 @@
       "role": "admin"
     },
     {
-      "id": "8091",
-      "email": "dchavarriafwdcostarica@gmail.com",
-      "pass": "fyxhal",
-      "nombre": "David Chavarria",
-      "telefono": "70121314",
+      "id": "7238",
+      "email": "joaquin252217@gmail.com",
+      "pass": "123456",
+      "nombre": "Joaco",
+      "telefono": "71104970",
       "role": "ciudadano"
+    },
+    {
+      "id": "3b98",
+      "email": "jaguilarfwdcostarica@gmail.com",
+      "pass": "mse33o",
+      "nombre": "Tita",
+      "telefono": "86151611",
+      "role": "ciudadano"
+    },
+    {
+      "id": "ae0c",
+      "nombre": "David",
+      "email": "david@gmail.cim",
+      "telefono": "88889923",
+      "role": "funcionario",
+      "pass": "123456"
     }
   ],
-  "reportes": [],
+  "reportes": [
+    {
+      "id": "77fb",
+      "tipo": "Robo o asalto",
+      "descripcion": "me sacaron pistola",
+      "distrito": "Desamparados",
+      "barrio": "Centro",
+      "direccion_exacta": "en el parque",
+      "fecha": "2026-03-10T13:50",
+      "id_creador": "65df",
+      "estado": "Pendiente"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }
