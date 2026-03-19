@@ -1,4 +1,17 @@
 /* Estilos modernos y consistentes con el diseño de la aplicación */
+.carousel {
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  margin: 30px 60px; /* Separar de los bordes laterales y superior/inferior */
+}
+
+.carousel-item img {
+  border-radius: 30px;
+  object-fit: cover;
+  height: 600px;
+}
+
 .carousel-caption {
   background: rgba(26, 28, 34, 0.75); /* Fondo oscuro como las tarjetas de login */
   backdrop-filter: blur(12px); /* Efecto tipo glassmorphism */

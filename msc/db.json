@@ -44,6 +44,18 @@
       "fecha": "2026-03-10T13:50",
       "id_creador": "65df",
       "estado": "Pendiente"
+    },
+    {
+      "id": "f4b9",
+      "tipo": "Robo o asalto",
+      "descripcion": "fafaf",
+      "distrito": "San Rafael Abajo",
+      "barrio": "Centro",
+      "direccion_exacta": "La iglesia Ciudad del este",
+      "fecha": "2026-02-27T17:42",
+      "id_creador": "8cae",
+      "nombre_creador": "david",
+      "estado": "Pendiente"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
