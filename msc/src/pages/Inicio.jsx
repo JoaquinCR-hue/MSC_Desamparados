@@ -1,20 +1,17 @@
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import Carrucel from '../components/Carrucel';
+import '../styles/Inicio.css';
 
 function Inicio() {
     return(
-        <>
-        <div className="Navbar-container">
+        <div className="inicio-container">
             <Navbar />
-      </div>
-        <div className="Carrucel-container">
-            <Carrucel />
-        </div>
-         <div className="Footer-container">
+            <div className="Carrucel-container">
+                <Carrucel />
+            </div>
             <Footer />
         </div>
-        </>
     )
 }
 export default Inicio;
