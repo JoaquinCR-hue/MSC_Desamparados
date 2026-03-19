@@ -144,13 +144,38 @@ const FormularioReporte = () => {
             <label htmlFor="tipo">Tipo de Incidente</label>
             <select id="tipo" name="tipo" value={formData.tipo} onChange={handleChange} required>
               <option value="">Seleccione una opción</option>
-              <option value="Robo o asalto">Robo o asalto</option>
-              <option value="Accidente de tránsito">Accidente de tránsito</option>
-              <option value="Vandalismo">Vandalismo</option>
-              <option value="Actividad sospechosa">Actividad sospechosa</option>
-              <option value="Emergencia médica">Emergencia médica</option>
-              <option value="Incendio">Incendio</option>
-              <option value="Otro">Otro</option>
+              
+              <optgroup label="Delitos Relevantes">
+                <option value="Asalto">Asalto</option>
+                <option value="Hurto">Hurto</option>
+                <option value="Robo">Robo</option>
+                <option value="Tacha De Vehículo">Tacha De Vehículo</option>
+                <option value="Robo De Vehículo">Robo De Vehículo</option>
+                <option value="Homicidio">Homicidio</option>
+              </optgroup>
+
+              <optgroup label="Violencia y Género">
+                <option value="Femicidio">Femicidio</option>
+                <option value="Maltrato a mujer">Maltrato a mujer</option>
+                <option value="Violencia domestica">Violencia domestica</option>
+                <option value="Maltrato animal">Maltrato animal</option>
+              </optgroup>
+
+              <optgroup label="Seguridad Pública">
+                <option value="Balacera">Balacera</option>
+                <option value="Ventas de drogas">Ventas de drogas</option>
+                <option value="Persona sospechosa">Persona sospechosa</option>
+                <option value="Actividad sospechosa">Actividad sospechosa</option>
+                <option value="Objeto sospechoso">Objeto sospechoso</option>
+              </optgroup>
+
+              <optgroup label="Siniestros y Otros">
+                <option value="Accidente de tránsito">Accidente de tránsito</option>
+                <option value="Incendio">Incendio</option>
+                <option value="Emergencia médica">Emergencia médica</option>
+                <option value="Vandalismo">Vandalismo</option>
+                <option value="Otro">Otro</option>
+              </optgroup>
             </select>
           </div>
 
