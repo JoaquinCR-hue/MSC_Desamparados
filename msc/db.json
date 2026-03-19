@@ -1,52 +1,31 @@
 {
   "usuarios": [
     {
-      "id": "7389",
-      "email": "jbrionesfwdcostarica@gmail.com",
-      "pass": "pvvyhe",
-      "nombre": "John Briones Araica",
-      "telefono": "70121314",
-      "role": "admin"
-    },
-    {
-      "id": "7238",
-      "email": "jaguilarfwdcostarica@gmail.com",
+      "id": "5857",
+      "email": "john0242010@gmail.com",
       "pass": "123456",
-      "nombre": "Joaco",
-      "telefono": "71104970",
-      "role": "ciudadano"
+      "nombre": "JOHN ANDONY BRIONES ARAICA",
+      "telefono": "70431471",
+      "role": "admin",
+      "cedula": "702430964"
     },
     {
-      "id": "8091",
-      "email": "dchavarriafwdcostarica@gmail.com",
+      "id": "6623",
+      "email": "davidchapps08@gmail.com",
+      "pass": "mmmmmm",
+      "nombre": "DAVID JOSE CHAVARRIA PESSOA",
+      "telefono": "89350365",
+      "role": "admin",
+      "cedula": "121520808"
+    },
+    {
+      "id": "a999",
+      "email": "amorafwdcostarica@gmail.com",
       "pass": "123456",
-      "nombre": "David Chavarria",
-      "telefono": "70121314",
-      "role": "ciudadano"
-    },
-    {
-      "id": "7dc0",
-      "email": "dauhbc",
-      "pass": "mmmmmm",
-      "nombre": "david",
-      "telefono": "12345678",
-      "role": "ciudadano"
-    },
-    {
-      "id": "3c7b",
-      "email": "yfyda",
-      "pass": "mmmmmm",
-      "nombre": "David",
-      "telefono": "12345678",
-      "role": "ciudadano"
-    },
-    {
-      "id": "8cae",
-      "email": "aaa",
-      "pass": "mmmmmm",
-      "nombre": "david",
-      "telefono": "12345678",
-      "role": "ciudadano"
+      "nombre": "ADRIAN DAVID MORA CASTILLO",
+      "telefono": "88173512",
+      "role": "ciudadano",
+      "cedula": "119470167"
     }
   ],
   "reportes": [
@@ -71,6 +50,18 @@
       "fecha": "2026-02-27T17:42",
       "id_creador": "8cae",
       "nombre_creador": "david",
+      "estado": "Pendiente"
+    },
+    {
+      "id": "617f",
+      "tipo": "Robo o asalto",
+      "descripcion": "wfjoijf",
+      "distrito": "Gravilias",
+      "barrio": "Centro",
+      "direccion_exacta": "La iglesia Ciudad del este",
+      "fecha": "2026-02-02T03:01",
+      "id_creador": "6623",
+      "nombre_creador": "DAVID JOSE CHAVARRIA PESSOA",
       "estado": "Pendiente"
     }
   ],

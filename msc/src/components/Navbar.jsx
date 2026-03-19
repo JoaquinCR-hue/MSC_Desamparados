@@ -44,10 +44,18 @@ const Navbar = () => {
           Números de Emergencia
         </a>
 
-        <a href="/gestion-usuarios" className="nav-link-custom">
-          <i className="fa-solid fa-users-gear"></i>
-          Gestión Usuarios
-        </a>
+        {user && JSON.parse(user).role === 'admin' && (
+          <>
+            <a href="/gestion-usuarios" className="nav-link-custom">
+              <i className="fa-solid fa-users-gear"></i>
+              Gestión Usuarios
+            </a>
+            <a href="/gestion-reportes" className="nav-link-custom">
+              <i className="fa-solid fa-file-shield"></i>
+              Gestión Reportes
+            </a>
+          </>
+        )}
       </div>
 
       <div className="nav-actions">

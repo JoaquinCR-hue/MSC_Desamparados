@@ -48,7 +48,13 @@ const ReportarIncidente = () => {
 
   const navigate = useNavigate();
   const user = localStorage.getItem('user');
-  const usuarioParseado = user ? JSON.parse(user) : null;
+  let usuarioParseado = null;
+  try {
+    usuarioParseado = user ? JSON.parse(user) : null;
+  } catch (error) {
+    console.error("Error parsing user from localStorage", error);
+    localStorage.removeItem('user');
+  }
 
   useEffect(() => {
     if (!user) {
