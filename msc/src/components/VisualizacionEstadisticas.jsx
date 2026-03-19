@@ -107,7 +107,7 @@ const VisualizacionEstadisticas = () => {
                                 <div className="bar-track">
                                     <div 
                                         className="bar-fill" 
-                                        style={{ width: `${(count / maxReports) * 100}%` }}
+                                        style={{ '--bar-width': `${(count / maxReports) * 100}%` }}
                                     >
                                         <span className="bar-count">{count}</span>
                                     </div>

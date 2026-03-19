@@ -1,62 +1,33 @@
 {
   "usuarios": [
     {
-      "id": "7389",
-      "email": "jbrionesfwdcostarica@gmail.com",
-      "pass": "pvvyhe",
-      "nombre": "John Briones Araica",
-      "telefono": "70121314",
-      "role": "admin"
-    },
-    {
-      "id": "7238",
-      "email": "joaquin252217@gmail.com",
+      "id": "5857",
+      "email": "john0242010@gmail.com",
       "pass": "123456",
-      "nombre": "Joaco",
-      "telefono": "71104970",
-      "role": "ciudadano"
+      "nombre": "JOHN ANDONY BRIONES ARAICA",
+      "telefono": "70431471",
+      "role": "admin",
+      "cedula": "702430964"
     },
     {
-      "id": "3b98",
-      "email": "jaguilarfwdcostarica@gmail.com",
-      "pass": "mse33o",
-      "nombre": "Tita",
-      "telefono": "86151611",
-      "role": "ciudadano"
+      "id": "6623",
+      "email": "davidchapps08@gmail.com",
+      "pass": "mmmmmm",
+      "nombre": "DAVID JOSE CHAVARRIA PESSOA",
+      "telefono": "89350365",
+      "role": "admin",
+      "cedula": "121520808"
     },
     {
-      "id": "ae0c",
-      "nombre": "David",
-      "email": "david@gmail.cim",
-      "telefono": "88889923",
-      "role": "funcionario",
-      "pass": "123456"
+      "id": "a999",
+      "email": "amorafwdcostarica@gmail.com",
+      "pass": "123456",
+      "nombre": "ADRIAN DAVID MORA CASTILLO",
+      "telefono": "88173512",
+      "role": "ciudadano",
+      "cedula": "119470167"
     }
   ],
-  "reportes": [
-    {
-      "id": "77fb",
-      "tipo": "Robo o asalto",
-      "descripcion": "me sacaron pistola",
-      "distrito": "Desamparados",
-      "barrio": "Centro",
-      "direccion_exacta": "en el parque",
-      "fecha": "2026-03-10T13:50",
-      "id_creador": "65df",
-      "estado": "Pendiente"
-    },
-    {
-      "id": "f4b9",
-      "tipo": "Robo o asalto",
-      "descripcion": "fafaf",
-      "distrito": "San Rafael Abajo",
-      "barrio": "Centro",
-      "direccion_exacta": "La iglesia Ciudad del este",
-      "fecha": "2026-02-27T17:42",
-      "id_creador": "8cae",
-      "nombre_creador": "david",
-      "estado": "Pendiente"
-    }
-  ],
+  "reportes": [],
   "$schema": "./node_modules/json-server/schema.json"
 }

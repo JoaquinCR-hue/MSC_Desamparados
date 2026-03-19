@@ -8,12 +8,24 @@ import ViewFuncionario from '../pages/ViewFuncionario';
 import ReportarIncidente from '../pages/ReportarIncidente';
 import Emergencias from '../pages/Emergencias';
 import GestionUsuarios from '../pages/GestionUsuarios';
+import GestionReportes from '../pages/GestionReportes';
 import Estadisticas from '../pages/Estadisticas';
 
 const ProtectedRoute = ({ children }) => {
   const user = localStorage.getItem('user');
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
+const AdminRoute = ({ children }) => {
+  const userStr = localStorage.getItem('user');
+  if (!userStr) return <Navigate to="/login" replace />;
+  
+  const user = JSON.parse(userStr);
+  if (user.role !== 'admin') {
+    return <Navigate to="/" replace />;
   }
   return children;
 };
@@ -30,8 +42,9 @@ function Routing() {
             <Route path="/VistaFuncionario" element={<ViewFuncionario />} />
             <Route path="/reportar-incidente" element={<ProtectedRoute><ReportarIncidente /></ProtectedRoute>} />
             <Route path="/emergencias" element={<Emergencias />} />
-            <Route path="/gestion-usuarios" element={<GestionUsuarios />} />
-            <Route path="/estadisticas" element={<Estadisticas />} />
+            <Route path="/gestion-usuarios" element={<AdminRoute><GestionUsuarios /></AdminRoute>} />
+            <Route path="/gestion-reportes" element={<AdminRoute><GestionReportes /></AdminRoute>} />
+            <Route path="/estadisticas" element={<AdminRoute><Estadisticas /></AdminRoute>} />
         </Routes>
     </Router>
     )   
