@@ -2,15 +2,38 @@ import React from 'react';
 
 import '../styles/Emergencias.css';
 
-const DirectorioEmergencias = () => {
+// Import local logos
+import logo911 from '../assets/logos/911_logo.png';
+import logoCruzRoja from '../assets/logos/cruz_roja_logo.png';
+import logoBomberos from '../assets/logos/bomberos_logo.png';
+import logoFuerzaPublica from '../assets/logos/fuerza_publica_logo.png';
+import logoOIJ from '../assets/logos/oij_logo.png';
+// Using remote URLs for these due to local file integrity issues
+const logoPANI = 'https://www.pani.go.cr/wp-content/themes/pani-2016/images/logo-pani.png';
+const logoINAMU = 'https://www.inamu.go.cr/Inamu-theme/images/logo_inamu_blanco.png';
+const logoCCSS = 'https://www.ccss.sa.cr/ccss_marca/ccss-logo.png';
+const logoCNFL = 'https://electronoticias.com/wp-content/uploads/2018/07/Marca-CNFL.png';
+const logoIMAS = 'https://upload.wikimedia.org/wikipedia/commons/f/f0/Imas-logo.png';
+const logoMunicipalDesamparados = 'https://www.desamparados.go.cr/sites/default/files/escudo_desamparados.png';
+const logoTransito = 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Logo_Policia_de_Transito_Costa_Rica.png/512px-Logo_Policia_de_Transito_Costa_Rica.png';
+const logoINS = 'https://www.ins-cr.com/Static/Img/logo-ins.png';
+const logoAyA = 'https://www.aya.go.cr/PublishingImages/LogoAyAHorizontal.png';
+const logoPCD = 'https://iconape.com/wp-content/files/oc/205634/png/205634.png';
 
+const DirectorioEmergencias = () => {
     const [filter, setFilter] = React.useState('TODOS');
+    const [brokenLogos, setBrokenLogos] = React.useState(new Set());
+
+    const handleLogoError = (id) => {
+        setBrokenLogos(prev => new Set(prev).add(id));
+    };
 
     const mainEmergency = {
         number: '9-1-1',
         title: '9-1-1 EMERGENCIAS',
         label: 'Línea única para reporte de crímenes en progreso, accidentes graves, incendios o riesgo inminente de vida.',
-        icon: 'fa-star-of-life'
+        icon: 'fa-star-of-life',
+        logo: logo911
     };
 
     const categories = [
@@ -19,9 +42,30 @@ const DirectorioEmergencias = () => {
             title: 'Emergencias Principales',
             icon: 'fa-star-of-life',
             numbers: [
-                { number: '2250-4972', label: 'Cruz Roja', subtitle: 'Emergencias Médicas', icon: 'fa-truck-medical', description: 'Primeros auxilios, traslados en ambulancia y rescate en accidentes.' },
-                { number: '2547-3700 / 2259-2304', label: 'Bomberos', subtitle: 'Prevención de Incendios', icon: 'fa-fire-extinguisher', description: 'Fugas de gas, cortocircuitos, incendios estructurales y rescate animal.' },
-                { number: '2250-1480', label: 'Policía Municipal', subtitle: 'Seguridad Local', icon: 'fa-building-shield', description: 'Vigilancia y prevención en el cantón de Desamparados.' }
+                { 
+                    number: '2250-4972', 
+                    label: 'Cruz Roja', 
+                    subtitle: 'Emergencias Médicas', 
+                    icon: 'fa-truck-medical', 
+                    logo: logoCruzRoja,
+                    description: 'Primeros auxilios, traslados en ambulancia y rescate en accidentes.' 
+                },
+                { 
+                    number: '2547-3700 / 2259-2304', 
+                    label: 'Bomberos', 
+                    subtitle: 'Prevención de Incendios', 
+                    icon: 'fa-fire-extinguisher', 
+                    logo: logoBomberos,
+                    description: 'Fugas de gas, cortocircuitos, incendios estructurales y rescate animal.' 
+                },
+                { 
+                    number: '2250-1480', 
+                    label: 'Policía Municipal Desamparados', 
+                    subtitle: 'Seguridad Local', 
+                    icon: 'fa-building-shield', 
+                    logo: logoMunicipalDesamparados,
+                    description: 'Vigilancia y prevención en el cantón de Desamparados.' 
+                }
             ]
         },
         {
@@ -29,8 +73,22 @@ const DirectorioEmergencias = () => {
             title: 'Seguridad Regional',
             icon: 'fa-shield-halved',
             numbers: [
-                { number: '2600-0270', label: 'Fuerza Pública', subtitle: 'Delegación Sur', icon: 'fa-building-shield', description: 'Seguridad ciudadana y prevención en la zona sur.' },
-                { number: '2250-0822', label: 'Fuerza Pública', subtitle: 'San Antonio', icon: 'fa-building-shield', description: 'Delegación local para el distrito de San Antonio.' }
+                { 
+                    number: '2600-0270', 
+                    label: 'Fuerza Pública', 
+                    subtitle: 'Delegación Sur', 
+                    icon: 'fa-building-shield', 
+                    logo: logoFuerzaPublica,
+                    description: 'Seguridad ciudadana y prevención en la zona sur.' 
+                },
+                { 
+                    number: '2250-0822', 
+                    label: 'Fuerza Pública', 
+                    subtitle: 'San Antonio', 
+                    icon: 'fa-building-shield', 
+                    logo: logoFuerzaPublica,
+                    description: 'Delegación local para el distrito de San Antonio.' 
+                }
             ]
         },
         {
@@ -38,8 +96,22 @@ const DirectorioEmergencias = () => {
             title: 'Denuncias e Investigación',
             icon: 'fa-magnifying-glass-chart',
             numbers: [
-                { number: '800-8000-645', label: 'OIJ', subtitle: 'Línea Confidencial', icon: 'fa-user-secret', description: 'Denuncias confidenciales para narcóticos, homicidios y crímenes.' },
-                { number: '1176', label: 'PCD', subtitle: 'Control de Drogas', icon: 'fa-pills', description: 'Reportes sobre venta y tráfico de sustancias ilícitas.' }
+                { 
+                    number: '800-8000-645', 
+                    label: 'OIJ', 
+                    subtitle: 'Línea Confidencial', 
+                    icon: 'fa-user-secret', 
+                    logo: logoOIJ,
+                    description: 'Denuncias confidenciales para narcóticos, homicidios y crímenes.' 
+                },
+                { 
+                    number: '1176', 
+                    label: 'PCD', 
+                    subtitle: 'Control de Drogas', 
+                    icon: 'fa-pills', 
+                    logo: logoPCD,
+                    description: 'Reportes sobre venta y tráfico de sustancias ilícitas.' 
+                }
             ]
         },
         {
@@ -47,9 +119,30 @@ const DirectorioEmergencias = () => {
             title: 'Apoyo Social y Bienestar',
             icon: 'fa-hands-holding-child',
             numbers: [
-                { number: '1147', label: 'PANI', subtitle: 'Protección de la Niñez', icon: 'fa-child-reaching', description: 'Reporte de maltrato infantil, abandono o riesgo para menores.' },
-                { number: '800-8000-247', label: 'INAMU', subtitle: 'Apoyo a Mujeres', icon: 'fa-venus', description: 'Orientación técnica y legal para víctimas de violencia de género.' },
-                { number: '800-000-4627', label: 'IMAS', subtitle: 'Ayuda Social', icon: 'fa-hand-holding-heart', description: 'Subsidios y programas de ayuda para personas de escasos recursos.' }
+                { 
+                    number: '1147', 
+                    label: 'PANI', 
+                    subtitle: 'Protección de la Niñez', 
+                    icon: 'fa-child-reaching', 
+                    logo: logoPANI,
+                    description: 'Reporte de maltrato infantil, abandono o riesgo para menores.' 
+                },
+                { 
+                    number: '800-8000-247', 
+                    label: 'INAMU', 
+                    subtitle: 'Apoyo a Mujeres', 
+                    icon: 'fa-venus', 
+                    logo: logoINAMU,
+                    description: 'Orientación técnica y legal para víctimas de violencia de género.' 
+                },
+                { 
+                    number: '800-000-4627', 
+                    label: 'IMAS', 
+                    subtitle: 'Ayuda Social', 
+                    icon: 'fa-hand-holding-heart', 
+                    logo: logoIMAS,
+                    description: 'Subsidios y programas de ayuda para personas de escasos recursos.' 
+                }
             ]
         },
         {
@@ -57,8 +150,22 @@ const DirectorioEmergencias = () => {
             title: 'Tránsito y Seguros',
             icon: 'fa-car-burst',
             numbers: [
-                { number: '2222-9330', label: 'Tránsito', subtitle: 'Emergencias Viales', icon: 'fa-traffic-light', description: 'Reporte de colisiones, bloqueos o emergencias en carretera.' },
-                { number: '800-800-8000', label: 'INS', subtitle: 'Soporte Seguros', icon: 'fa-file-shield', description: 'Reporte de accidentes y reclamaciones de seguros (Instituto Nacional de Seguros).' }
+                { 
+                    number: '2222-9330', 
+                    label: 'Tránsito', 
+                    subtitle: 'Emergencias Viales', 
+                    icon: 'fa-traffic-light', 
+                    logo: logoTransito,
+                    description: 'Reporte de colisiones, bloqueos o emergencias en carretera.' 
+                },
+                { 
+                    number: '800-800-8000', 
+                    label: 'INS', 
+                    subtitle: 'Soporte Seguros', 
+                    icon: 'fa-file-shield', 
+                    logo: logoINS,
+                    description: 'Reporte de accidentes y reclamaciones de seguros (Instituto Nacional de Seguros).' 
+                }
             ]
         },
         {
@@ -66,9 +173,30 @@ const DirectorioEmergencias = () => {
             title: 'Servicios Básicos y Salud',
             icon: 'fa-faucet-drip',
             numbers: [
-                { number: '800-732-6783', label: 'AyA', subtitle: 'Averías Agua', icon: 'fa-droplet', description: 'Reporte de fugas, cortes de servicio o problemas con el suministro.' },
-                { number: '1026', label: 'CNFL', subtitle: 'Averías Electricidad', icon: 'fa-bolt', description: 'Asistencia técnica por fallas en el fluido eléctrico o alumbrado.' },
-                { number: '2223-1028', label: 'Intoxicaciones', subtitle: 'Centro Nacional', icon: 'fa-skull-crossbones', description: 'Atención especializada en casos de envenenamiento o químicos.' }
+                { 
+                    number: '800-732-6783', 
+                    label: 'AyA', 
+                    subtitle: 'Averías Agua', 
+                    icon: 'fa-droplet', 
+                    logo: logoAyA,
+                    description: 'Reporte de fugas, cortes de servicio o problemas con el suministro.' 
+                },
+                { 
+                    number: '1026', 
+                    label: 'CNFL', 
+                    subtitle: 'Averías Electricidad', 
+                    icon: 'fa-bolt', 
+                    logo: logoCNFL,
+                    description: 'Asistencia técnica por fallas en el fluido eléctrico o alumbrado.' 
+                },
+                { 
+                    number: '2223-1028', 
+                    label: 'Intoxicaciones', 
+                    subtitle: 'Centro Nacional', 
+                    icon: 'fa-skull-crossbones', 
+                    logo: logoCCSS,
+                    description: 'Atención especializada en casos de envenenamiento o químicos.' 
+                }
             ]
         }
     ];
@@ -138,7 +266,16 @@ const DirectorioEmergencias = () => {
                     <section className="featured-emergency">
                         <div className="featured-card">
                             <div className="featured-icon">
-                                <i className={`fa-solid ${mainEmergency.icon}`}></i>
+                                {mainEmergency.logo && !brokenLogos.has('911') ? (
+                                    <img 
+                                        src={mainEmergency.logo} 
+                                        alt={mainEmergency.title} 
+                                        className="institution-logo-main" 
+                                        onError={() => handleLogoError('911')}
+                                    />
+                                ) : (
+                                    <i className={`fa-solid ${mainEmergency.icon}`}></i>
+                                )}
                             </div>
                             <div className="featured-info">
                                 <h2>{mainEmergency.title}</h2>
@@ -159,7 +296,16 @@ const DirectorioEmergencias = () => {
                             <div key={index} className="directory-card">
                                 <div className="card-top">
                                     <div className="card-icon-container">
-                                        <i className={`fa-solid ${item.icon}`}></i>
+                                        {item.logo && !brokenLogos.has(item.label) ? (
+                                            <img 
+                                                src={item.logo} 
+                                                alt={item.label} 
+                                                className="institution-logo-card" 
+                                                onError={() => handleLogoError(item.label)}
+                                            />
+                                        ) : (
+                                            <i className={`fa-solid ${item.icon}`}></i>
+                                        )}
                                     </div>
                                     <div className="card-titles">
                                         <h3>{item.label}</h3>

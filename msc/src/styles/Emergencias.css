@@ -190,6 +190,15 @@
     font-size: 2.5rem;
     color: #f25c05;
     z-index: 1;
+    overflow: hidden;
+}
+
+.institution-logo-main {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 5px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
 .featured-info {
@@ -283,6 +292,20 @@
     justify-content: center;
     font-size: 1.6rem;
     color: #f25c05;
+    overflow: hidden;
+}
+
+.institution-logo-card {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+    filter: grayscale(0.2) contrast(1.1);
+    transition: all 0.3s ease;
+}
+
+.directory-card:hover .institution-logo-card {
+    filter: grayscale(0) contrast(1.2) scale(1.05);
 }
 
 .card-titles h3 {
