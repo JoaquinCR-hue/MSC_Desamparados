@@ -60,6 +60,11 @@ const Navbar = () => {
           Mapa de Riesgo
         </a>
 
+        <a href="/rutas-seguras" className="nav-link-custom nav-link-safe">
+          <i className="fa-solid fa-route"></i>
+          Rutas Seguras
+        </a>
+
       </div>
 
       <div className="nav-actions">
