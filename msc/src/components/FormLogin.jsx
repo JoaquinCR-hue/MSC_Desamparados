@@ -46,19 +46,31 @@ function FormLogin() {
     if (!cedulaRegex.test(cedula)) {
       Swal.fire({
         title: 'Seguridad',
-        text: 'por su seguridad y la de nustros habitantes no puedes iniciar secion sin una cedula valida',
+        text: 'Por su seguridad y la de nuestros habitantes, el formato de la cédula no es válido (deben ser 9 dígitos).',
         icon: 'warning'
       });
       return;
     }
     
-    const usuarioExistente = usuarios.find((u) => u.cedula === cedula);
+    // Asegurarse de que usuarios sea un arreglo
+    const listaUsuarios = Array.isArray(usuarios) ? usuarios : (usuarios.usuarios || []);
+
+    if (listaUsuarios.length === 0) {
+      Swal.fire({
+        title: 'Error de Servidor',
+        text: 'La base de datos de usuarios está vacía o no se pudo cargar correctamente.',
+        icon: 'error'
+      });
+      return;
+    }
+
+    const usuarioExistente = listaUsuarios.find((u) => String(u.cedula || "").trim() === String(cedula).trim());
 
     if (!usuarioExistente) {
       Swal.fire({
-        title: 'Seguridad',
-        text: 'por su seguridad y la de nustros habitantes no puedes iniciar secion sin una cedula valida',
-        icon: 'warning'
+        title: 'Error de Acceso',
+        text: `La cédula ${cedula} no se encuentra registrada en el sistema (Total usuarios: ${listaUsuarios.length}).`,
+        icon: 'error'
       });
       return;
     }
@@ -142,7 +154,7 @@ function FormLogin() {
           label="Cédula"
           value={cedula}
           placeholder="Ingrese su cédula"
-          onChange={(evento) => setCedula(evento.target.value)}
+          onChange={(evento) => setCedula(evento.target.value.replace(/\D/g, ''))}
         />
 
         <PasswordInput 

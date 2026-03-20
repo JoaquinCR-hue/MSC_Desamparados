@@ -1,9 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, useMap, useMapEvents, Marker } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import ServiceReportes from '../services/ServiceReportes';
+
+// Fix for default marker icon in Leaflet + React
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
 
 const distritosData = {
   "Desamparados": { center: [9.8989, -84.0664], barrios: ["Centro", "Calle Fallas", "Contadores", "Cucubres", "Dorado", "Lomas", "Metrópoli"] },
@@ -29,6 +42,15 @@ const MapUpdater = ({ center, zoom }) => {
   return null;
 };
 
+const LocationPicker = ({ position, setPosition }) => {
+  useMapEvents({
+    click(e) {
+      setPosition([e.latlng.lat, e.latlng.lng]);
+    },
+  });
+  return position ? <Marker position={position} /> : null;
+};
+
 const FormularioReporte = () => {
   const [formData, setFormData] = useState({
     tipo: '',
@@ -39,8 +61,9 @@ const FormularioReporte = () => {
     fecha: '',
   });
 
-  const [mapCenter, setMapCenter] = useState([9.9281, -84.0907]); 
-  const [mapZoom, setMapZoom] = useState(10);
+  const [location, setLocation] = useState(null);
+  const [mapCenter, setMapCenter] = useState([9.892, -84.05]); 
+  const [mapZoom, setMapZoom] = useState(12);
 
   const navigate = useNavigate();
   const user = localStorage.getItem('user');
@@ -83,9 +106,7 @@ const FormularioReporte = () => {
       if (value && distritosData[value]) {
         setMapCenter(distritosData[value].center);
         setMapZoom(14);
-      } else {
-        setMapCenter([9.9281, -84.0907]);
-        setMapZoom(10);
+        setLocation(distritosData[value].center); // Default to center if not clicked
       }
     } else {
       setFormData({
@@ -98,11 +119,22 @@ const FormularioReporte = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!location) {
+      Swal.fire({
+        title: 'Ubicación Requerida',
+        text: 'Por favor, marca el lugar exacto en el mapa.',
+        icon: 'info'
+      });
+      return;
+    }
+
     const nuevoReporte = {
       ...formData,
       id_creador: usuarioParseado.id,
       nombre_creador: usuarioParseado.nombre,
-      estado: 'Pendiente' 
+      estado: 'Pendiente',
+      lat: location[0],
+      lng: location[1]
     };
 
     try {
@@ -115,8 +147,9 @@ const FormularioReporte = () => {
       });
 
       setFormData({ tipo: '', descripcion: '', distrito: '', barrio: '', direccion_exacta: '', fecha: '' });
-      setMapCenter([9.9281, -84.0907]);
-      setMapZoom(10);
+      setLocation(null);
+      setMapCenter([9.892, -84.05]);
+      setMapZoom(12);
 
     } catch (error) {
       console.error(error);
@@ -128,14 +161,11 @@ const FormularioReporte = () => {
     }
   };
 
-  const currentDistrito = formData.distrito;
-  const showMarker = currentDistrito && distritosData[currentDistrito];
-
   return (
     <div className="reportar-form-wrapper map-layout">
       <div className="reportar-header">
         <h2>Reportar Incidente o Riesgo</h2>
-        <p>Ayúdanos a mantener Desamparados y nuestro país más seguro.</p>
+        <p>Marca el lugar exacto del incidente en el mapa para una mejor respuesta.</p>
       </div>
 
       <div className="report-content-grid">
@@ -186,7 +216,7 @@ const FormularioReporte = () => {
 
           <div className="form-row">
             <div className="form-group-custom">
-              <label htmlFor="distrito">Distrito (Desamparados)</label>
+              <label htmlFor="distrito">Distrito</label>
               <select id="distrito" name="distrito" value={formData.distrito} onChange={handleChange} required>
                 <option value="">Seleccionar Distrito</option>
                 {Object.keys(distritosData).map(dist => (
@@ -222,25 +252,16 @@ const FormularioReporte = () => {
         </form>
 
         <div className="map-container-wrapper">
+          <div className="map-instruccion">
+            <i className="fa-solid fa-hand-pointer"></i> Haz clic en el mapa para marcar el punto exacto
+          </div>
           <MapContainer center={mapCenter} zoom={mapZoom} scrollWheelZoom={true} className="leaflet-map">
             <TileLayer 
-              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" 
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" 
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' 
             />
             <MapUpdater center={mapCenter} zoom={mapZoom} />
-            
-            {showMarker && (
-              <CircleMarker 
-                center={distritosData[formData.distrito].center} 
-                pathOptions={{ color: '#d32f2f', fillColor: '#ef5350', fillOpacity: 0.6, weight: 3 }} 
-                radius={35}
-              >
-                <Popup>
-                  <strong>{formData.distrito}</strong>
-                  {formData.barrio ? <><br/>Sector: {formData.barrio}</> : null}
-                </Popup>
-              </CircleMarker>
-            )}
+            <LocationPicker position={location} setPosition={setLocation} />
           </MapContainer>
         </div>
       </div>

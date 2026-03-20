@@ -2,7 +2,7 @@ async function getReportes() {
 
     try {
 
-        const respuestaServidor = await fetch("http://localhost:3001/reportes")
+        const respuestaServidor = await fetch("http://127.0.0.1:3001/reportes")
       
         
         const datosReportes= await respuestaServidor.json();
@@ -27,7 +27,7 @@ async function postReportes(reporte){
 
        try {
 
-        const respuesta = await fetch("http://localhost:3001/reportes",{
+        const respuesta = await fetch("http://127.0.0.1:3001/reportes",{
             method:"POST",
             headers:{
                 "Content-Type":"application/json"
@@ -57,7 +57,7 @@ async function putReportes(reporte,id){
 
        try {
 
-        const respuesta = await fetch("http://localhost:3001/reportes/"+id,{
+        const respuesta = await fetch("http://127.0.0.1:3001/reportes/"+id,{
             method:"PUT",
             headers:{
                 "Content-Type":"application/json"

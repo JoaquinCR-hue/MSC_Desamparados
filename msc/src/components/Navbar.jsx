@@ -55,6 +55,11 @@ const Navbar = () => {
           Números de Emergencia
         </a>
 
+        <a href="/mapa-riesgo" className="nav-link-custom">
+          <i className="fa-solid fa-map-location-dot"></i>
+          Mapa de Riesgo
+        </a>
+
       </div>
 
       <div className="nav-actions">
@@ -70,11 +75,15 @@ const Navbar = () => {
                 <a href="/gestion-usuarios" className="dropdown-item">
                   <i className="fa-solid fa-users-gear"></i>G.Usuarios
                 </a>
-                <a href="/gestion-reportes" className="dropdown-item">
-                  <i className="fa-solid fa-file-shield"></i>G.Reportes
-                </a>
                 <a href="/estadisticas" className="dropdown-item">
                   <i className="fa-solid fa-chart-line"></i>Estadísticas
+                </a>
+              </>
+            )}
+            {user && (
+              <>
+                <a href="/gestion-reportes" className="dropdown-item">
+                  <i className="fa-solid fa-file-shield"></i>G.Reportes
                 </a>
                 <div className="dropdown-divider"></div>
               </>
