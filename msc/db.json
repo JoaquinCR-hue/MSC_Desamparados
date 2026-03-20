@@ -1,6 +1,32 @@
 {
   "usuarios": [
-    
+    {
+      "id": "5857",
+      "email": "john0242010@gmail.com",
+      "pass": "123456",
+      "nombre": "JOHN ANDONY BRIONES ARAICA",
+      "telefono": "70431471",
+      "role": "admin",
+      "cedula": "702430964"
+    },
+    {
+      "id": "6623",
+      "email": "davidchapps08@gmail.com",
+      "pass": "mmmmmm",
+      "nombre": "DAVID JOSE CHAVARRIA PESSOA",
+      "telefono": "89350365",
+      "role": "admin",
+      "cedula": "121520808"
+    },
+    {
+      "id": "a999",
+      "email": "amorafwdcostarica@gmail.com",
+      "pass": "123456",
+      "nombre": "ADRIAN DAVID MORA CASTILLO",
+      "telefono": "88173512",
+      "role": "ciudadano",
+      "cedula": "119470167"
+    }
   ],
   "reportes": [
     {
@@ -24,6 +50,18 @@
       "fecha": "2026-02-27T17:42",
       "id_creador": "8cae",
       "nombre_creador": "david",
+      "estado": "Pendiente"
+    },
+    {
+      "id": "617f",
+      "tipo": "Robo o asalto",
+      "descripcion": "wfjoijf",
+      "distrito": "Gravilias",
+      "barrio": "Centro",
+      "direccion_exacta": "La iglesia Ciudad del este",
+      "fecha": "2026-02-02T03:01",
+      "id_creador": "6623",
+      "nombre_creador": "DAVID JOSE CHAVARRIA PESSOA",
       "estado": "Pendiente"
     }
   ],
