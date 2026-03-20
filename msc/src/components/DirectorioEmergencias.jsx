@@ -219,7 +219,7 @@ const DirectorioEmergencias = () => {
                             <i className="fa-solid fa-address-book"></i>
                             <span>Directorio</span>
                         </a>
-                        <a href="#" className="sidebar-item">
+                        <a href="/mapa-riesgo" className="sidebar-item">
                             <i className="fa-solid fa-map-location-dot"></i>
                             <span>Mapa de Riesgo</span>
                         </a>

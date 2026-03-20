@@ -4,6 +4,12 @@ import Navbar from '../components/Navbar';
 import RiskMapDisplay from '../components/RiskMapDisplay';
 import '../styles/MapaRiesgo.css';
 
+const RELEVANT_TYPES = [
+  'Asalto', 'Hurto', 'Robo', 'Tacha De Vehículo', 'Robo De Vehículo', 'Homicidio',
+  'Balacera', 'Ventas de drogas', 'Persona sospechosa', 'Actividad sospechosa', 'Objeto sospechoso',
+  'Femicidio', 'Maltrato a mujer', 'Violencia domestica'
+];
+
 const MapaRiesgo = () => {
   const [reportes, setReportes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,27 +20,31 @@ const MapaRiesgo = () => {
       try {
         const data = await ServiceReportes.getReportes();
         
-        // Filter reports from the last 7 days
+        // Filter reports from the last 7 days AND relevant types
         const hoy = new Date();
         const unaSemanaAtras = new Date();
         unaSemanaAtras.setDate(hoy.getDate() - 7);
 
-        const reportesRecientes = data.filter(r => {
-          if (!r.fecha) return false;
+        const reportesFiltrados = data.filter(r => {
+          if (!r.fecha || !r.tipo) return false;
+          
           const fechaReporte = new Date(r.fecha);
-          return fechaReporte >= unaSemanaAtras;
+          const esReciente = fechaReporte >= unaSemanaAtras;
+          const esRelevante = RELEVANT_TYPES.includes(r.tipo);
+          
+          return esReciente && esRelevante;
         });
 
         // Agregamos por distrito para las estadísticas
         const stats = {};
-        reportesRecientes.forEach(r => {
+        reportesFiltrados.forEach(r => {
           const dist = r.distrito;
           if (dist) {
             stats[dist] = (stats[dist] || 0) + 1;
           }
         });
 
-        setReportes(reportesRecientes);
+        setReportes(reportesFiltrados);
         setAgregatedStats(stats);
         setLoading(false);
       } catch (error) {
