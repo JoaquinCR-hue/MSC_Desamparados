@@ -194,9 +194,7 @@ const RutSeguras = () => {
       <div className="rutas-content">
         {/* ── Header ────────────────────────────────────────────────────── */}
         <header className="rutas-header">
-          <div className="rutas-badge">
-            <i className="fa-solid fa-shield-halved"></i> CRIMINOLOGÍA Y SEGURIDAD VIAL
-          </div>
+         
           <h1>Rutas Seguras</h1>
           <p>Analiza la seguridad de tu trayecto con base en incidentes ciudadanos reales.</p>
         </header>

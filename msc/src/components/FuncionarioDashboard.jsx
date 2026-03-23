@@ -6,7 +6,6 @@ import '../styles/FuncionarioDashboard.css';
 function FuncionarioDashboard() {
   return (
     <div className="funcionario-dashboard-page">
-      <Navbar />
       <div className="dashboard-content-premium">
         <header className="dashboard-header-premium">
           <div className="d-flex align-items-center mb-2">
