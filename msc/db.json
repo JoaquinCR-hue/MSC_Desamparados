@@ -79,6 +79,20 @@
       "estado": "Pendiente",
       "lat": 9.8922,
       "lng": -84.0644
+    },
+    {
+      "id": "452e",
+      "tipo": "Maltrato animal",
+      "descripcion": "Un incidente de maltrato animal para probar el filtro del mapa.",
+      "distrito": "Desamparados",
+      "barrio": "Centro",
+      "direccion_exacta": "Faltando al respeto a un perrito",
+      "fecha": "2026-03-20T12:00",
+      "id_creador": "a999",
+      "nombre_creador": "ADRIAN DAVID MORA CASTILLO",
+      "estado": "Pendiente",
+      "lat": 9.8989,
+      "lng": -84.0664
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
