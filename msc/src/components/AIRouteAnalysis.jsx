@@ -206,7 +206,7 @@ const AIRouteAnalysis = ({
 
         {/* Recomendaciones */}
         <div className="recomendaciones-section">
-          <h4><i className="fa-solid fa-shield-halved"></i> Recomendaciones de Seguridad</h4>
+          
           <div className="recomendaciones-list">
             {recomendaciones.map((rec, i) => (
               <div key={i} className="recomendacion-item" style={{ '--rec-color': rec.color }}>

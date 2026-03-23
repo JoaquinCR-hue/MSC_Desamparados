@@ -5,11 +5,7 @@ import '../styles/Navbar.css'
 function Footer() {
     return (
         <>
-        <div className="bat-container bat-footer" aria-hidden="true">
-          <span className="bat"><i className="fa-solid fa-shield-halved"></i></span>
-          <span className="bat"><i className="fa-solid fa-shield-halved"></i></span>
-          <span className="bat"><i className="fa-solid fa-shield-halved"></i></span>
-        </div>
+       
         <footer className="custom-footer">
           <div className="container p-4">
             <div className="row">
