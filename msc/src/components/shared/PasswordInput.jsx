@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './PasswordInput.css';
+import '../../styles/PasswordInput.css';
 
 const PasswordInput = ({ label, value, onChange, placeholder, showPassword, togglePassword, error }) => {
   const [internalVerPass, setInternalVerPass] = useState(false);

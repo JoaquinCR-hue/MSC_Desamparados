@@ -26,43 +26,59 @@
       "telefono": "88173512",
       "role": "ciudadano",
       "cedula": "119470167"
+    },
+    {
+      "id": "ce10",
+      "email": "test@test.com",
+      "pass": "Password123!",
+      "nombre": "Juan Pérez",
+      "telefono": "88888888",
+      "role": "ciudadano",
+      "cedula": "123456789"
     }
   ],
   "reportes": [
     {
-      "id": "77fb",
-      "tipo": "Robo o asalto",
-      "descripcion": "me sacaron pistola",
+      "id": "8a28",
+      "tipo": "Asalto",
+      "descripcion": "Persona sospechosa en motoPersona sospechosa en motocicleta.cicleta.",
+      "distrito": "San Rafael Arriba",
+      "barrio": "Centro",
+      "direccion_exacta": "Persona sospechosa en motoFrente al parque centralFrente al parque centralcicleta merodeando la zona.",
+      "fecha": "202610-03-20T00:00",
+      "id_creador": "ce10",
+      "nombre_creador": "Juan Pérez",
+      "estado": "Pendiente",
+      "lat": 9.8783,
+      "lng": -84.0736
+    },
+    {
+      "id": "8db9",
+      "tipo": "Asalto",
+      "descripcion": "Test report for verification.",
       "distrito": "Desamparados",
       "barrio": "Centro",
-      "direccion_exacta": "en el parque",
-      "fecha": "2026-03-10T13:50",
-      "id_creador": "65df",
-      "estado": "Pendiente"
+      "direccion_exacta": "Test Exact Point",
+      "fecha": "2026-03-20T09:03",
+      "id_creador": "ce10",
+      "nombre_creador": "Juan Pérez",
+      "estado": "Pendiente",
+      "lat": 9.8989,
+      "lng": -84.0664
     },
     {
-      "id": "f4b9",
-      "tipo": "Robo o asalto",
-      "descripcion": "fafaf",
-      "distrito": "San Rafael Abajo",
-      "barrio": "Centro",
-      "direccion_exacta": "La iglesia Ciudad del este",
-      "fecha": "2026-02-27T17:42",
-      "id_creador": "8cae",
-      "nombre_creador": "david",
-      "estado": "Pendiente"
-    },
-    {
-      "id": "617f",
-      "tipo": "Robo o asalto",
-      "descripcion": "wfjoijf",
+      "id": "d88c",
+      "tipo": "Balacera",
+      "descripcion": "caca en la acera",
       "distrito": "Gravilias",
-      "barrio": "Centro",
-      "direccion_exacta": "La iglesia Ciudad del este",
-      "fecha": "2026-02-02T03:01",
-      "id_creador": "6623",
-      "nombre_creador": "DAVID JOSE CHAVARRIA PESSOA",
-      "estado": "Pendiente"
+      "barrio": "Porvenir",
+      "direccion_exacta": "en el parque",
+      "fecha": "2026-03-20T12:09",
+      "id_creador": "a999",
+      "nombre_creador": "ADRIAN DAVID MORA CASTILLO",
+      "estado": "Pendiente",
+      "lat": 9.8922,
+      "lng": -84.0644
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

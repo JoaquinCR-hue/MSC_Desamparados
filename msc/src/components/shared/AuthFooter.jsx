@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import './AuthFooter.css';
+import '../../styles/AuthFooter.css';
 
 const AuthFooter = ({ text, linkText, linkTo, onClickExtra, extraLinkText }) => {
   return (

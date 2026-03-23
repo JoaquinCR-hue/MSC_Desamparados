@@ -68,6 +68,9 @@
 }
 
 .nav-link-custom {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: #cbd5e1;
   text-decoration: none;
   font-weight: 700;
@@ -85,6 +88,19 @@
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
   background-color: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.2);
+}
+
+.nav-link-safe {
+  color: #00C853 !important;
+  border-color: rgba(0, 200, 83, 0.3) !important;
+  background-color: rgba(0, 200, 83, 0.08) !important;
+}
+
+.nav-link-safe:hover {
+  background-color: rgba(0, 200, 83, 0.18) !important;
+  border-color: rgba(0, 200, 83, 0.6) !important;
+  box-shadow: 0 0 16px rgba(0, 200, 83, 0.25);
+  text-shadow: 0 0 10px rgba(0, 200, 83, 0.5) !important;
 }
 
 .report-button {
@@ -215,6 +231,12 @@
 
 .dropdown-item:last-child {
   border-bottom: none;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background-color: #334155;
+  margin: 5px 0;
 }
 
 .dropdown-item i {

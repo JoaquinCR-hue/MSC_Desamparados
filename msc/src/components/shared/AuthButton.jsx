@@ -1,5 +1,5 @@
 import React from 'react';
-import './AuthButton.css';
+import '../../styles/AuthButton.css';
 
 const AuthButton = ({ text, type = "submit", className = "" }) => {
   return (

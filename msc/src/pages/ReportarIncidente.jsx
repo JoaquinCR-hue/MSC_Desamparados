@@ -3,7 +3,7 @@ import Navbar from '../components/Navbar';
 import FormularioReporte from '../components/FormularioReporte';
 import '../styles/ReportarIncidente.css';
 
-<<<<<<< HEAD
+
 function ReportarIncidente() {
     return (
         <div className="reportar-page-container">
@@ -11,7 +11,7 @@ function ReportarIncidente() {
             <main className="reportar-main-content">
                 <FormularioReporte />
             </main>
-=======
+
 const distritosData = {
   "Desamparados": { center: [9.8989, -84.0664], barrios: ["Centro", "Calle Fallas", "Contadores", "Cucubres", "Dorado", "Lomas", "Metrópoli"] },
   "San Miguel": { center: [9.8763, -84.0620], barrios: ["Centro", "Capitán", "Valle", "Loto", "San Martín", "Higuito"] },
@@ -240,7 +240,7 @@ const ReportarIncidente = () => {
               </MapContainer>
             </div>
           </div>
->>>>>>> f1ecc00436cff963112df74246fdbf25a6f9fc34
+
         </div>
     );
 }

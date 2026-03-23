@@ -30,6 +30,15 @@ function AdminDashboard() {
           </div>
           <div className="card-arrow"><i className="fa-solid fa-chevron-right"></i></div>
         </div>
+
+        <div className="admin-card" onClick={() => navigate('/estadisticas')}>
+          <div className="card-icon"><i className="fa-solid fa-chart-line"></i></div>
+          <div className="card-info">
+            <h3>Estadísticas del Sistema</h3>
+            <p>Visualización de datos e incidencia en tiempo real.</p>
+          </div>
+          <div className="card-arrow"><i className="fa-solid fa-chevron-right"></i></div>
+        </div>
       </div>
     </div>
   )

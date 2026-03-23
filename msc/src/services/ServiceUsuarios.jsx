@@ -2,7 +2,7 @@ async function getUsuarios() {
 
     try {
 
-        const respuestaServidor = await fetch("http://localhost:3001/usuarios")
+        const respuestaServidor = await fetch("http://127.0.0.1:3001/usuarios")
       
         
         const datosUsuarios= await respuestaServidor.json();
@@ -27,7 +27,7 @@ async function postUsuarios(usuario){
 
        try {
 
-        const respuesta = await fetch("http://localhost:3001/usuarios",{
+        const respuesta = await fetch("http://127.0.0.1:3001/usuarios",{
             method:"POST",
             headers:{
                 "Content-Type":"application/json"
@@ -57,7 +57,7 @@ async function putUsuarios(usuario,id){
 
        try {
 
-        const respuesta = await fetch("http://localhost:3001/usuarios/"+id,{
+        const respuesta = await fetch("http://127.0.0.1:3001/usuarios/"+id,{
             method:"PUT",
             headers:{
                 "Content-Type":"application/json"
@@ -85,7 +85,7 @@ async function deleteUsuarios(id){
 
        try {
 
-        const respuesta = await fetch("http://localhost:3001/usuarios/"+id,{
+        const respuesta = await fetch("http://127.0.0.1:3001/usuarios/"+id,{
             method:"DELETE",
         })
 
@@ -102,7 +102,7 @@ async function deleteUsuarios(id){
 
 async function recuperarContra(id, datosActualizados) {
     try {
-        const respuesta = await fetch(`http://localhost:3001/usuarios/${id}`, {
+        const respuesta = await fetch(`http://127.0.0.1:3001/usuarios/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"

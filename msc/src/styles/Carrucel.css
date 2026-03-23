@@ -1,4 +1,9 @@
 /* Estilos modernos y consistentes con el diseño de la aplicación */
+.carousel-img {
+    object-fit: cover;
+    height: 600px;
+}
+
 .carousel {
   border-radius: 30px;
   overflow: hidden;

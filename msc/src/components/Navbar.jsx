@@ -22,7 +22,19 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuRef]);
-  const user = localStorage.getItem('user');
+
+  const getUser = () => {
+    const userStr = localStorage.getItem('user');
+    if (!userStr) return null;
+    try {
+      return JSON.parse(userStr);
+    } catch {
+      return null;
+    }
+  };
+
+  const user = getUser();
+  const isAdmin = user && user.role === 'admin';
 
   return (
     <>
@@ -37,25 +49,22 @@ const Navbar = () => {
       </a>
 
       <div className="nav-links-custom">
-        <a href="/" className="nav-link-custom">Inicio</a>
         
         <a href="/emergencias" className="nav-link-custom">
           <i className="fa-solid fa-phone"></i>
           Números de Emergencia
         </a>
 
-        {user && JSON.parse(user).role === 'admin' && (
-          <>
-            <a href="/gestion-usuarios" className="nav-link-custom">
-              <i className="fa-solid fa-users-gear"></i>
-              Gestión Usuarios
-            </a>
-            <a href="/gestion-reportes" className="nav-link-custom">
-              <i className="fa-solid fa-file-shield"></i>
-              Gestión Reportes
-            </a>
-          </>
-        )}
+        <a href="/mapa-riesgo" className="nav-link-custom">
+          <i className="fa-solid fa-map-location-dot"></i>
+          Mapa de Riesgo
+        </a>
+
+        <a href="/rutas-seguras" className="nav-link-custom nav-link-safe">
+          <i className="fa-solid fa-route"></i>
+          Rutas Seguras
+        </a>
+
       </div>
 
       <div className="nav-actions">
@@ -66,6 +75,24 @@ const Navbar = () => {
           </button>
           
           <div className={`dropdown-menu-custom ${isMenuOpen ? 'show' : ''}`}>
+            {isAdmin && (
+              <>
+                <a href="/gestion-usuarios" className="dropdown-item">
+                  <i className="fa-solid fa-users-gear"></i>G.Usuarios
+                </a>
+                <a href="/estadisticas" className="dropdown-item">
+                  <i className="fa-solid fa-chart-line"></i>Estadísticas
+                </a>
+              </>
+            )}
+            {user && (
+              <>
+                <a href="/gestion-reportes" className="dropdown-item">
+                  <i className="fa-solid fa-file-shield"></i>G.Reportes
+                </a>
+                <div className="dropdown-divider"></div>
+              </>
+            )}
             {!user ? (
               <>
                 <a href="/login" className="dropdown-item">

@@ -1,5 +1,5 @@
 import React from 'react';
-import './InputGroup.css';
+import '../../styles/InputGroup.css';
 
 const InputGroup = ({ label, value, onChange, type = "text", placeholder, isSearching, maxLength, onBlur, error }) => {
   return (
