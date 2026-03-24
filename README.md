@@ -6,3 +6,4 @@ instalar: npm i leaflet
 instalar: npm i bootstrap
 instalar: npm i sweetalert2
 instalar: npm i @emailjs/browser
+instalar: npm i axios
