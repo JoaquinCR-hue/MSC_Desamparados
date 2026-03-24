@@ -32,7 +32,7 @@ function MapClickHandler({ onMapClick }) {
   return null;
 }
 
-const PatrolMap = () => {
+const PatrolMap = ({ refreshTrigger }) => {
   const [reportes, setReportes] = useState([]);
   const [patrullas, setPatrullas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -76,7 +76,7 @@ const PatrolMap = () => {
 
   useEffect(() => {
     fetchDatos();
-  }, []);
+  }, [refreshTrigger]);
 
   const handleMapClick = (latlng) => {
     setCurrentLatlng(latlng);
@@ -174,8 +174,8 @@ const PatrolMap = () => {
           className="functional-map-instance"
         >
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://carto.com/attributions">CARTO</a>'
+            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           />
           <MapClickHandler onMapClick={handleMapClick} />
           
@@ -200,7 +200,7 @@ const PatrolMap = () => {
                   </div>
                   <div className="popup-info">
                     <span className="info-dist fw-bold">{reporte.distrito}</span>
-                    <p className="info-desc text-muted mt-2 mb-1">{reporte.descripcion}</p>
+                    <p className="info-desc mt-2 mb-1 text-light">{reporte.descripcion}</p>
                     <small className="text-secondary">{new Date(reporte.fecha).toLocaleString()}</small>
                   </div>
                 </Popup>
