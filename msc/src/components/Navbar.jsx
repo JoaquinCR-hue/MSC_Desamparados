@@ -34,6 +34,9 @@ const Navbar = () => {
   };
 
   const user = getUser();
+  const isPublic = !user;
+  const isCiudadano = user && user.role === 'ciudadano';
+  const isFuncionario = user && user.role === 'funcionario';
   const isAdmin = user && user.role === 'admin';
 
   return (
@@ -50,21 +53,33 @@ const Navbar = () => {
           </a>
 
           <div className="nav-links-custom">
+            
+            {(isPublic || isAdmin) && (
+              <a href="/emergencias" className="nav-link-custom">
+                <i className="fa-solid fa-phone"></i>
+                Emergencias
+              </a>
+            )}
 
-            <a href="/emergencias" className="nav-link-custom">
-              <i className="fa-solid fa-phone"></i>
-              Números de Emergencia
-            </a>
-
+            {/* Public, Ciudadano, Funcionario, Admin */}
             <a href="/mapa-riesgo" className="nav-link-custom">
               <i className="fa-solid fa-map-location-dot"></i>
               Mapa de Riesgo
             </a>
 
-            <a href="/rutas-seguras" className="nav-link-custom nav-link-safe">
-              <i className="fa-solid fa-route"></i>
-              Rutas Seguras
-            </a>
+            {(isCiudadano || isFuncionario || isAdmin) && (
+              <a href="/rutas-seguras" className="nav-link-custom nav-link-safe">
+                <i className="fa-solid fa-route"></i>
+                Rutas Seguras
+              </a>
+            )}
+
+            {(isFuncionario || isAdmin) && (
+              <a href="/patrol-map" className="nav-link-custom">
+                <i className="fa-solid fa-shield-halved"></i>
+                Patrol Map
+              </a>
+            )}
 
           </div>
 
@@ -81,19 +96,26 @@ const Navbar = () => {
                     <a href="/gestion-usuarios" className="dropdown-item">
                       <i className="fa-solid fa-users-gear"></i>G.Usuarios
                     </a>
-                    <a href="/estadisticas" className="dropdown-item">
-                      <i className="fa-solid fa-chart-line"></i>Estadísticas
+                    <a href="/gestion-consultas" className="dropdown-item">
+                      <i className="fa-solid fa-headset"></i>G.Consultas
                     </a>
                   </>
                 )}
-                {user && (
-                  <>
-                    <a href="/gestion-reportes" className="dropdown-item">
-                      <i className="fa-solid fa-file-shield"></i>G.Reportes
-                    </a>
-                    <div className="dropdown-divider"></div>
-                  </>
+                
+                {(isFuncionario || isAdmin) && (
+                  <a href="/estadisticas" className="dropdown-item">
+                    <i className="fa-solid fa-chart-line"></i>Estadísticas
+                  </a>
                 )}
+                
+                {(isFuncionario || isAdmin) && (
+                  <a href="/gestion-reportes" className="dropdown-item">
+                    <i className="fa-solid fa-file-shield"></i>G.Reportes
+                  </a>
+                )}
+                
+                {user && <div className="dropdown-divider"></div>}
+
                 {!user ? (
                   <>
                     <a href="/login" className="dropdown-item">
@@ -117,7 +139,7 @@ const Navbar = () => {
               </div>
             </div>
 
-            {user && (
+            {(isCiudadano || isFuncionario || isAdmin) && (
               <button className="report-button" onClick={() => navigate('/reportar-incidente')}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M11 5L6 9H2v6h4l5 4V5z" className="btn-icon-white" />

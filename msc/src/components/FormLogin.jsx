@@ -91,12 +91,23 @@ function FormLogin() {
     // Si todo es correcto
     localStorage.setItem("user", JSON.stringify(usuarioExistente));
 
+    let mensajeBienvenida = '';
+    if (usuarioExistente.role === "admin") {
+      mensajeBienvenida = `Bienvenido Administrador(a) ${usuarioExistente.nombre || ''} al sistema MSC.`;
+    } else if (usuarioExistente.role === "funcionario") {
+      mensajeBienvenida = `Bienvenido Oficial ${usuarioExistente.nombre || ''}, listo para patrullar.`;
+    } else {
+      mensajeBienvenida = `¡Hola ${usuarioExistente.nombre || 'Ciudadano'}! Gracias por ayudar a la comunidad.`;
+    }
+
     Swal.fire({
-      title: "¡Éxito!",
-      text: "Inicio de sesión Exitoso",
+      title: "¡Acceso Autorizado!",
+      text: mensajeBienvenida,
       icon: "success",
-      timer: 1500,
+      timer: 2000,
       showConfirmButton: false,
+      background: "#1f2937",
+      color: "#fff"
     }).then(() => {
       if (usuarioExistente.role === "admin") {
         navigate("/gestion-usuarios");
