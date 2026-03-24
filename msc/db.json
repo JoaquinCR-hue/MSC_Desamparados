@@ -44,6 +44,8 @@
       "telefono": "60343536",
       "role": "funcionario",
       "cedula": "116540496"
+    },
+    {
       "id": "d3bb",
       "email": "alejandronicmen@gmail.com",
       "pass": "mmmmmm1",
@@ -150,6 +152,6 @@
       "lat": 9.894569103104011,
       "lng": -84.06533014078933
     }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  ]
+ 
 }
