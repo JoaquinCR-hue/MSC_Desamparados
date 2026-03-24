@@ -44,6 +44,13 @@
       "telefono": "60343536",
       "role": "funcionario",
       "cedula": "116540496"
+      "id": "d3bb",
+      "email": "alejandronicmen@gmail.com",
+      "pass": "mmmmmm1",
+      "nombre": "ALEJANDRO ANTONIO NICARAGUA MENDOZA",
+      "telefono": "88888888",
+      "role": "ciudadano",
+      "cedula": "119640798"
     }
   ],
   "reportes": [

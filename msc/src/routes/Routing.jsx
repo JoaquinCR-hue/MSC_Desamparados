@@ -14,6 +14,7 @@ import MapaRiesgo from '../pages/MapaRiesgo';
 import RutasSeguras from '../pages/RutasSeguras';
 import Contactenos from '../pages/Contactenos'; 
 import GestionConsultas from '../pages/GestionConsultas';
+import TerminosCondiciones from '../pages/TerminosCondiciones';
 
 const ProtectedRoute = ({ children }) => {
   const user = localStorage.getItem('user');
@@ -53,6 +54,7 @@ function Routing() {
             <Route path="/rutas-seguras" element={<ProtectedRoute><RutasSeguras /></ProtectedRoute>} />
             <Route path="/contactenos" element={<Contactenos />} />
             <Route path="/gestion-consultas" element={<AdminRoute><GestionConsultas /></AdminRoute>} />
+            <Route path="/terminos" element={<TerminosCondiciones />} />
         </Routes>
     </Router>
     )   
