@@ -1,9 +1,17 @@
 import React from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, GeoJSON, ZoomControl } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/RiskMapDisplay.css';
+import desamparadosGeo from '../data/desamparados.json';
+import distritosGeo from '../data/distritos.json';
+
+const TILE_LAYERS = {
+  night: { url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' },
+  day: { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png' },
+};
 
 const RiskMapDisplay = ({ reportes, agregatedStats }) => {
+  const [mapMode, setMapMode] = React.useState('night');
   
   const getColor = (count) => {
     if (count <= 2) return "#4CAF50"; // Green
@@ -22,15 +30,44 @@ const RiskMapDisplay = ({ reportes, agregatedStats }) => {
   return (
     <div className="risk-map-display-wrapper">
       <div className="map-section">
+        <div className="map-mode-toggle cont-temas" style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 1000, background: 'rgba(26, 28, 34, 0.9)', padding: '5px', borderRadius: '10px' }}>
+          <button
+            className={`boton-n map-mode-btn ${mapMode === 'night' ? 'active' : ''}`}
+            onClick={() => setMapMode('night')}
+            title="Modo nocturno"
+          >
+            <i className="fa-solid fa-moon"></i>
+            <span>Noche</span>
+          </button>
+          <button
+            className={`map-mode-btn ${mapMode === 'day' ? 'active' : ''}`}
+            onClick={() => setMapMode('day')}
+            title="Modo diurno"
+          >
+            <i className="fa-solid fa-sun"></i>
+            <span>Día</span>
+          </button>
+        </div>
+
         <MapContainer 
           center={[9.892, -84.05]} 
           zoom={13} 
           scrollWheelZoom={true} 
           className="map-instance"
+          zoomControl={false}
         >
+          <ZoomControl position="bottomright" />
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+            url={TILE_LAYERS[mapMode].url}
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          />
+          <GeoJSON 
+            data={desamparadosGeo} 
+            pathOptions={{ color: '#00FFFF', weight: 4, fillOpacity: 0.0, opacity: 0.8 }} 
+          />
+          <GeoJSON 
+            data={distritosGeo} 
+            pathOptions={{ color: mapMode === 'day' ? '#000000' : '#FFFFFF', weight: 1.5, dashArray: '5, 5', fillOpacity: 0.05, opacity: 0.6 }} 
           />
           
           {reportes.map(reporte => {
@@ -61,7 +98,7 @@ const RiskMapDisplay = ({ reportes, agregatedStats }) => {
                   </div>
                   <div className="popup-info">
                     <span className="info-dist">{reporte.distrito}</span>
-                    <p className="info-desc">{reportes.descripcion || "Incidente reportado por ciudadano."}</p>
+                    <p className="info-desc">{reporte.descripcion || "Incidente reportado por ciudadano."}</p>
                     <div className="info-loc">
                       <i className="fa-solid fa-location-crosshairs"></i> {reporte.barrio}
                     </div>

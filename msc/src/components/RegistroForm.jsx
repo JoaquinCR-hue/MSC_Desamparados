@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import ServiceUsuarios from '../services/ServiceUsuarios';
 import Swal from 'sweetalert2';
 import AuthLayout from './shared/AuthLayout';
@@ -22,6 +22,7 @@ const RegistroForm = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [errors, setErrors] = useState({});
   const [nombreOficial, setNombreOficial] = useState("");
+  const [aceptaTerminos, setAceptaTerminos] = useState(false);
   const navigate = useNavigate();
 
   const togglePassword = () => {
@@ -125,6 +126,7 @@ const RegistroForm = () => {
     if (!emailRegex.test(correoUsuario)) newErrors.email = "Ingrese un correo electrónico válido";
     if (contra.length < 6) newErrors.contra = "La contraseña debe tener al menos 6 caracteres";
     if (contra !== confirmarContra) newErrors.confirmarContra = "Las contraseñas no coinciden";
+    if (!aceptaTerminos) newErrors.terminos = "Debe aceptar los términos y condiciones";
 
     setErrors(newErrors);
     return { isValid: Object.keys(newErrors).length === 0, newErrors };
@@ -239,6 +241,22 @@ const RegistroForm = () => {
           togglePassword={togglePassword}
           error={errors.confirmarContra}
         />
+
+        <div style={{ margin: "15px 0", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+          <label style={{ color: "#fff", display: "flex", alignItems: "center", gap: "8px", fontSize: "0.9rem", cursor: "pointer" }}>
+            <input 
+              type="checkbox" 
+              checked={aceptaTerminos}
+              onChange={(e) => setAceptaTerminos(e.target.checked)}
+              style={{ width: "16px", height: "16px", cursor: "pointer" }}
+            />
+            Acepto los términos y condiciones
+          </label>
+          <Link to="/terminos" target="_blank" rel="noopener noreferrer" style={{ color: "#ff8c00", textDecoration: "underline", fontSize: "0.85rem" }}>
+            Ver términos y condiciones
+          </Link>
+          {errors.terminos && <span style={{ color: "#ff4d4d", fontSize: "0.8rem", marginTop: "5px" }}>{errors.terminos}</span>}
+        </div>
 
         <AuthButton text="CREAR CUENTA" className="btn-registro" />
       </form>

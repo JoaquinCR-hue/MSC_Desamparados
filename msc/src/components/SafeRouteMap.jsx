@@ -1,11 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import {
   MapContainer, TileLayer, CircleMarker, Popup,
-  Polyline, Marker, Rectangle, useMapEvents
+  Polyline, Marker, Rectangle, useMapEvents, GeoJSON, ZoomControl
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/RutasSeguras.css';
+import desamparadosGeo from '../data/desamparados.json';
+import distritosGeo from '../data/distritos.json';
 
 // ── Límites del cantón de Desamparados ───────────────────────────────────────
 const BOUNDS_DESAMPARADOS = {
@@ -121,25 +123,25 @@ const SafeRouteMap = ({
 
   return (
     <>
-      <div className="map-mode-toggle cont-temas">
-        <button
-          className={`boton-n map-mode-btn ${mapMode === 'night' ? 'active' : ''}`}
-          onClick={() => setMapMode('night')}
-          title="Modo nocturno"
-        >
-          <i className="fa-solid fa-moon"></i>
-          <span>Noche</span>
-        </button>
-        <button
-          className={`map-mode-btn ${mapMode === 'day' ? 'active' : ''}`}
-          onClick={() => setMapMode('day')}
-          title="Modo diurno"
-        >
-          <i className="fa-solid fa-sun"></i>
-          <span>Día</span>
-        </button>
-      </div>
       <div className={`safe-route-map-wrapper ${cursorClass}`}>
+        <div className="map-mode-toggle cont-temas" style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 1000, background: 'rgba(26, 28, 34, 0.9)', padding: '5px', borderRadius: '10px' }}>
+          <button
+            className={`boton-n map-mode-btn ${mapMode === 'night' ? 'active' : ''}`}
+            onClick={() => setMapMode('night')}
+            title="Modo nocturno"
+          >
+            <i className="fa-solid fa-moon"></i>
+            <span>Noche</span>
+          </button>
+          <button
+            className={`map-mode-btn ${mapMode === 'day' ? 'active' : ''}`}
+            onClick={() => setMapMode('day')}
+            title="Modo diurno"
+          >
+            <i className="fa-solid fa-sun"></i>
+            <span>Día</span>
+          </button>
+        </div>
 
         {/* ── Hint de selección ─────────────────────────────────────────── */}
         {modoSeleccion && (
@@ -167,22 +169,20 @@ const SafeRouteMap = ({
           className="safe-map-instance"
           maxBounds={BOUNDS_RECT}
           maxBoundsViscosity={0.85}
+          zoomControl={false}
         >
+          <ZoomControl position="bottomright" />
           <TileLayer url={tileLayer.url} attribution={ATTR} />
 
-          <MapClickHandler onClick={handleClick} />
-
-          {/* Borde del cantón */}
-          <Rectangle
-            bounds={BOUNDS_RECT}
-            pathOptions={{
-              color: '#00C853',
-              weight: 2,
-              opacity: 0.5,
-              fillOpacity: 0,
-              dashArray: '8 6',
-            }}
+          <GeoJSON 
+            data={desamparadosGeo} 
+            pathOptions={{ color: '#00FFFF', weight: 4, fillOpacity: 0.0, opacity: 0.8 }} 
           />
+          <GeoJSON 
+            data={distritosGeo} 
+            pathOptions={{ color: mapMode === 'day' ? '#000000' : '#FFFFFF', weight: 1.5, dashArray: '5, 5', fillOpacity: 0.05, opacity: 0.6 }} 
+          />
+          <MapClickHandler onClick={handleClick} />
 
           {/* Incidentes existentes del backend */}
           {reportes.map(reporte => {

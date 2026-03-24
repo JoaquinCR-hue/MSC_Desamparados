@@ -21,7 +21,7 @@
     {
       "id": "a999",
       "email": "amorafwdcostarica@gmail.com",
-      "pass": "123456",
+      "pass": "qwzv04fm",
       "nombre": "ADRIAN DAVID MORA CASTILLO",
       "telefono": "88173512",
       "role": "ciudadano",
@@ -53,6 +53,15 @@
       "role": "admin",
       "pass": "123456",
       "cedula": "114340233"
+    },
+    {
+      "id": "d3bb",
+      "email": "alejandronicmen@gmail.com",
+      "pass": "mmmmmm1",
+      "nombre": "ALEJANDRO ANTONIO NICARAGUA MENDOZA",
+      "telefono": "88888888",
+      "role": "ciudadano",
+      "cedula": "119640798"
     }
   ],
   "reportes": [
@@ -111,6 +120,35 @@
       "estado": "Pendiente",
       "lat": 9.8989,
       "lng": -84.0664
+    },
+    {
+      "id": "69bb",
+      "tipo": "Robo",
+      "descripcion": "Robo con arma de fuego",
+      "distrito": "San Rafael Abajo",
+      "barrio": "Valencia",
+      "direccion_exacta": "En calle la amistad",
+      "fecha": "2026-03-23T15:38",
+      "id_creador": "5857",
+      "nombre_creador": "JOHN ANDONY BRIONES ARAICA",
+      "estado": "Pendiente",
+      "lat": 9.8967,
+      "lng": -84.0811
+    }
+  ],
+  "consultas": [
+    {
+      "id": "2921",
+      "cedula": "119470167",
+      "nombreCompleto": "ADRIAN DAVID MORA CASTILLO",
+      "correo": "amorafwdcostarica@gmail.com",
+      "telefono": "88173512",
+      "tipoConsulta": "Sugerencia",
+      "descripcion": "No puedover el mapa",
+      "fecha": "2026-03-24T17:09:26.469Z",
+      "estado": "Respondida",
+      "respuesta": "Ahorita veras el mapa",
+      "fechaRespuesta": "2026-03-24T17:10:20.719Z"
     }
   ],
   "policias": [

@@ -12,21 +12,21 @@ import GestionReportes from '../pages/GestionReportes';
 import Estadisticas from '../pages/Estadisticas';
 import MapaRiesgo from '../pages/MapaRiesgo';
 import RutasSeguras from '../pages/RutasSeguras';
+import Contactenos from '../pages/Contactenos'; 
+import GestionConsultas from '../pages/GestionConsultas';
+import TerminosCondiciones from '../pages/TerminosCondiciones';
+import PatrolMapPage from '../pages/PatrolMapPage';
 
-const ProtectedRoute = ({ children }) => {
-  const user = localStorage.getItem('user');
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
-};
-
-const AdminRoute = ({ children }) => {
+const RoleRoute = ({ children, allowedRoles }) => {
   const userStr = localStorage.getItem('user');
   if (!userStr) return <Navigate to="/login" replace />;
   
   const user = JSON.parse(userStr);
-  if (user.role !== 'admin') {
+  if (user.role === 'admin') {
+    return children;
+  }
+  
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }
   return children;
@@ -39,16 +39,25 @@ function Routing() {
             <Route path="/" element={<Inicio />} />
             <Route path="/login" element={<Login />} />
             <Route path="/registrarse" element={<Registrarse />} />
-            <Route path="/VistaAdmin" element={<ViewAdmin />} />
-            <Route path="/VistaCiudadano" element={<ViewCiudadano />} />
-            <Route path="/VistaFuncionario" element={<ViewFuncionario />} />
-            <Route path="/reportar-incidente" element={<ProtectedRoute><ReportarIncidente /></ProtectedRoute>} />
+            
+            {/* Views para cada rol principal */}
+            <Route path="/VistaAdmin" element={<RoleRoute allowedRoles={[]}><ViewAdmin /></RoleRoute>} />
+            <Route path="/VistaCiudadano" element={<RoleRoute allowedRoles={['ciudadano']}><ViewCiudadano /></RoleRoute>} />
+            <Route path="/VistaFuncionario" element={<RoleRoute allowedRoles={['funcionario']}><ViewFuncionario /></RoleRoute>} />
+            
+            {/* Rutas con acceso restringido por roles */}
+            <Route path="/reportar-incidente" element={<RoleRoute allowedRoles={['ciudadano', 'funcionario']}><ReportarIncidente /></RoleRoute>} />
             <Route path="/emergencias" element={<Emergencias />} />
-            <Route path="/gestion-usuarios" element={<AdminRoute><GestionUsuarios /></AdminRoute>} />
-            <Route path="/gestion-reportes" element={<ProtectedRoute><GestionReportes /></ProtectedRoute>} />
-            <Route path="/estadisticas" element={<AdminRoute><Estadisticas /></AdminRoute>} />
+            <Route path="/terminos" element={<TerminosCondiciones />} />
+            <Route path="/contactenos" element={<Contactenos />} />
+            
+            <Route path="/gestion-usuarios" element={<RoleRoute allowedRoles={[]}><GestionUsuarios /></RoleRoute>} />
+            <Route path="/gestion-reportes" element={<RoleRoute allowedRoles={['funcionario']}><GestionReportes /></RoleRoute>} />
+            <Route path="/gestion-consultas" element={<RoleRoute allowedRoles={[]}><GestionConsultas /></RoleRoute>} />
+            <Route path="/estadisticas" element={<RoleRoute allowedRoles={['funcionario']}><Estadisticas /></RoleRoute>} />
             <Route path="/mapa-riesgo" element={<MapaRiesgo />} />
-            <Route path="/rutas-seguras" element={<ProtectedRoute><RutasSeguras /></ProtectedRoute>} />
+            <Route path="/rutas-seguras" element={<RoleRoute allowedRoles={['ciudadano', 'funcionario']}><RutasSeguras /></RoleRoute>} />
+            <Route path="/patrol-map" element={<RoleRoute allowedRoles={['funcionario']}><PatrolMapPage /></RoleRoute>} />
         </Routes>
     </Router>
     )   

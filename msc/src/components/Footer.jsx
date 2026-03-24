@@ -45,7 +45,9 @@ function Footer() {
 
               {/*Grid column: Contact */}
               <div className="col-lg-4 col-md-6 mb-4 mb-md-0 text-start">
-                <h5 className="text-uppercase footer-title">Contacto</h5>
+                <a href="/contactenos" className="btn btn-info text-dark text-uppercase fw-bold mb-3">
+                  <i className="fa-solid fa-envelope-open-text me-2"></i> Contáctenos
+                </a>
                 <ul className="list-unstyled footer-links">
                   <li>
                     <span><i className="fa-solid fa-location-dot me-2"></i> Municipalidad de Desamparados</span>

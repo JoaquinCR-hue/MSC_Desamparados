@@ -31,6 +31,15 @@ function AdminDashboard() {
           <div className="card-arrow"><i className="fa-solid fa-chevron-right"></i></div>
         </div>
 
+        <div className="admin-card" onClick={() => navigate('/gestion-consultas')}>
+          <div className="card-icon"><i className="fa-solid fa-envelope-open-text"></i></div>
+          <div className="card-info">
+            <h3>Consultas Ciudadanas</h3>
+            <p>Atención y respuesta a consultas, quejas y sugerencias.</p>
+          </div>
+          <div className="card-arrow"><i className="fa-solid fa-chevron-right"></i></div>
+        </div>
+
         <div className="admin-card" onClick={() => navigate('/estadisticas')}>
           <div className="card-icon"><i className="fa-solid fa-chart-line"></i></div>
           <div className="card-info">
