@@ -16,6 +16,7 @@ import Contactenos from '../pages/Contactenos';
 import GestionConsultas from '../pages/GestionConsultas';
 import TerminosCondiciones from '../pages/TerminosCondiciones';
 import PatrolMapPage from '../pages/PatrolMapPage';
+import A11yToolbar from '../components/A11yToolbar';
 
 const RoleRoute = ({ children, allowedRoles }) => {
   const userStr = localStorage.getItem('user');
@@ -35,6 +36,7 @@ const RoleRoute = ({ children, allowedRoles }) => {
 function Routing() {
     return(
     <Router>
+        <A11yToolbar />
         <Routes>
             <Route path="/" element={<Inicio />} />
             <Route path="/login" element={<Login />} />
