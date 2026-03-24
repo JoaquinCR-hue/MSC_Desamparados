@@ -35,6 +35,24 @@
       "telefono": "88888888",
       "role": "ciudadano",
       "cedula": "123456789"
+    },
+    {
+      "id": "0a50",
+      "email": "crisprueba@gmail.com",
+      "pass": "123456",
+      "nombre": "CHRISTOPHER JOSUE DELGADO HIDALGO",
+      "telefono": "60343536",
+      "role": "funcionario",
+      "cedula": "116540496"
+    },
+    {
+      "id": "b230",
+      "nombre": "Joaquin Aguilar",
+      "email": "jaguilarfwdcostarica@gmail.com",
+      "telefono": "71104970",
+      "role": "admin",
+      "pass": "123456",
+      "cedula": "114340233"
     }
   ],
   "reportes": [
@@ -93,6 +111,26 @@
       "estado": "Pendiente",
       "lat": 9.8989,
       "lng": -84.0664
+    }
+  ],
+  "policias": [
+    {
+      "nombre_oficiales": "Pedro Nuñez",
+      "unidad": "1512d",
+      "estado": "En Incidente",
+      "zona": "Oficina Central",
+      "lat": 9.89835335823442,
+      "lng": -84.06123440527765,
+      "id": "1774295082074"
+    },
+    {
+      "id": "1774295108405",
+      "nombre_oficiales": "Pedro Nuñez",
+      "unidad": "1512d",
+      "estado": "Activa",
+      "zona": "Centro",
+      "lat": 9.898839572022146,
+      "lng": -84.06634107233359
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

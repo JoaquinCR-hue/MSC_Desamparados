@@ -14,4 +14,4 @@ function ReportarIncidente() {
     );
 }
 
-export default ReportarIncidente;
+export default ReportarIncidente;   

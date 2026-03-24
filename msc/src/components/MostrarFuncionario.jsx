@@ -6,7 +6,7 @@ const MostrarFuncionario = () => {
   const [funcionarios, setFuncionarios] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newFunc, setNewFunc] = useState({ nombre: '', email: '', telefono: '', role: 'admin', pass: '' });
-  
+
   // Edit state
   const [editingId, setEditingId] = useState(null);
   const [editFunc, setEditFunc] = useState(null);
@@ -52,7 +52,7 @@ const MostrarFuncionario = () => {
     setShowAddForm(false);
     setNewFunc({ nombre: '', email: '', telefono: '', role: 'admin', pass: '' });
     loadData();
-    
+
     import('sweetalert2').then(Swal => {
       Swal.default.fire('¡Agregado!', 'El funcionario ha sido registrado con éxito.', 'success');
     });
@@ -86,11 +86,12 @@ const MostrarFuncionario = () => {
         <form className="add-form" onSubmit={handleAddSubmit}>
           <h4>Agregar Nuevo Funcionario</h4>
           <div className="form-grid">
-            <input type="text" placeholder="Nombre completo" required value={newFunc.nombre} onChange={e => setNewFunc({...newFunc, nombre: e.target.value})} />
-            <input type="email" placeholder="Correo electrónico" required value={newFunc.email} onChange={e => setNewFunc({...newFunc, email: e.target.value})} />
-            <input type="text" placeholder="Teléfono" required value={newFunc.telefono} onChange={e => setNewFunc({...newFunc, telefono: e.target.value})} />
-            <input type="password" placeholder="Contraseña" required value={newFunc.pass} onChange={e => setNewFunc({...newFunc, pass: e.target.value})} />
-            <select value={newFunc.role} onChange={e => setNewFunc({...newFunc, role: e.target.value})}>
+            <input type="text" placeholder="Nombre completo" required value={newFunc.nombre} onChange={e => setNewFunc({ ...newFunc, nombre: e.target.value })} />
+            <input type="text" placeholder="Cedula" required value={newFunc.cedula} onChange={e => setNewFunc({ ...newFunc, cedula: e.target.value })} />
+            <input type="email" placeholder="Correo electrónico" required value={newFunc.email} onChange={e => setNewFunc({ ...newFunc, email: e.target.value })} />
+            <input type="text" placeholder="Teléfono" required value={newFunc.telefono} onChange={e => setNewFunc({ ...newFunc, telefono: e.target.value })} />
+            <input type="password" placeholder="Contraseña" required value={newFunc.pass} onChange={e => setNewFunc({ ...newFunc, pass: e.target.value })} />
+            <select value={newFunc.role} onChange={e => setNewFunc({ ...newFunc, role: e.target.value })}>
               <option value="admin">Administrador</option>
               <option value="funcionario">Funcionario</option>
             </select>
@@ -104,6 +105,7 @@ const MostrarFuncionario = () => {
           <thead>
             <tr>
               <th>NOMBRE</th>
+              <th>CEDULA</th>
               <th>CORREO</th>
               <th>TELÉFONO</th>
               <th>ROL</th>
@@ -114,11 +116,12 @@ const MostrarFuncionario = () => {
             {funcionarios.map((func) => (
               editingId === func.id ? (
                 <tr key={func.id} className="edit-row">
-                  <td><input type="text" className="inline-input" value={editFunc.nombre} onChange={e => setEditFunc({...editFunc, nombre: e.target.value})} /></td>
-                  <td><input type="email" className="inline-input" value={editFunc.email} onChange={e => setEditFunc({...editFunc, email: e.target.value})} /></td>
-                  <td><input type="text" className="inline-input" value={editFunc.telefono} onChange={e => setEditFunc({...editFunc, telefono: e.target.value})} /></td>
+                  <td><input type="text" className="inline-input" value={editFunc.nombre} onChange={e => setEditFunc({ ...editFunc, nombre: e.target.value })} /></td>
+                  <td><input type="text" className="inline-input" value={editFunc.cedula} onChange={e => setEditFunc({ ...editFunc, cedula: e.target.value })} /></td>
+                  <td><input type="email" className="inline-input" value={editFunc.email} onChange={e => setEditFunc({ ...editFunc, email: e.target.value })} /></td>
+                  <td><input type="text" className="inline-input" value={editFunc.telefono} onChange={e => setEditFunc({ ...editFunc, telefono: e.target.value })} /></td>
                   <td>
-                    <select className="inline-input" value={editFunc.role} onChange={e => setEditFunc({...editFunc, role: e.target.value})}>
+                    <select className="inline-input" value={editFunc.role} onChange={e => setEditFunc({ ...editFunc, role: e.target.value })}>
                       <option value="admin">Admin</option>
                       <option value="funcionario">Funcionario</option>
                     </select>
@@ -137,6 +140,7 @@ const MostrarFuncionario = () => {
               ) : (
                 <tr key={func.id}>
                   <td><strong>{func.nombre}</strong></td>
+                  <td>{func.cedula}</td>
                   <td>{func.email}</td>
                   <td>{func.telefono}</td>
                   <td><span className="badge-role">{func.role.toUpperCase()}</span></td>
