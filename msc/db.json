@@ -134,6 +134,20 @@
       "estado": "Pendiente",
       "lat": 9.8967,
       "lng": -84.0811
+    },
+    {
+      "id": "33a7",
+      "tipo": "Homicidio",
+      "descripcion": "El ladron llevaba jeans rotos y tenis nike blancas, sueter rojo",
+      "distrito": "San Rafael Abajo",
+      "barrio": "Valencia",
+      "direccion_exacta": "Frente Zona Centro",
+      "fecha": "2026-03-25T16:22",
+      "id_creador": "0a50",
+      "nombre_creador": "CHRISTOPHER JOSUE DELGADO HIDALGO",
+      "estado": "Pendiente",
+      "lat": 9.8967,
+      "lng": -84.0811
     }
   ],
   "consultas": [

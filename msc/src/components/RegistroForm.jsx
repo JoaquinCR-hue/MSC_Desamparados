@@ -107,6 +107,11 @@ const RegistroForm = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\d{8}$/;
     const cedulaRegex = /^[1-9]\d{8}$/;
+    
+    // Validaciones de Contraseña: 6 caracteres mínimo, una mayúscula, una minúscula, un número
+    const passHasUpperCase = /[A-Z]/.test(contra);
+    const passHasLowerCase = /[a-z]/.test(contra);
+    const passHasNumber = /[0-9]/.test(contra);
 
     if (!nombre.trim()) {
       newErrors.nombre = "El nombre completo es obligatorio";
@@ -124,7 +129,13 @@ const RegistroForm = () => {
     }
     if (!phoneRegex.test(telefono)) newErrors.telefono = "El teléfono debe tener 8 dígitos";
     if (!emailRegex.test(correoUsuario)) newErrors.email = "Ingrese un correo electrónico válido";
-    if (contra.length < 6) newErrors.contra = "La contraseña debe tener al menos 6 caracteres";
+    
+    if (contra.length < 6) {
+      newErrors.contra = "La contraseña debe tener al menos 6 caracteres";
+    } else if (!passHasUpperCase || !passHasLowerCase || !passHasNumber) {
+      newErrors.contra = "La contraseña debe tener al menos una mayúscula, una minúscula y un número";
+    }
+    
     if (contra !== confirmarContra) newErrors.confirmarContra = "Las contraseñas no coinciden";
     if (!aceptaTerminos) newErrors.terminos = "Debe aceptar los términos y condiciones";
 
@@ -173,7 +184,7 @@ const RegistroForm = () => {
       
       Swal.fire({
         title: '¡Éxito!',
-        text: 'Registro exitoso. ¡Bienvenido a la familia!',
+        text: 'Registro exitoso. ¡Bienvenido!',
         icon: 'success'
       });
       navigate('/login');
@@ -189,7 +200,7 @@ const RegistroForm = () => {
 
   return (
     <AuthLayout>
-      <AuthHeader title="Unirse a la Familia" subtitle="Crea tu cuenta oficial" />
+      <AuthHeader title="Unirse a la Comunidad" subtitle="Crea tu cuenta oficial" />
       
       <form onSubmit={handleSubmit}>
         <InputGroup 
