@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import PatrolMap from '../components/PatrolMap';
+import Footer from '../components/Footer';
 import '../styles/FuncionarioDashboard.css';
 
 const PatrolMapPage = () => {
@@ -22,6 +23,7 @@ const PatrolMapPage = () => {
           <PatrolMap />
         </section>
       </div>
+      <Footer />
     </div>
   );
 };

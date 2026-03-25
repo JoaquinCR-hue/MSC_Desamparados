@@ -169,7 +169,16 @@
       "zona": "Centro",
       "lat": 9.898839572022146,
       "lng": -84.06634107233359
+    },
+    {
+      "id": "1774473425984",
+      "nombre_oficiales": "Guillermo Ortiz",
+      "unidad": "1345p",
+      "estado": "Activa",
+      "zona": "Centro",
+      "lat": 9.749950714105271,
+      "lng": -84.01573687791826
     }
-  ]
- 
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
