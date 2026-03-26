@@ -89,7 +89,7 @@ function FormLogin() {
     }
 
     // Si todo es correcto
-    localStorage.setItem("user", JSON.stringify(usuarioExistente));
+    sessionStorage.setItem("user", JSON.stringify(usuarioExistente));
 
     let mensajeBienvenida = '';
     if (usuarioExistente.role === "admin") {

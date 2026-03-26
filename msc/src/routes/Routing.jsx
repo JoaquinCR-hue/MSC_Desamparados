@@ -19,7 +19,7 @@ import PatrolMapPage from '../pages/PatrolMapPage';
 import A11yToolbar from '../components/A11yToolbar';
 
 const RoleRoute = ({ children, allowedRoles }) => {
-  const userStr = localStorage.getItem('user');
+  const userStr = sessionStorage.getItem('user');
   if (!userStr) return <Navigate to="/login" replace />;
   
   const user = JSON.parse(userStr);

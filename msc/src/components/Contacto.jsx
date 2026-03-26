@@ -123,9 +123,9 @@ function Contacto() {
                     <div className="social-card">
                         <h3>Nuestras Redes Oficiales</h3>
                         <div className="social-icons">
-                            <a href="#" className="social-icon facebook"><i className="fa-brands fa-facebook-f"></i></a>
-                            <a href="#" className="social-icon instagram"><i className="fa-brands fa-instagram"></i></a>
-                            <a href="#" className="social-icon youtube"><i className="fa-brands fa-youtube"></i></a>
+                            <a href="https://www.facebook.com/MuniDesamparados" target="_blank" rel="noopener noreferrer" className="social-icon facebook text-white fs-4"><i className="fa-brands fa-facebook-f"></i></a>
+                            <a href="https://www.instagram.com/munidesampa/?locale=es&hl=en" target="_blank" rel="noopener noreferrer" className="social-icon instagram text-white fs-4"><i className="fa-brands fa-instagram"></i></a>
+                            <a href="https://www.youtube.com/channel/UCkaBSMbgBnzEUuowilq8hKQ" target="_blank" rel="noopener noreferrer" className="social-icon youtube text-white fs-4"><i className="fa-brands fa-youtube"></i></a>
                         </div>
                     </div>
                 </div>

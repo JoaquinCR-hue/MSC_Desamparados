@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import NotificationBell from './NotificationBell';
 import '../styles/Navbar.css';
 
 const Navbar = () => {
@@ -24,7 +25,7 @@ const Navbar = () => {
   }, [menuRef]);
 
   const getUser = () => {
-    const userStr = localStorage.getItem('user');
+    const userStr = sessionStorage.getItem('user');
     if (!userStr) return null;
     try {
       return JSON.parse(userStr);
@@ -84,6 +85,9 @@ const Navbar = () => {
           </div>
 
           <div className="nav-actions">
+            {(isFuncionario || isAdmin) && (
+              <NotificationBell />
+            )}
             <div className="menu-dropdown-container" ref={menuRef}>
               <button className="menu-button" onClick={toggleMenu}>
                 <i className="fa-solid fa-bars menu-icon"></i>
@@ -129,7 +133,7 @@ const Navbar = () => {
                   </>
                 ) : (
                   <a href="#" className="dropdown-item" onClick={() => {
-                    localStorage.removeItem('user');
+                    sessionStorage.removeItem('user');
                     window.location.href = '/';
                   }}>
                     <i className="fa-solid fa-power-off"></i>

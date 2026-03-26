@@ -72,54 +72,12 @@
       "distrito": "San Rafael Arriba",
       "barrio": "Centro",
       "direccion_exacta": "Persona sospechosa en motoFrente al parque centralFrente al parque centralcicleta merodeando la zona.",
-      "fecha": "202610-03-20T00:00",
+      "fecha": "2026-03-26T09:56",
       "id_creador": "ce10",
       "nombre_creador": "Juan Pérez",
       "estado": "Pendiente",
       "lat": 9.8783,
       "lng": -84.0736
-    },
-    {
-      "id": "8db9",
-      "tipo": "Asalto",
-      "descripcion": "Test report for verification.",
-      "distrito": "Desamparados",
-      "barrio": "Centro",
-      "direccion_exacta": "Test Exact Point",
-      "fecha": "2026-03-20T09:03",
-      "id_creador": "ce10",
-      "nombre_creador": "Juan Pérez",
-      "estado": "Pendiente",
-      "lat": 9.8989,
-      "lng": -84.0664
-    },
-    {
-      "id": "d88c",
-      "tipo": "Balacera",
-      "descripcion": "caca en la acera",
-      "distrito": "Gravilias",
-      "barrio": "Porvenir",
-      "direccion_exacta": "en el parque",
-      "fecha": "2026-03-20T12:09",
-      "id_creador": "a999",
-      "nombre_creador": "ADRIAN DAVID MORA CASTILLO",
-      "estado": "Pendiente",
-      "lat": 9.8922,
-      "lng": -84.0644
-    },
-    {
-      "id": "452e",
-      "tipo": "Maltrato animal",
-      "descripcion": "Un incidente de maltrato animal para probar el filtro del mapa.",
-      "distrito": "Desamparados",
-      "barrio": "Centro",
-      "direccion_exacta": "Faltando al respeto a un perrito",
-      "fecha": "2026-03-20T12:00",
-      "id_creador": "a999",
-      "nombre_creador": "ADRIAN DAVID MORA CASTILLO",
-      "estado": "Pendiente",
-      "lat": 9.8989,
-      "lng": -84.0664
     },
     {
       "id": "69bb",
@@ -148,6 +106,34 @@
       "estado": "Pendiente",
       "lat": 9.8967,
       "lng": -84.0811
+    },
+    {
+      "id": "4a8f",
+      "tipo": "Robo De Vehículo",
+      "descripcion": "No los vi.",
+      "distrito": "San Rafael Abajo",
+      "barrio": "San José",
+      "direccion_exacta": "Frente Zona Centro",
+      "fecha": "2026-03-26T09:56",
+      "id_creador": "ce10",
+      "nombre_creador": "Juan Pérez",
+      "estado": "Pendiente",
+      "lat": 9.8967,
+      "lng": -84.0811
+    },
+    {
+      "id": "2c06",
+      "tipo": "Robo De Vehículo",
+      "descripcion": "No los vi.",
+      "distrito": "Frailes",
+      "barrio": "San Cristóbal Norte",
+      "direccion_exacta": "Al frente de la Plaza de Frailes",
+      "fecha": "2026-03-26T11:12",
+      "id_creador": "ce10",
+      "nombre_creador": "Juan Pérez",
+      "estado": "Pendiente",
+      "lat": 9.7709,
+      "lng": -84.0531
     }
   ],
   "consultas": [
@@ -193,6 +179,5 @@
       "lat": 9.749950714105271,
       "lng": -84.01573687791826
     }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  ]
 }
