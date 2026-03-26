@@ -57,7 +57,7 @@
 }
 
 .form-group-custom label {
-  color: #cbd5e1;
+  color: var(--text-main);
   font-weight: 600;
   font-size: 0.95rem;
 }
@@ -179,4 +179,26 @@ select option {
   .form-row {
     flex-direction: column;
   }
+}
+
+/* Voice Input Styles */
+.form-input-with-voice {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.form-input-with-voice input,
+.form-input-with-voice textarea {
+  flex: 1;
+  padding-right: 45px !important; /* Asegurar espacio para el micrófono */
+}
+
+.voice-input-container {
+  position: absolute;
+  right: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

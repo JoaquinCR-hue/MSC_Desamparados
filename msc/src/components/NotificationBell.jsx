@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ServiceReportes from '../services/ServiceReportes';
 import Swal from 'sweetalert2';
+import '../styles/NotificationBell.css';
 
 const NotificationBell = () => {
   const [reportesCount, setReportesCount] = useState(0);
@@ -63,7 +64,7 @@ const NotificationBell = () => {
               showConfirmButton: false,
               timer: 6000,
               timerProgressBar: true,
-              background: '#1e40af',
+              background: 'var(--primary-color)',
               color: '#ffffff'
             });
           }
@@ -90,63 +91,51 @@ const NotificationBell = () => {
   };
 
   return (
-    <div className="notification-bell-container" ref={bellRef} style={{ position: 'relative', marginLeft: '15px' }}>
+    <div className="notification-bell-container" ref={bellRef}>
       <button 
+        className="notification-bell-btn"
         onClick={handleToggle}
-        style={{ 
-          background: 'transparent', border: 'none', cursor: 'pointer', 
-          color: '#ffffff', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          width: '40px', height: '40px', borderRadius: '50%', backgroundColor: 'rgba(255,255,255,0.1)'
-        }}
         title="Notificaciones"
       >
         <i className={`fa-solid fa-bell fs-5 ${unreadCount > 0 ? 'text-warning fa-shake' : ''}`}></i>
         {unreadCount > 0 && (
-          <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm" style={{ fontSize: '0.65rem', transform: 'translate(-30%, 30%)' }}>
+          <span className="notification-badge">
             {unreadCount}
           </span>
         )}
       </button>
 
       {isOpen && (
-        <div className="notifications-dropdown" style={{
-          position: 'absolute', top: '50px', right: '-10px', 
-          width: '320px', backgroundColor: '#1f2937', borderRadius: '8px',
-          boxShadow: '0 10px 25px rgba(0,0,0,0.5)', zIndex: 1000, overflow: 'hidden',
-          border: '1px solid #374151'
-        }}>
-          <div style={{ padding: '12px 15px', backgroundColor: '#111827', borderBottom: '1px solid #374151', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h6 style={{ margin: 0, color: '#f3f4f6', fontSize: '0.95rem', fontWeight: 'bold' }}>Notificaciones</h6>
-            <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>Nuevos: {unreadCount}</span>
+        <div className="notifications-dropdown">
+          <div className="notifications-header">
+            <h6>Notificaciones</h6>
+            <span className="notifications-count-text">Nuevos: {unreadCount}</span>
           </div>
           
-          <div style={{ maxHeight: '350px', overflowY: 'auto' }}>
+          <div className="notifications-list">
             {recentReports.length === 0 ? (
-              <div style={{ padding: '20px', textAlign: 'center', color: '#9ca3af', fontSize: '0.9rem' }}>
+              <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                 No hay reportes recientes.
               </div>
             ) : (
               recentReports.map(reporte => (
                 <div 
                   key={reporte.id} 
+                  className="notification-item"
                   onClick={() => handleReportClick(reporte)}
-                  style={{ 
-                    padding: '12px 15px', borderBottom: '1px solid #374151', cursor: 'pointer',
-                    transition: 'background 0.2s', backgroundColor: '#1f2937',
-                  }}
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#374151'}
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#1f2937'}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <strong style={{ color: '#ef4444', fontSize: '0.85rem' }}><i className="fa-solid fa-triangle-exclamation"></i> {reporte.tipo}</strong>
-                    <span style={{ fontSize: '0.75rem', color: '#9ca3af' }}>
+                  <div className="notification-item-header">
+                    <strong className="notification-item-type">
+                      <i className="fa-solid fa-triangle-exclamation"></i> {reporte.tipo}
+                    </strong>
+                    <span className="notification-item-date">
                       {new Date(reporte.fecha).toLocaleDateString()}
                     </span>
                   </div>
-                  <div style={{ color: '#d1d5db', fontSize: '0.85rem', marginBottom: '4px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  <div className="notification-item-desc">
                     {reporte.descripcion || 'Sin descripción'}
                   </div>
-                  <div style={{ color: '#9ca3af', fontSize: '0.75rem' }}>
+                  <div className="notification-item-loc">
                     <i className="fa-solid fa-location-dot"></i> {reporte.distrito}, {reporte.barrio}
                   </div>
                 </div>
@@ -155,13 +144,8 @@ const NotificationBell = () => {
           </div>
           
           <div 
+            className="notifications-footer"
             onClick={() => { setIsOpen(false); navigate('/gestion-reportes'); }}
-            style={{ 
-              padding: '10px', textAlign: 'center', backgroundColor: '#111827', cursor: 'pointer',
-              color: '#3b82f6', fontSize: '0.85rem', fontWeight: 'bold', borderTop: '1px solid #374151'
-            }}
-            onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1f2937'}
-            onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#111827'}
           >
             Ver todos los reportes
           </div>

@@ -51,11 +51,14 @@ const A11yToolbar = () => {
       if (!textToSpeech) return;
       
       const target = e.target;
-      const validTags = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'A', 'BUTTON', 'SPAN', 'LABEL', 'LI', 'STRONG', 'B'];
+      const validTags = ['P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'A', 'BUTTON', 'SPAN', 'LABEL', 'LI', 'STRONG', 'B', 'INPUT', 'SELECT', 'TEXTAREA'];
       
       if (validTags.includes(target.tagName) || target.role === 'button' || target.role === 'link') {
         // Prevent reading massive body blocks, get specific text
-        let text = target.getAttribute('aria-label') || target.title || target.innerText;
+        let text = target.getAttribute('aria-label') || 
+                   (target.getAttribute('data-no-tts-placeholder') ? null : target.placeholder) || 
+                   target.title || 
+                   target.innerText;
         
         if (text && text.trim().length > 0 && text.length < 300) {
           window.speechSynthesis.cancel(); // Stop current speaking

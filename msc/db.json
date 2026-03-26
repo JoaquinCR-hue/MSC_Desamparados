@@ -62,6 +62,15 @@
       "telefono": "88888888",
       "role": "ciudadano",
       "cedula": "119640798"
+    },
+    {
+      "id": "804a",
+      "email": "jheycobalt@gmail.com",
+      "pass": "Jheycob11",
+      "nombre": "JOB JHEYCOB PORRAS QUESADA",
+      "telefono": "86292379",
+      "role": "ciudadano",
+      "cedula": "120050880"
     }
   ],
   "reportes": [

@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, CircleMarker, Popup, useMap, useMapEvents, Mar
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import ServiceReportes from '../services/ServiceReportes';
+import VoiceInput from './shared/VoiceInput';
 
 // Fix for default marker icon in Leaflet + React
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -116,6 +117,13 @@ const FormularioReporte = () => {
     }
   };
 
+  const handleVoiceResult = (field, text) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: prev[field] ? `${prev[field]} ${text}` : text
+    }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -171,7 +179,7 @@ const FormularioReporte = () => {
       <div className="report-content-grid">
         <form onSubmit={handleSubmit} className="reportar-form compact-form">
           <div className="form-group-custom">
-            <label htmlFor="tipo">Tipo de Incidente</label>
+            <label htmlFor="tipo" title="Tipo de Incidente">Tipo de Incidente</label>
             <select id="tipo" name="tipo" value={formData.tipo} onChange={handleChange} required>
               <option value="">Seleccione una opción</option>
               
@@ -210,13 +218,13 @@ const FormularioReporte = () => {
           </div>
 
           <div className="form-group-custom">
-            <label htmlFor="fecha">Fecha y Hora</label>
+            <label htmlFor="fecha" title="Fecha y Hora">Fecha y Hora</label>
             <input type="datetime-local" id="fecha" name="fecha" value={formData.fecha} onChange={handleChange} required />
           </div>
 
           <div className="form-row">
             <div className="form-group-custom">
-              <label htmlFor="distrito">Distrito</label>
+              <label htmlFor="distrito" title="Distrito">Distrito</label>
               <select id="distrito" name="distrito" value={formData.distrito} onChange={handleChange} required>
                 <option value="">Seleccionar Distrito</option>
                 {Object.keys(distritosData).map(dist => (
@@ -226,7 +234,7 @@ const FormularioReporte = () => {
             </div>
             
             <div className="form-group-custom">
-              <label htmlFor="barrio">Barrio / Sector</label>
+              <label htmlFor="barrio" title="Barrio / Sector">Barrio / Sector</label>
               <select id="barrio" name="barrio" value={formData.barrio} onChange={handleChange} required disabled={!formData.distrito}>
                 <option value="">Seleccionar Barrio</option>
                 {formData.distrito && distritosData[formData.distrito].barrios.map(b => (
@@ -237,13 +245,40 @@ const FormularioReporte = () => {
           </div>
 
           <div className="form-group-custom">
-            <label htmlFor="direccion_exacta">Punto Exacto de Ref.</label>
-            <input type="text" id="direccion_exacta" name="direccion_exacta" placeholder="Ej. A la par de la farmacia principal..." value={formData.direccion_exacta} onChange={handleChange} required />
+            <label htmlFor="direccion_exacta" title="Punto Exacto de Referencia">Punto Exacto de Ref.</label>
+            <div className="form-input-with-voice">
+              <input 
+                type="text" 
+                id="direccion_exacta" 
+                name="direccion_exacta" 
+                placeholder="Ej. A la par de la farmacia principal..." 
+                value={formData.direccion_exacta} 
+                onChange={handleChange} 
+                required 
+              />
+              <div className="voice-input-container">
+                <VoiceInput onResult={(text) => handleVoiceResult('direccion_exacta', text)} />
+              </div>
+            </div>
           </div>
 
           <div className="form-group-custom">
-            <label htmlFor="descripcion">Descripción detallada</label>
-            <textarea id="descripcion" name="descripcion" rows="3" placeholder="Describe a los sospechosos, los vehículos, etc." value={formData.descripcion} onChange={handleChange} required></textarea>
+            <label htmlFor="descripcion" title="Descripción detallada">Descripción detallada</label>
+            <div className="form-input-with-voice">
+              <textarea 
+                id="descripcion" 
+                name="descripcion" 
+                rows="3" 
+                placeholder="Describe a los sospechosos, los vehículos, etc." 
+                data-no-tts-placeholder="true"
+                value={formData.descripcion} 
+                onChange={handleChange} 
+                required
+              ></textarea>
+              <div className="voice-input-container">
+                <VoiceInput onResult={(text) => handleVoiceResult('descripcion', text)} />
+              </div>
+            </div>
           </div>
 
           <button type="submit" className="submit-report-btn">
