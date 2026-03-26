@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, Marker, useMapEvents, GeoJSON, ZoomControl } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, Marker, useMapEvents, GeoJSON, ZoomControl, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button, Form, Modal } from 'react-bootstrap';
@@ -37,6 +37,17 @@ function MapClickHandler({ onMapClick }) {
       onMapClick(e.latlng);
     }
   });
+  return null;
+}
+
+function MapRefresher() {
+  const map = useMap();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [map]);
   return null;
 }
 
@@ -202,6 +213,7 @@ const PatrolMap = ({ refreshTrigger }) => {
           className="functional-map-instance"
           zoomControl={false}
         >
+          <MapRefresher />
           <ZoomControl position="bottomright" />
           <TileLayer
             url={TILE_LAYERS[mapMode].url}

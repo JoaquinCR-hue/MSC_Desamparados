@@ -72,7 +72,7 @@
       "distrito": "San Rafael Arriba",
       "barrio": "Centro",
       "direccion_exacta": "Persona sospechosa en motoFrente al parque centralFrente al parque centralcicleta merodeando la zona.",
-      "fecha": "202610-03-20T00:00",
+      "fecha": "2026-03-26T09:56",
       "id_creador": "ce10",
       "nombre_creador": "Juan Pérez",
       "estado": "Pendiente",
@@ -92,6 +92,48 @@
       "estado": "Pendiente",
       "lat": 9.8967,
       "lng": -84.0811
+    },
+    {
+      "id": "33a7",
+      "tipo": "Homicidio",
+      "descripcion": "El ladron llevaba jeans rotos y tenis nike blancas, sueter rojo",
+      "distrito": "San Rafael Abajo",
+      "barrio": "Valencia",
+      "direccion_exacta": "Frente Zona Centro",
+      "fecha": "2026-03-25T16:22",
+      "id_creador": "0a50",
+      "nombre_creador": "CHRISTOPHER JOSUE DELGADO HIDALGO",
+      "estado": "Pendiente",
+      "lat": 9.8967,
+      "lng": -84.0811
+    },
+    {
+      "id": "4a8f",
+      "tipo": "Robo De Vehículo",
+      "descripcion": "No los vi.",
+      "distrito": "San Rafael Abajo",
+      "barrio": "San José",
+      "direccion_exacta": "Frente Zona Centro",
+      "fecha": "2026-03-26T09:56",
+      "id_creador": "ce10",
+      "nombre_creador": "Juan Pérez",
+      "estado": "Pendiente",
+      "lat": 9.8967,
+      "lng": -84.0811
+    },
+    {
+      "id": "2c06",
+      "tipo": "Robo De Vehículo",
+      "descripcion": "No los vi.",
+      "distrito": "Frailes",
+      "barrio": "San Cristóbal Norte",
+      "direccion_exacta": "Al frente de la Plaza de Frailes",
+      "fecha": "2026-03-26T11:12",
+      "id_creador": "ce10",
+      "nombre_creador": "Juan Pérez",
+      "estado": "Pendiente",
+      "lat": 9.7709,
+      "lng": -84.0531
     }
   ],
   "consultas": [
@@ -147,8 +189,18 @@
       "estado": "Activa",
       "zona": "Distrito Central",
       "lat": 9.92675061043482,
-      "lng": -84.04875755702845
+      "lng": -84.04875755702845 
+      },
+
+      {
+        "id": "1774473425984",
+      "nombre_oficiales": "Guillermo Ortiz",
+      "unidad": "1345p",
+      "estado": "Activa",
+      "zona": "Centro",
+      "lat": 9.749950714105271,
+      "lng": -84.01573687791826
+
     }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  ]
 }

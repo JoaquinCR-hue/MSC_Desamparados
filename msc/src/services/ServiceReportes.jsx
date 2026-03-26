@@ -6,9 +6,30 @@ async function getReportes() {
       
         
         const datosReportes= await respuestaServidor.json();
-   
         
-        return datosReportes;
+        // Add a small pseudo-random offset based on ID to prevent markers from perfectly stacking
+        const reportesConOffset = datosReportes.map(reporte => {
+            if (reporte.lat && reporte.lng) {
+                // Use a simple hash of the ID or string to get a consistent pseudo-random number
+                const idStr = String(reporte.id || Math.random());
+                let hash = 0;
+                for (let i = 0; i < idStr.length; i++) {
+                    hash = ((hash << 5) - hash) + idStr.charCodeAt(i);
+                    hash |= 0; 
+                }
+                const random1 = Math.abs(Math.sin(hash)) * 0.0004 - 0.0002;
+                const random2 = Math.abs(Math.cos(hash)) * 0.0004 - 0.0002;
+                
+                return {
+                    ...reporte,
+                    lat: parseFloat(reporte.lat) + random1,
+                    lng: parseFloat(reporte.lng) + random2
+                };
+            }
+            return reporte;
+        });
+        
+        return reportesConOffset;
         
     } catch (error) {
         

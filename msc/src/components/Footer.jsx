@@ -10,7 +10,7 @@ function Footer() {
           <div className="container p-4">
             <div className="row">
               {/*Grid column: About Us */}
-              <div className="col-lg-4 col-md-12 mb-4 mb-md-0 text-start">
+              <div className="col-lg-3 col-md-12 mb-4 mb-md-0 text-start">
                 <div className="d-flex align-items-center mb-3">
                   <div className="footer-logo-container">
                     <i className="fa-solid fa-user-shield footer-logo-icon"></i>
@@ -25,7 +25,7 @@ function Footer() {
               </div>
 
               {/*Grid column: Links */}
-              <div className="col-lg-4 col-md-6 mb-4 mb-md-0 text-start">
+              <div className="col-lg-3 col-md-6 mb-4 mb-md-0 text-start">
                 <h5 className="text-uppercase footer-title">Enlaces Rápidos</h5>
                 <ul className="list-unstyled mb-0 footer-links">
                   <li>
@@ -59,6 +59,18 @@ function Footer() {
                     <span><i className="fa-solid fa-phone me-2"></i> 911 (Emergencias)</span>
                   </li>
                 </ul>
+              </div>
+
+              {/*Grid column: Redes Sociales */}
+              <div className="col-lg-3 col-md-6 mb-4 mb-md-0 text-start">
+                <div className="social-card">
+                    <h5 className="text-uppercase footer-title">Nuestras Redes Oficiales</h5>
+                    <div className="social-icons d-flex gap-3 mt-3">
+                        <a href="https://www.facebook.com/MuniDesamparados" target="_blank" rel="noopener noreferrer" className="social-icon facebook text-white fs-4"><i className="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/munidesampa/?locale=es&hl=en" target="_blank" rel="noopener noreferrer" className="social-icon instagram text-white fs-4"><i className="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/channel/UCkaBSMbgBnzEUuowilq8hKQ" target="_blank" rel="noopener noreferrer" className="social-icon youtube text-white fs-4"><i className="fa-brands fa-youtube"></i></a>
+                    </div>
+                </div>
               </div>
             </div>
           </div>

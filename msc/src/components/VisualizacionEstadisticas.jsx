@@ -135,7 +135,7 @@ const VisualizacionEstadisticas = () => {
             </div>
 
             <div className="recent-alerts-wrapper glass">
-                <h3>Alertas Críticas Recientes</h3>
+                <h3>Alertas Recientes</h3>
                 <div className="table-responsive">
                     <table className="stats-table">
                         <thead>
@@ -143,7 +143,6 @@ const VisualizacionEstadisticas = () => {
                                 <th>Tipo</th>
                                 <th>Ubicación</th>
                                 <th>Fecha</th>
-                                <th>Estado</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -152,11 +151,7 @@ const VisualizacionEstadisticas = () => {
                                     <td>{reporte.tipo}</td>
                                     <td>{reporte.distrito}, {reporte.barrio}</td>
                                     <td>{new Date(reporte.fecha).toLocaleString()}</td>
-                                    <td>
-                                        <span className={`status-badge ${reporte.estado.toLowerCase()}`}>
-                                            {reporte.estado}
-                                        </span>
-                                    </td>
+                                    
                                 </tr>
                             ))}
                             {stats.recientes.length === 0 && (

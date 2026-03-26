@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import {
   MapContainer, TileLayer, CircleMarker, Popup,
-  Polyline, Marker, Rectangle, useMapEvents, GeoJSON, ZoomControl
+  Polyline, Marker, Rectangle, useMapEvents, GeoJSON, ZoomControl, useMap
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -11,7 +11,7 @@ import distritosGeo from '../data/distritos.json';
 
 // ── Límites del cantón de Desamparados ───────────────────────────────────────
 const BOUNDS_DESAMPARADOS = {
-  minLat: 9.82,
+  minLat: 9.70, // Ajustado para incluir zonas del sur como Frailes
   maxLat: 9.98,
   minLng: -84.18,
   maxLng: -83.92,
@@ -74,6 +74,17 @@ const iconDestino = makeIcon('B', '#FF1744');
 // ── Capturar clics en el mapa ─────────────────────────────────────────────────
 const MapClickHandler = ({ onClick }) => {
   useMapEvents({ click: (e) => onClick(e.latlng) });
+  return null;
+};
+
+const MapRefresher = () => {
+  const map = useMap();
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [map]);
   return null;
 };
 
@@ -171,6 +182,7 @@ const SafeRouteMap = ({
           maxBoundsViscosity={0.85}
           zoomControl={false}
         >
+          <MapRefresher />
           <ZoomControl position="bottomright" />
           <TileLayer url={tileLayer.url} attribution={ATTR} />
 

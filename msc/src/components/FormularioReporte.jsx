@@ -66,7 +66,7 @@ const FormularioReporte = () => {
   const [mapZoom, setMapZoom] = useState(12);
 
   const navigate = useNavigate();
-  const user = localStorage.getItem('user');
+  const user = sessionStorage.getItem('user');
   const usuarioParseado = user ? JSON.parse(user) : null;
 
   useEffect(() => {

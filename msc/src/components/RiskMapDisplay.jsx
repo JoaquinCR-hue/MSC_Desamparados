@@ -1,5 +1,5 @@
 import React from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, GeoJSON, ZoomControl } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Popup, GeoJSON, ZoomControl, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/RiskMapDisplay.css';
 import desamparadosGeo from '../data/desamparados.json';
@@ -8,6 +8,17 @@ import distritosGeo from '../data/distritos.json';
 const TILE_LAYERS = {
   night: { url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' },
   day: { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png' },
+};
+
+const MapRefresher = () => {
+  const map = useMap();
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [map]);
+  return null;
 };
 
 const RiskMapDisplay = ({ reportes, agregatedStats }) => {
@@ -56,6 +67,7 @@ const RiskMapDisplay = ({ reportes, agregatedStats }) => {
           className="map-instance"
           zoomControl={false}
         >
+          <MapRefresher />
           <ZoomControl position="bottomright" />
           <TileLayer
             url={TILE_LAYERS[mapMode].url}

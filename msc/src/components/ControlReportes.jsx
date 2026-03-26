@@ -27,11 +27,11 @@ const ControlReportes = () => {
   const [filterType, setFilterType] = useState('all');
   const [filterDistrict, setFilterDistrict] = useState('all');
 
-  const userStr = localStorage.getItem('user');
+  const userStr = sessionStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
   const canDelete = user && (user.role === 'admin' || user.role === 'funcionario');
 
-  const EXPIRY_TIME = 5 * 24 * 60 * 60 * 1000; // 5 days
+  const EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000; // 7 days
 
   const loadReportes = async () => {
     setLoading(true);
