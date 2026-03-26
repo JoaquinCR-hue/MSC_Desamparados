@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ServiceConsultas from '../services/ServiceConsultas';
 import Swal from 'sweetalert2';
+import '../styles/ControlConsultas.css';
 
 function ControlConsultas() {
     const [consultas, setConsultas] = useState([]);
@@ -39,7 +40,9 @@ function ControlConsultas() {
             showCancelButton: true,
             confirmButtonText: 'Enviar Respuesta',
             cancelButtonText: 'Cancelar',
-            background: '#1f2937', color: '#fff'
+            background: 'var(--bg-card)',
+            color: 'var(--text-main)',
+            confirmButtonColor: 'var(--primary-color)'
         });
 
         if (respuestaText) {
@@ -56,7 +59,9 @@ function ControlConsultas() {
                     icon: 'success',
                     title: 'Enviado',
                     text: 'La respuesta ha sido registrada y enviada al ciudadano.',
-                    background: '#1f2937', color: '#fff'
+                    background: 'var(--bg-card)',
+                    color: 'var(--text-main)',
+                    confirmButtonColor: 'var(--primary-color)'
                 });
                 fetchConsultas();
             } catch (error) {
@@ -75,55 +80,74 @@ function ControlConsultas() {
     }
 
     return (
-        <div className="control-consultas-container text-white">
-            <h2 className="mb-4 text-info border-bottom border-info pb-2"><i className="fa-solid fa-envelopes-bulk"></i> Bandeja de Atención Ciudadana</h2>
+        <div className="control-consultas-container">
+            <header className="page-header-premium">
+                <h1>Bandeja de Atención Ciudadana</h1>
+                <p className="text-secondary">Gestión centralizada de quejas, sugerencias y consultas ciudadanas</p>
+            </header>
             
-            <div className="alert alert-dark border-secondary text-light">
-                <i className="fa-solid fa-circle-info text-info"></i> Aquí puede visualizar las quejas, sugerencias y consultas de los ciudadanos y darles una respuesta oficial.
+            <div className="info-banner-v2">
+                <i className="fa-solid fa-circle-info"></i>
+                <p className="mb-0">Administre las comunicaciones entrantes y brinde respuestas oficiales para mejorar la satisfacción comunitaria.</p>
             </div>
 
             {consultas.length === 0 ? (
-                <div className="alert alert-secondary text-center">No hay consultas registradas en el sistema.</div>
+                <div className="empty-state">
+                    <i className="fa-solid fa-mailbox-empty"></i>
+                    <h3>Bandeja Vacía</h3>
+                    <p className="text-muted">No hay nuevas consultas que requieran atención en este momento.</p>
+                </div>
             ) : (
-                <div className="row">
+                <div className="consultas-grid">
                     {consultas.map(consulta => (
-                        <div key={consulta.id} className="col-12 mb-4">
-                            <div className={`card bg-dark border-${consulta.estado === 'Pendiente' ? 'warning' : 'success'} shadow-lg h-100`}>
-                                <div className={`card-header text-dark fw-bold d-flex justify-content-between align-items-center bg-${consulta.estado === 'Pendiente' ? 'warning' : 'success'}`}>
+                        <div key={consulta.id} className="consulta-card-wrapper">
+                            <article className="consulta-card-premium">
+                                <header className={`card-premium-header ${consulta.estado === 'Pendiente' ? 'status-pending' : 'status-resolved'}`}>
                                     <span>
-                                        <i className={`fa-solid ${consulta.tipoConsulta === 'Queja' ? 'fa-angry' : 'fa-clipboard-question'}`}></i> {consulta.tipoConsulta}
+                                        <i className={`fa-solid ${consulta.tipoConsulta === 'Queja' ? 'fa-angry' : 'fa-clipboard-question'} me-2`}></i> 
+                                        {consulta.tipoConsulta}
                                     </span>
-                                    <span className="badge bg-dark border text-light">{consulta.estado}</span>
-                                </div>
-                                <div className="card-body text-light">
-                                    <h5 className="card-title text-info">{consulta.nombreCompleto}</h5>
-                                    <h6 className="card-subtitle mb-3 text-secondary"><i className="fa-solid fa-id-card"></i> {consulta.cedula} | <i className="fa-solid fa-envelope"></i> {consulta.correo} | <i className="fa-solid fa-phone"></i> {consulta.telefono || 'N/A'}</h6>
-                                    
-                                    <div className="p-3 bg-secondary bg-opacity-25 rounded mb-3">
-                                        <p className="mb-0 text-white">"{consulta.descripcion}"</p>
+                                    <span className="status-badge">{consulta.estado}</span>
+                                </header>
+
+                                <div className="card-premium-body">
+                                    <h3 className="citizen-name">{consulta.nombreCompleto}</h3>
+                                    <div className="citizen-meta">
+                                        <span><i className="fa-solid fa-id-card"></i> {consulta.cedula}</span>
+                                        <span><i className="fa-solid fa-envelope"></i> {consulta.correo}</span>
+                                        {consulta.telefono && <span><i className="fa-solid fa-phone"></i> {consulta.telefono}</span>}
+                                        <span><i className="fa-regular fa-calendar"></i> {new Date(consulta.fecha).toLocaleDateString()}</span>
                                     </div>
-                                    <small className="text-muted d-block mb-3"><i className="fa-regular fa-calendar"></i> Recibida: {new Date(consulta.fecha).toLocaleString()}</small>
+                                    
+                                    <div className="message-content">
+                                        <p className="message-text">"{consulta.descripcion}"</p>
+                                    </div>
 
                                     {consulta.estado === 'Respondida' && consulta.respuesta && (
-                                        <div className="p-3 bg-success bg-opacity-25 border border-success rounded">
-                                            <strong><i className="fa-solid fa-reply"></i> Su Respuesta Oficial:</strong>
-                                            <p className="mb-1 mt-2">{consulta.respuesta}</p>
-                                            <small className="text-muted"><i className="fa-regular fa-clock"></i> Respondido el: {new Date(consulta.fechaRespuesta).toLocaleString()}</small>
+                                        <div className="response-box">
+                                            <div className="response-header">
+                                                <i className="fa-solid fa-reply"></i> Respuesta Oficial:
+                                            </div>
+                                            <p className="message-text mt-2">{consulta.respuesta}</p>
+                                            <small className="text-muted d-block mt-2">
+                                                <i className="fa-regular fa-clock me-1"></i> Finalizado el {new Date(consulta.fechaRespuesta).toLocaleString()}
+                                            </small>
                                         </div>
                                     )}
                                 </div>
-                                <div className="card-footer border-secondary bg-dark text-end">
+
+                                <footer className="card-premium-footer">
                                     {consulta.estado === 'Pendiente' ? (
-                                        <button className="btn btn-outline-info" onClick={() => handleResponder(consulta)}>
+                                        <button className="btn-premium-respond" onClick={() => handleResponder(consulta)}>
                                             <i className="fa-solid fa-reply"></i> Dar Respuesta
                                         </button>
                                     ) : (
-                                        <button className="btn btn-outline-success disabled">
-                                            <i className="fa-solid fa-check-double"></i> Atendido
-                                        </button>
+                                        <div className="btn-premium-disabled">
+                                            <i className="fa-solid fa-check-double me-2"></i> Atendido Correctamente
+                                        </div>
                                     )}
-                                </div>
-                            </div>
+                                </footer>
+                            </article>
                         </div>
                     ))}
                 </div>

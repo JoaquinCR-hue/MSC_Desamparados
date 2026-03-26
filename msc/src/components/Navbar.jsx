@@ -4,12 +4,23 @@ import '../styles/Navbar.css';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
   const menuRef = useRef(null);
   const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -77,13 +88,17 @@ const Navbar = () => {
             {(isFuncionario || isAdmin) && (
               <a href="/patrol-map" className="nav-link-custom">
                 <i className="fa-solid fa-shield-halved"></i>
-                Patrol Map
+                Mapa Patrullaje
               </a>
             )}
 
           </div>
 
           <div className="nav-actions">
+            <button className="theme-toggle-btn" onClick={toggleTheme} title={theme === 'dark' ? 'Modo Día' : 'Modo Noche'}>
+              {theme === 'dark' ? <i className="fa-solid fa-sun"></i> : <i className="fa-solid fa-moon"></i>}
+            </button>
+
             <div className="menu-dropdown-container" ref={menuRef}>
               <button className="menu-button" onClick={toggleMenu}>
                 <i className="fa-solid fa-bars menu-icon"></i>

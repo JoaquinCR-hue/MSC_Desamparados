@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-image: linear-gradient(rgba(17, 24, 39, 0.75), rgba(17, 24, 39, 0.85)), url('../../Img/mapa_desamparados_generado.png');
+  background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.85)), url('../../Img/mapa_desamparados_generado.png');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -11,8 +11,8 @@
 }
 
 .auth-card {
-  background-color: #1a1c22;
-  border: 1px solid #334155;
+  background-color: var(--bg-main);
+  border: 1px solid var(--border-strong);
   border-radius: 12px;
   padding: 40px;
   width: 100%;
@@ -20,5 +20,5 @@
   margin: 0 auto;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: #cbd5e1;
+  color: var(--text-secondary);
 }

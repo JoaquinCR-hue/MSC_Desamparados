@@ -74,18 +74,31 @@ const ControlReportes = () => {
       text: "Esta acción no se puede deshacer.",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#f44336',
-      cancelButtonColor: '#94a3b8',
       confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        confirmButton: 'btn-premium-danger',
+        cancelButton: 'btn-premium-secondary',
+        popup: 'premium-swal-popup'
+      }
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
           await ServiceReportes.deleteReportes(id);
           loadReportes();
-          Swal.fire('Eliminado', 'El reporte ha sido borrado.', 'success');
+          Swal.fire({
+            title: 'Eliminado',
+            text: 'El reporte ha sido borrado.',
+            icon: 'success',
+            customClass: { popup: 'premium-swal-popup' }
+          });
         } catch (error) {
-          Swal.fire('Error', 'No se pudo eliminar el reporte', 'error');
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo eliminar el reporte',
+            icon: 'error',
+            customClass: { popup: 'premium-swal-popup' }
+          });
         }
       }
     });
@@ -124,12 +137,9 @@ const ControlReportes = () => {
 
   return (
     <div className="gestion-container">
-      <header className="gestion-header">
-        <div className="gestion-title-wrapper">
-          <span className="gestion-subtitle">Sistema de Vigilancia</span>
-          <h1 className="gestion-title">Gestión de Reportes</h1>
-          <p className="gestion-subtext">Historial detallado de incidentes comunitarios recientes.</p>
-        </div>
+      <header className="page-header-premium">
+        <h1>Gestión de Reportes</h1>
+        <p className="text-secondary">Historial detallado de incidentes comunitarios registrados en el nodo central</p>
       </header>
 
       <section className="filters-section">
@@ -137,15 +147,15 @@ const ControlReportes = () => {
           <label>Búsqueda</label>
           <input 
             type="text" 
-            placeholder="Tipo o barrio..." 
+            placeholder="Buscar por tipo o barrio..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="filter-group">
-          <label>Tipo de Incidente</label>
+          <label>Categoría</label>
           <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-            <option value="all">Todos los tipos</option>
+            <option value="all">Todas las categorías</option>
             {uniqueTypes.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
@@ -159,66 +169,70 @@ const ControlReportes = () => {
       </section>
 
       {loading ? (
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Cargando reportes...</p>
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary mb-3" role="status"></div>
+          <p className="text-secondary">Sincronizando base de datos central...</p>
         </div>
       ) : (
-        <div className="table-responsive">
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th>INCIDENTE</th>
-                <th>UBICACIÓN</th>
-                <th>FECHA</th>
-                <th>VIGENCIA</th>
-                <th>ACCIONES</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredReportes.length === 0 ? (
+        <div className="table-container-premium">
+          <div className="table-responsive">
+            <table className="custom-table">
+              <thead>
                 <tr>
-                  <td colSpan="5" className="no-data">No se encontraron reportes con los criterios seleccionados.</td>
+                  <th>Incidente</th>
+                  <th>Ubicación</th>
+                  <th>Fecha</th>
+                  <th>Vigencia</th>
+                  <th className="text-end">Acciones</th>
                 </tr>
-              ) : (
-                filteredReportes.map((rep) => (
-                  <tr key={rep.id}>
-                    <td><strong>{rep.tipo}</strong></td>
-                    <td>
-                      <div className="loc-info">
-                        <strong>{rep.distrito}</strong>
-                        <small>{rep.barrio}</small>
-                      </div>
-                    </td>
-                    <td>{new Date(rep.fecha).toLocaleDateString()}</td>
-                    <td>
-                      <span className={`time-badge ${getTimeLeftClass(rep.fecha)}`}>
-                        <i className="fa-regular fa-clock"></i> {calculateTimeLeft(rep.fecha)}
-                      </span>
-                    </td>
-                    <td>
-                      <button 
-                        className="btn-action btn-view" 
-                        onClick={() => setSelectedReport(rep)}
-                        title="Ver detalles"
-                      >
-                        <i className="fa-solid fa-eye"></i>
-                      </button>
-                      {canDelete && (
-                        <button 
-                          className="btn-action btn-delete" 
-                          onClick={() => handleDelete(rep.id)}
-                          title="Eliminar reporte"
-                        >
-                          <i className="fa-solid fa-trash-can"></i>
-                        </button>
-                      )}
-                    </td>
+              </thead>
+              <tbody>
+                {filteredReportes.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-5 text-muted">No se encontraron reportes con los criterios seleccionados.</td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  filteredReportes.map((rep) => (
+                    <tr key={rep.id}>
+                      <td><span className="fw-bold">{rep.tipo}</span></td>
+                      <td>
+                        <div className="loc-info">
+                          <strong>{rep.distrito}</strong>
+                          <small>{rep.barrio}</small>
+                        </div>
+                      </td>
+                      <td>{new Date(rep.fecha).toLocaleDateString()}</td>
+                      <td>
+                        <span className={`time-badge ${getTimeLeftClass(rep.fecha)}`}>
+                          <i className="fa-regular fa-clock"></i> {calculateTimeLeft(rep.fecha)}
+                        </span>
+                      </td>
+                      <td className="text-end">
+                        <div className="d-flex justify-content-end gap-2">
+                          <button 
+                            className="btn-action btn-view" 
+                            onClick={() => setSelectedReport(rep)}
+                            title="Ver detalles"
+                          >
+                            <i className="fa-solid fa-eye"></i>
+                          </button>
+                          {canDelete && (
+                            <button 
+                              className="btn-action btn-delete" 
+                              onClick={() => handleDelete(rep.id)}
+                              title="Eliminar reporte"
+                            >
+                              <i className="fa-solid fa-trash-can"></i>
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
@@ -226,7 +240,7 @@ const ControlReportes = () => {
       {selectedReport && (
         <div className="modal-overlay" onClick={() => setSelectedReport(null)}>
           <div className="modal-content-premium" onClick={e => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setSelectedReport(null)}>
+            <button className="modal-close" onClick={() => setSelectedReport(null)} aria-label="Cerrar modal">
               <i className="fa-solid fa-xmark"></i>
             </button>
             <div className="modal-body-premium">

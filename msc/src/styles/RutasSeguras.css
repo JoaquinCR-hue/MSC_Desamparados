@@ -4,10 +4,10 @@
 
 /* ── Page Layout ─────────────────────────────────────────────────────── */
 .rutas-page {
-  background-color: #0f1117;
+  background-color: var(--bg-main);
   min-height: 100vh;
   font-family: 'Inter', -apple-system, sans-serif;
-  color: #ffffff;
+  color: var(--text-main);
 }
 
 .rutas-content {
@@ -40,15 +40,18 @@
 .rutas-header h1 {
   font-size: 2.8rem;
   font-weight: 900;
-  color: #ffffff;
+  background: var(--title-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   margin: 0 0 0.6rem;
   letter-spacing: -0.5px;
-  text-shadow: 0 4px 24px rgba(0, 200, 83, 0.2);
+  display: inline-block;
 }
 
 .rutas-header p {
   font-size: 1.1rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   max-width: 600px;
   margin: 0 auto;
 }
@@ -59,8 +62,8 @@
   align-items: center;
   gap: 0.75rem;
   flex-wrap: wrap;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-main);
   border-radius: 16px;
   padding: 1rem 1.25rem;
   margin-bottom: 1.5rem;
@@ -173,9 +176,19 @@
   width: 100%;
 }
 
+/* ✅ FIX para que el mapa no tape los botones */
 .safe-map-instance {
   height: 100%;
   width: 100%;
+  z-index: 0;
+}
+
+/* ✅ FIX PRINCIPAL: botones siempre visibles */
+.map-mode-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
 }
 
 .map-cursor-crosshair .safe-map-instance {
@@ -251,9 +264,9 @@
 }
 
 .ai-panel {
-  background: rgba(15, 17, 23, 0.85);
+  background: var(--bg-main);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-main);
   border-radius: 20px;
   padding: 1.75rem;
   display: flex;
@@ -319,7 +332,7 @@
 .ai-panel-header h2 {
   font-size: 1.4rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--text-main);
   margin: 0;
 }
 
@@ -349,7 +362,7 @@
   transition: all 0.2s ease;
   text-align: left;
   width: 100%;
-  color: #ffffff;
+  color: var(--text-main);
 }
 
 .step-card:hover:not(:disabled) {
@@ -406,7 +419,7 @@
 .step-title {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-main);
 }
 
 .step-desc {
@@ -763,15 +776,15 @@
 
 /* ── Popup Leaflet override ───────────────────────────────────────────── */
 .premium-popup .leaflet-popup-content-wrapper {
-  background: #1a1c22;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--bg-main);
+  border: 1px solid var(--border-main);
   border-radius: 12px;
-  color: #ffffff;
+  color: var(--text-main);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 .premium-popup .leaflet-popup-tip {
-  background: #1a1c22;
+  background: var(--bg-main);
 }
 
 .popup-banner {
@@ -1086,175 +1099,5 @@
 
 
 
-.cont-temas {}
 
-.boton-n {}
 
-/* =====================================================================
-   RutasSeguras.css – Dark Premium Theme
-   ===================================================================== */
-
-/* ── Page Layout ─────────────────────────────────────────────────────── */
-.rutas-page {
-  background-color: #0f1117;
-  min-height: 100vh;
-  font-family: 'Inter', -apple-system, sans-serif;
-  color: #ffffff;
-}
-
-.rutas-content {
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 2rem 2rem 3rem;
-}
-
-/* ── Header ──────────────────────────────────────────────────────────── */
-.rutas-header {
-  text-align: center;
-  padding: 2rem 0 1.5rem;
-}
-
-.rutas-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: rgba(0, 200, 83, 0.12);
-  color: #00C853;
-  border: 1px solid rgba(0, 200, 83, 0.3);
-  padding: 6px 18px;
-  border-radius: 20px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 1.5px;
-  margin-bottom: 1.25rem;
-}
-
-.rutas-header h1 {
-  font-size: 2.8rem;
-  font-weight: 900;
-  color: #ffffff;
-  margin: 0 0 0.6rem;
-  letter-spacing: -0.5px;
-  text-shadow: 0 4px 24px rgba(0, 200, 83, 0.2);
-}
-
-.rutas-header p {
-  font-size: 1.1rem;
-  color: #94a3b8;
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-/* ── Controls Bar ────────────────────────────────────────────────────── */
-.rutas-controls-bar {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 1rem 1.25rem;
-  margin-bottom: 1.5rem;
-}
-
-/* ── Main Layout ─────────────────────────────────────────────────────── */
-.rutas-main-layout {
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 1.5rem;
-  align-items: start;
-}
-
-@media (max-width: 1100px) {
-  .rutas-main-layout {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ── Map Column ──────────────────────────────────────────────────────── */
-.rutas-map-col {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  overflow: hidden;
-  height: 620px;
-}
-
-.safe-route-map-wrapper {
-  position: relative;
-  height: 100%;
-  width: 100%;
-}
-
-/* ✅ FIX para que el mapa no tape los botones */
-.safe-map-instance {
-  height: 100%;
-  width: 100%;
-  z-index: 0;
-}
-
-/* ✅ FIX PRINCIPAL: botones siempre visibles */
-.map-mode-toggle {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 1000;
-}
-
-/* ── Cursor ──────────────────────────────────────────────────────────── */
-.map-cursor-crosshair .safe-map-instance {
-  cursor: crosshair !important;
-}
-
-.map-cursor-crosshair .leaflet-container {
-  cursor: crosshair !important;
-}
-
-/* ── Hint ────────────────────────────────────────────────────────────── */
-.map-selection-hint {
-  position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.85);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  padding: 0.6rem 1.2rem;
-  font-size: 0.85rem;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.map-selection-hint i {
-  color: #00C853;
-}
-
-/* ── Alert ───────────────────────────────────────────────────────────── */
-.map-out-of-bounds-alert {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 23, 68, 0.9);
-  color: #fff;
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  z-index: 1100;
-}
-
-/* ── FIN (resto intacto) ─────────────────────────────────────────────── */
-
-.cont-temas {
-  position: absolute;
-  left: 30px;
-  top: 450px;
-}
-
-.boton-n {}

@@ -12,7 +12,10 @@
 
 .admin-header h1 {
   font-size: 2.5rem;
-  color: #2c3e50;
+  background: var(--title-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -31,7 +34,7 @@
 }
 
 .admin-header p {
-  color: #7f8c8d;
+  color: var(--text-secondary);
   font-size: 1.1rem;
 }
 
@@ -43,7 +46,7 @@
 }
 
 .admin-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-card);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: 16px;
@@ -54,7 +57,7 @@
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-main);
   position: relative;
   overflow: hidden;
 }
@@ -91,13 +94,13 @@
 
 .card-info h3 {
   margin: 0 0 5px 0;
-  color: #2c3e50;
+  color: var(--text-main);
   font-size: 1.25rem;
 }
 
 .card-info p {
   margin: 0;
-  color: #7f8c8d;
+  color: var(--text-secondary);
   font-size: 0.95rem;
   line-height: 1.4;
 }

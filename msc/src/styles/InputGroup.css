@@ -5,7 +5,7 @@
 }
 
 .input-group label {
-  color: #ffffff;
+  color: var(--text-main);
   font-size: 0.9rem;
   font-weight: 600;
   margin-bottom: 8px;
@@ -13,9 +13,9 @@
 }
 
 .input-group input {
-  background-color: #2a3441;
-  border: 1px solid #334155;
-  color: #ffffff;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-strong);
+  color: var(--text-main);
   padding: 12px 16px;
   border-radius: 8px;
   font-size: 1rem;

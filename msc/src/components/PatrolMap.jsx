@@ -12,7 +12,7 @@ import distritosGeo from '../data/distritos.json';
 
 // CSS para los íconos de patrullas
 const patrolIconHtml = `
-  <div style="background-color: #1E3A8A; color: white; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 3px solid #60A5FA; box-shadow: 0 4px 6px rgba(0,0,0,0.3); font-size: 16px;">
+  <div style="background-color: var(--primary-color); color: white; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 3px solid var(--bg-main); box-shadow: 0 4px 6px rgba(0,0,0,0.3); font-size: 16px;">
     <i class="fa-solid fa-shield-halved"></i>
   </div>
 `;
@@ -164,7 +164,7 @@ const PatrolMap = ({ refreshTrigger }) => {
     return (
       <div className="premium-loader text-center my-5">
         <div className="spinner-border text-primary" role="status"></div>
-        <p className="mt-3 text-light">Sincronizando red de patrullaje...</p>
+        <p className="mt-3">Sincronizando red de patrullaje...</p>
       </div>
     );
   }
@@ -176,7 +176,7 @@ const PatrolMap = ({ refreshTrigger }) => {
       </div>
 
       <div className="map-glass-container">
-        <div className="map-mode-toggle cont-temas" style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 1000, background: 'rgba(26, 28, 34, 0.9)', padding: '5px', borderRadius: '10px' }}>
+        <div className="map-mode-toggle cont-temas">
           <button
             className={`boton-n map-mode-btn ${mapMode === 'night' ? 'active' : ''}`}
             onClick={() => setMapMode('night')}
@@ -238,7 +238,7 @@ const PatrolMap = ({ refreshTrigger }) => {
                   </div>
                   <div className="popup-info">
                     <span className="info-dist fw-bold">{reporte.distrito}</span>
-                    <p className="info-desc mt-2 mb-1 text-light">{reporte.descripcion}</p>
+                    <p className="info-desc mt-2 mb-1">{reporte.descripcion}</p>
                     {reporte.anonimo ? (
                       <p className="text-warning mb-1"><small><i className="fa-solid fa-user-secret"></i> Reporte Anónimo</small></p>
                     ) : (
@@ -265,8 +265,8 @@ const PatrolMap = ({ refreshTrigger }) => {
                     <span className="popup-type"><i className="fa-solid fa-truck-fast"></i> Unidad: {patrulla.unidad}</span>
                   </div>
                   <div className="popup-info text-center mt-2">
-                    <p className="mb-1 text-light"><strong>Oficiales:</strong> {patrulla.nombre_oficiales}</p>
-                    <p className="mb-2 text-light"><strong>Estado:</strong> <span className={`badge ${patrulla.estado === 'Activa' ? 'bg-success' : 'bg-warning'}`}>{patrulla.estado}</span></p>
+                    <p className="mb-1"><strong>Oficiales:</strong> {patrulla.nombre_oficiales}</p>
+                    <p className="mb-2"><strong>Estado:</strong> <span className={`badge ${patrulla.estado === 'Activa' ? 'bg-success' : 'bg-warning'}`}>{patrulla.estado}</span></p>
 
                     <div className="d-flex justify-content-center gap-2 mt-3">
                       <Button variant="outline-info" size="sm" onClick={() => handleEditClick(patrulla)}>
@@ -285,10 +285,10 @@ const PatrolMap = ({ refreshTrigger }) => {
       </div>
 
       <Modal show={showModal} onHide={() => setShowModal(false)} centered className="premium-modal">
-        <Modal.Header closeButton className="border-secondary bg-dark text-light">
+        <Modal.Header closeButton>
           <Modal.Title>{editingPatrol ? 'Editar Unidad Asignada' : 'Desplegar Nueva Unidad'}</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="bg-dark text-light">
+        <Modal.Body>
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Número de unidad <span className="text-danger">*</span></Form.Label>
@@ -328,7 +328,7 @@ const PatrolMap = ({ refreshTrigger }) => {
                 name="estado"
                 value={formData.estado}
                 onChange={handleChange}
-                className="bg-dark text-light border-secondary"
+                className="bg-main text-main border-secondary"
               >
                 <option value="Activa">Activa / Patrullando</option>
                 <option value="Inactiva">Inactiva / En Estación</option>
@@ -337,7 +337,7 @@ const PatrolMap = ({ refreshTrigger }) => {
             </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer className="border-secondary bg-dark">
+        <Modal.Footer>
           <Button variant="outline-secondary" onClick={() => setShowModal(false)}>
             Cancelar
           </Button>

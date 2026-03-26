@@ -1,7 +1,6 @@
-/* src/styles/MostrarFuncionario.css */
 .list-container {
-    background-color: #121316;
-    border: 1px solid #232529;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-main);
     border-radius: 12px;
     padding: 25px;
 }
@@ -18,8 +17,8 @@
 .search-box {
     display: flex;
     align-items: center;
-    background-color: #0e0e11;
-    border: 1px solid #334155;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-main);
     border-radius: 8px;
     padding: 10px 15px;
     width: 100%;
@@ -34,7 +33,7 @@
 .search-box input {
     background: transparent;
     border: none;
-    color: #ffffff;
+    color: var(--text-main);
     width: 100%;
     outline: none;
     font-size: 0.9rem;
@@ -134,14 +133,14 @@
 }
 
 .user-name strong {
-    color: #ffffff;
+    color: var(--text-main);
     font-size: 1rem;
     font-style: italic;
     letter-spacing: 0.05em;
 }
 
 .user-uid {
-    color: #64748b;
+    color: var(--text-muted);
     font-size: 0.75rem;
     font-family: monospace;
     margin-top: 3px;
@@ -191,7 +190,7 @@
 .btn-action {
     background-color: transparent;
     border: 1px solid #334155;
-    color: #94a3b8;
+    color: var(--text-secondary);
     width: 35px;
     height: 35px;
     border-radius: 6px;
@@ -226,11 +225,11 @@
 }
 
 .add-form {
-    background-color: #1a1c22;
+    background-color: var(--bg-card);
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 25px;
-    border: 1px solid #334155;
+    border: 1px solid var(--border-main);
     animation: slideDown 0.3s ease-out;
 }
 
@@ -254,9 +253,9 @@
 }
 
 .form-grid input, .form-grid select {
-    background-color: #0e0e11;
-    border: 1px solid #334155;
-    color: #ffffff;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-strong);
+    color: var(--text-main);
     padding: 10px 15px;
     border-radius: 6px;
     outline: none;
@@ -264,7 +263,7 @@
 }
 
 .form-grid input::placeholder {
-    color: #64748b;
+    color: var(--text-muted);
 }
 
 .form-grid input:focus, .form-grid select:focus {
@@ -316,5 +315,5 @@
 .empty-row-text {
     text-align: center;
     padding: 20px;
-    color: #64748b;
+    color: var(--text-muted);
 }

@@ -45,7 +45,7 @@ function Footer() {
 
               {/*Grid column: Contact */}
               <div className="col-lg-4 col-md-6 mb-4 mb-md-0 text-start">
-                <a href="/contactenos" className="btn btn-info text-dark text-uppercase fw-bold mb-3">
+                <a href="/contactenos" className="btn btn-contact-orange text-uppercase fw-bold mb-3">
                   <i className="fa-solid fa-envelope-open-text me-2"></i> Contáctenos
                 </a>
                 <ul className="list-unstyled footer-links">

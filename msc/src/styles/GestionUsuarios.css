@@ -1,9 +1,9 @@
 .gestion-container {
-    background-color: #0e0e11;
+    background-color: var(--bg-darker);
     min-height: 100vh;
     padding: 40px 20px;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: #e2e8f0;
+    color: var(--text-secondary);
 }
 
 .gestion-header {
@@ -44,7 +44,7 @@
     font-size: 3.5rem;
     font-weight: 900;
     font-style: italic;
-    color: #ffffff;
+    color: var(--text-main);
     margin: 0;
     line-height: 1;
     letter-spacing: -0.02em;
@@ -126,7 +126,6 @@
 .stat-card.pending::before { background-color: #eab308; }
 
 .stat-title {
-    color: #94a3b8;
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -143,9 +142,12 @@
 .stat-value {
     font-size: 3rem;
     font-weight: 900;
-    color: #ffffff;
     line-height: 1;
 }
+
+.stat-card.total .stat-value, .stat-card.total .stat-title { color: #f25c05; }
+.stat-card.active .stat-value, .stat-card.active .stat-title { color: #10b981; }
+.stat-card.pending .stat-value, .stat-card.pending .stat-title { color: #eab308; }
 
 .stat-trend {
     font-size: 0.8rem;
@@ -162,8 +164,18 @@
     right: 25px;
     top: 50%;
     transform: translateY(-50%);
-    font-size: 3rem;
-    color: rgba(255, 255, 255, 0.03);
+    font-size: 3.5rem;
+    opacity: 0.15;
+    transition: all 0.3s ease;
+}
+
+.stat-card.total .stat-icon { color: #f25c05; }
+.stat-card.active .stat-icon { color: #10b981; }
+.stat-card.pending .stat-icon { color: #eab308; }
+
+.stat-card:hover .stat-icon {
+    opacity: 0.3;
+    transform: translateY(-50%) scale(1.1);
 }
 
 /* Tabs for switching components */
@@ -189,7 +201,7 @@
 }
 
 .view-tab:hover {
-    color: #cbd5e1;
+    color: var(--text-secondary);
 }
 
 .view-tab.active {

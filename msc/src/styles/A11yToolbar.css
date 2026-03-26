@@ -31,12 +31,12 @@
 }
 
 .a11y-menu-panel {
-  background: rgba(26, 28, 34, 0.95);
+  background: var(--bg-main);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-main);
   padding: 20px;
   border-radius: 15px 0 0 15px;
-  color: white;
+  color: var(--text-main);
   width: 250px;
   box-shadow: -5px 0 15px rgba(0,0,0,0.7);
   display: flex;
@@ -67,9 +67,9 @@
 }
 
 .a11y-option-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #f1f1f1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-main);
+  color: var(--text-secondary);
   padding: 10px;
   border-radius: 8px;
   display: flex;

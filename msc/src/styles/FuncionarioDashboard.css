@@ -1,7 +1,7 @@
 .funcionario-dashboard-page {
-  background-color: #0b0f19;
+  background-color: var(--bg-darker);
   min-height: 100vh;
-  color: #fff;
+  color: var(--text-main);
   font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
@@ -18,8 +18,8 @@
 }
 
 .dashboard-header-premium {
-  background: linear-gradient(135deg, rgba(30,58,138,0.3) 0%, rgba(17,24,39,0.8) 100%);
-  border: 1px solid rgba(59,130,246,0.2);
+  background: var(--bg-main);
+  border: 1px solid var(--border-main);
   border-radius: 12px;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -32,34 +32,34 @@
 .dashboard-header-premium h1 {
   font-weight: 800;
   margin-bottom: 0.5rem;
-  background: linear-gradient(90deg, #60A5FA, #ffffff);
+  background: linear-gradient(90deg, var(--primary-color), var(--text-main));
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .dashboard-header-premium p {
-  color: #9CA3AF;
+  color: var(--text-muted);
   font-size: 1.1rem;
   margin-bottom: 0;
 }
 
 .alert-banner-info {
-  background: rgba(30, 58, 138, 0.2);
-  border-left: 4px solid #3B82F6;
+  background: var(--bg-secondary);
+  border-left: 4px solid var(--primary-color);
   padding: 1rem 1.5rem;
   border-radius: 8px;
-  color: #BFDBFE;
+  color: var(--text-main);
   font-size: 0.95rem;
   animation: slideIn 0.5s ease;
 }
 
 .map-glass-container {
-  background: rgba(17, 24, 39, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-main);
+  border: 1px solid var(--border-main);
   border-radius: 16px;
   padding: 1rem;
-  box-shadow: 0 15px 35px rgba(255, 248, 248, 0.6);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.2);
   height: 600px; /* Fixed height for map */
   width: 100%;
   display: flex;

@@ -5,7 +5,7 @@ import Footer from '../components/Footer';
 
 function GestionConsultas() {
     return (
-        <div className="page-wrapper bg-dark min-vh-100">
+        <div className="gestion-consultas-page-wrapper min-vh-100" style={{ backgroundColor: 'var(--bg-main)' }}>
             <Navbar />
             <div className="container mt-4 pt-5 pb-5">
                 <ControlConsultas />

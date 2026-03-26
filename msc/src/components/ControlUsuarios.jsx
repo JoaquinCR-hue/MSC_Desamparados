@@ -52,6 +52,7 @@ const ControlUsuarios = () => {
                         <div className="stat-value-wrapper">
                             <span className="stat-value">{stats.funcionarios}</span>
                         </div>
+                        <i className="fa-solid fa-user-tie stat-icon"></i>
                     </div>
 
                     <div className="stat-card pending">

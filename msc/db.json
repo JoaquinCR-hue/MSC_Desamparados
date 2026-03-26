@@ -80,48 +80,6 @@
       "lng": -84.0736
     },
     {
-      "id": "8db9",
-      "tipo": "Asalto",
-      "descripcion": "Test report for verification.",
-      "distrito": "Desamparados",
-      "barrio": "Centro",
-      "direccion_exacta": "Test Exact Point",
-      "fecha": "2026-03-20T09:03",
-      "id_creador": "ce10",
-      "nombre_creador": "Juan Pérez",
-      "estado": "Pendiente",
-      "lat": 9.8989,
-      "lng": -84.0664
-    },
-    {
-      "id": "d88c",
-      "tipo": "Balacera",
-      "descripcion": "caca en la acera",
-      "distrito": "Gravilias",
-      "barrio": "Porvenir",
-      "direccion_exacta": "en el parque",
-      "fecha": "2026-03-20T12:09",
-      "id_creador": "a999",
-      "nombre_creador": "ADRIAN DAVID MORA CASTILLO",
-      "estado": "Pendiente",
-      "lat": 9.8922,
-      "lng": -84.0644
-    },
-    {
-      "id": "452e",
-      "tipo": "Maltrato animal",
-      "descripcion": "Un incidente de maltrato animal para probar el filtro del mapa.",
-      "distrito": "Desamparados",
-      "barrio": "Centro",
-      "direccion_exacta": "Faltando al respeto a un perrito",
-      "fecha": "2026-03-20T12:00",
-      "id_creador": "a999",
-      "nombre_creador": "ADRIAN DAVID MORA CASTILLO",
-      "estado": "Pendiente",
-      "lat": 9.8989,
-      "lng": -84.0664
-    },
-    {
       "id": "69bb",
       "tipo": "Robo",
       "descripcion": "Robo con arma de fuego",
@@ -149,6 +107,18 @@
       "estado": "Respondida",
       "respuesta": "Ahorita veras el mapa",
       "fechaRespuesta": "2026-03-24T17:10:20.719Z"
+    },
+    {
+      "id": "eb8c",
+      "cedula": "111111111",
+      "nombreCompleto": "Test User",
+      "correo": "test@test.com",
+      "telefono": "88888888",
+      "tipoConsulta": "Queja",
+      "descripcion": "Esta es una consulta de verificacion para el sistema.",
+      "fecha": "2026-03-26T16:44:09.412Z",
+      "estado": "Pendiente",
+      "respuesta": ""
     }
   ],
   "policias": [
@@ -169,6 +139,15 @@
       "zona": "Centro",
       "lat": 9.898839572022146,
       "lng": -84.06634107233359
+    },
+    {
+      "id": "1774539416744",
+      "nombre_oficiales": "Oficial Test",
+      "unidad": "U-123",
+      "estado": "Activa",
+      "zona": "Distrito Central",
+      "lat": 9.92675061043482,
+      "lng": -84.04875755702845
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

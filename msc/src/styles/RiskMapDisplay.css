@@ -2,12 +2,12 @@
     position: relative;
     border-radius: 20px;
     overflow: hidden;
-    background: #1e2128;
+    background: var(--bg-main);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
     display: grid;
     grid-template-columns: 1fr 340px;
     min-height: 650px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid var(--border-main);
 }
 
 .map-section {
@@ -20,9 +20,9 @@
 }
 
 .sidebar-section {
-    background: rgba(26, 28, 34, 0.98);
+    background: var(--bg-main);
     backdrop-filter: blur(15px);
-    border-left: 1px solid rgba(255, 255, 255, 0.08);
+    border-left: 1px solid var(--border-main);
     padding: 1.75rem;
     display: flex;
     flex-direction: column;
@@ -105,7 +105,7 @@
 .label-title {
     font-size: 0.95rem;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-main);
 }
 
 .label-desc {
