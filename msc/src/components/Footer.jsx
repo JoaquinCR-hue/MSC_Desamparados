@@ -10,7 +10,7 @@ function Footer() {
           <div className="container p-4">
             <div className="row">
               {/*Grid column: About Us */}
-              <div className="col-lg-3 col-md-12 mb-4 mb-md-0 text-start">
+              <div className="col-lg-4 col-md-12 mb-4 mb-md-0 text-start">
                 <div className="d-flex align-items-center mb-3">
                   <div className="footer-logo-container">
                     <i className="fa-solid fa-user-shield footer-logo-icon"></i>
@@ -25,7 +25,7 @@ function Footer() {
               </div>
 
               {/*Grid column: Links */}
-              <div className="col-lg-3 col-md-6 mb-4 mb-md-0 text-start">
+              <div className="col-lg-2 col-md-6 mb-4 mb-md-0 text-start">
                 <h5 className="text-uppercase footer-title">Enlaces Rápidos</h5>
                 <ul className="list-unstyled mb-0 footer-links">
                   <li>
@@ -44,7 +44,7 @@ function Footer() {
               </div>
 
               {/*Grid column: Contact */}
-              <div className="col-lg-4 col-md-6 mb-4 mb-md-0 text-start">
+              <div className="col-lg-3 col-md-6 mb-4 mb-md-0 text-start">
                 <a href="/contactenos" className="btn btn-contact-orange text-uppercase fw-bold mb-3">
                   <i className="fa-solid fa-envelope-open-text me-2"></i> Contáctenos
                 </a>

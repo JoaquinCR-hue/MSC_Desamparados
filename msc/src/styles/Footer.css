@@ -1,6 +1,6 @@
 .custom-footer {
     background-color: var(--bg-main);
-    padding: 40px 0 0 0;
+    padding: 20px 0 0 0;
     color: var(--text-secondary);
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     border-top: 2px solid var(--border-strong);
