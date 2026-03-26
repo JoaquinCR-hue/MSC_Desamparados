@@ -134,6 +134,48 @@
       "estado": "Pendiente",
       "lat": 9.7709,
       "lng": -84.0531
+    },
+    {
+      "id": "7c6f",
+      "tipo": "Ventas de drogas",
+      "descripcion": "venta de droga",
+      "distrito": "Damas",
+      "barrio": "Dos Cercas",
+      "direccion_exacta": "alameda 4b",
+      "fecha": "2026-03-26T11:37",
+      "id_creador": "b230",
+      "nombre_creador": "Joaquin Aguilar",
+      "estado": "Pendiente",
+      "lat": 9.893503614688404,
+      "lng": -84.05046343803407
+    },
+    {
+      "id": "86a1",
+      "tipo": "Objeto sospechoso",
+      "descripcion": "auto abandonado ",
+      "distrito": "San Rafael Abajo",
+      "barrio": "Centro",
+      "direccion_exacta": "afuera de la iglesia ",
+      "fecha": "2026-03-26T11:39",
+      "id_creador": "b230",
+      "nombre_creador": "Joaquin Aguilar",
+      "estado": "Pendiente",
+      "lat": 9.896347234907655,
+      "lng": -84.08806264400484
+    },
+    {
+      "id": "aa9b",
+      "tipo": "Asalto",
+      "descripcion": "3 hombres armados ",
+      "distrito": "Patarrá",
+      "barrio": "Centro",
+      "direccion_exacta": "en la pulperia",
+      "fecha": "2026-03-26T11:42",
+      "id_creador": "b230",
+      "nombre_creador": "Joaquin Aguilar",
+      "estado": "Pendiente",
+      "lat": 9.936396442157497,
+      "lng": -84.07939910888673
     }
   ],
   "consultas": [
@@ -189,18 +231,17 @@
       "estado": "Activa",
       "zona": "Distrito Central",
       "lat": 9.92675061043482,
-      "lng": -84.04875755702845 
-      },
-
-      {
-        "id": "1774473425984",
+      "lng": -84.04875755702845
+    },
+    {
+      "id": "1774473425984",
       "nombre_oficiales": "Guillermo Ortiz",
       "unidad": "1345p",
       "estado": "Activa",
       "zona": "Centro",
       "lat": 9.749950714105271,
       "lng": -84.01573687791826
-
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
