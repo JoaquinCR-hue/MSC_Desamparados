@@ -25,6 +25,45 @@ const patrolIcon = L.divIcon({
   popupAnchor: [0, -18]
 });
 
+const BOUNDS_DESAMPARADOS = {
+  minLat: 9.70,
+  maxLat: 9.98,
+  minLng: -84.18,
+  maxLng: -83.92,
+};
+
+// Algoritmo Ray-Casting para saber si un punto está dentro de un polígono
+const isPointInPolygon = (point, polygon) => {
+  let x = point[0], y = point[1];
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    let xi = polygon[i][0], yi = polygon[i][1];
+    let xj = polygon[j][0], yj = polygon[j][1];
+    let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+};
+
+// Verificación estricta contra el GeoJSON de Desamparados
+const dentroDeDesamparados = (lat, lng) => {
+  if (!desamparadosGeo || !desamparadosGeo.features || !desamparadosGeo.features[0]) return true;
+  const geometry = desamparadosGeo.features[0].geometry;
+  const point = [lng, lat]; // GeoJSON usa [lng, lat]
+  
+  if (geometry.type === 'Polygon') {
+    return isPointInPolygon(point, geometry.coordinates[0]);
+  } else if (geometry.type === 'MultiPolygon') {
+    return geometry.coordinates.some(poly => isPointInPolygon(point, poly[0]));
+  }
+  return false;
+};
+
+const BOUNDS_RECT = [
+  [BOUNDS_DESAMPARADOS.minLat, BOUNDS_DESAMPARADOS.minLng],
+  [BOUNDS_DESAMPARADOS.maxLat, BOUNDS_DESAMPARADOS.maxLng],
+];
+
 const TILE_LAYERS = {
   night: { url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' },
   day: { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png' },
@@ -34,6 +73,15 @@ const TILE_LAYERS = {
 function MapClickHandler({ onMapClick }) {
   useMapEvents({
     click(e) {
+      if (!dentroDeDesamparados(e.latlng.lat, e.latlng.lng)) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Fuera de Límites',
+          text: 'La patrulla debe ubicarse dentro del cantón de Desamparados.',
+          background: '#1f2937', color: '#fff'
+        });
+        return;
+      }
       onMapClick(e.latlng);
     }
   });
@@ -212,6 +260,8 @@ const PatrolMap = ({ refreshTrigger }) => {
           scrollWheelZoom={true}
           className="functional-map-instance"
           zoomControl={false}
+          maxBounds={BOUNDS_RECT}
+          maxBoundsViscosity={0.85}
         >
           <MapRefresher />
           <ZoomControl position="bottomright" />
@@ -303,7 +353,7 @@ const PatrolMap = ({ refreshTrigger }) => {
         <Modal.Body>
           <Form>
             <Form.Group className="mb-3">
-              <Form.Label>Número de unidad <span className="text-danger">*</span></Form.Label>
+              <Form.Label className="text-white">Número de unidad <span className="text-danger">*</span></Form.Label>
               <Form.Control
                 type="text"
                 name="unidad"
@@ -314,7 +364,7 @@ const PatrolMap = ({ refreshTrigger }) => {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Nombres de Oficiales a Cargo <span className="text-danger">*</span></Form.Label>
+              <Form.Label className="text-white">Nombres de Oficiales a Cargo <span className="text-danger">*</span></Form.Label>
               <Form.Control
                 type="text"
                 name="nombre_oficiales"
@@ -325,7 +375,7 @@ const PatrolMap = ({ refreshTrigger }) => {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Zona/Distrito de Operación</Form.Label>
+              <Form.Label className="text-white">Zona/Distrito de Operación</Form.Label>
               <Form.Control
                 type="text"
                 name="zona"
@@ -335,7 +385,7 @@ const PatrolMap = ({ refreshTrigger }) => {
               />
             </Form.Group>
             <Form.Group className="mb-3">
-              <Form.Label>Estado Operativo</Form.Label>
+              <Form.Label className="text-white">Estado Operativo</Form.Label>
               <Form.Select
                 name="estado"
                 value={formData.estado}

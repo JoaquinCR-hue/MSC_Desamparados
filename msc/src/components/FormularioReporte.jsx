@@ -6,6 +6,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import ServiceReportes from '../services/ServiceReportes';
 import VoiceInput from './shared/VoiceInput';
+import desamparadosGeo from '../data/desamparados.json';
 
 // Fix for default marker icon in Leaflet + React
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -18,6 +19,45 @@ let DefaultIcon = L.icon({
     iconAnchor: [12, 41]
 });
 L.Marker.prototype.options.icon = DefaultIcon;
+
+const BOUNDS_DESAMPARADOS = {
+  minLat: 9.70,
+  maxLat: 9.98,
+  minLng: -84.18,
+  maxLng: -83.92,
+};
+
+// Algoritmo Ray-Casting para saber si un punto está dentro de un polígono
+const isPointInPolygon = (point, polygon) => {
+  let x = point[0], y = point[1];
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    let xi = polygon[i][0], yi = polygon[i][1];
+    let xj = polygon[j][0], yj = polygon[j][1];
+    let intersect = ((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+};
+
+// Verificación estricta contra el GeoJSON de Desamparados
+const dentroDeDesamparados = (lat, lng) => {
+  if (!desamparadosGeo || !desamparadosGeo.features || !desamparadosGeo.features[0]) return true;
+  const geometry = desamparadosGeo.features[0].geometry;
+  const point = [lng, lat]; // GeoJSON usa [lng, lat]
+  
+  if (geometry.type === 'Polygon') {
+    return isPointInPolygon(point, geometry.coordinates[0]);
+  } else if (geometry.type === 'MultiPolygon') {
+    return geometry.coordinates.some(poly => isPointInPolygon(point, poly[0]));
+  }
+  return false;
+};
+
+const BOUNDS_RECT = [
+  [BOUNDS_DESAMPARADOS.minLat, BOUNDS_DESAMPARADOS.minLng],
+  [BOUNDS_DESAMPARADOS.maxLat, BOUNDS_DESAMPARADOS.maxLng],
+];
 
 const distritosData = {
   "Desamparados": { center: [9.8989, -84.0664], barrios: ["Centro", "Calle Fallas", "Contadores", "Cucubres", "Dorado", "Lomas", "Metrópoli"] },
@@ -46,6 +86,14 @@ const MapUpdater = ({ center, zoom }) => {
 const LocationPicker = ({ position, setPosition }) => {
   useMapEvents({
     click(e) {
+      if (!dentroDeDesamparados(e.latlng.lat, e.latlng.lng)) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Fuera de Límites',
+          text: 'Por favor, ubique el reporte dentro del cantón de Desamparados (zona permitida).'
+        });
+        return;
+      }
       setPosition([e.latlng.lat, e.latlng.lng]);
     },
   });
@@ -290,7 +338,14 @@ const FormularioReporte = () => {
           <div className="map-instruccion">
             <i className="fa-solid fa-hand-pointer"></i> Haz clic en el mapa para marcar el punto exacto
           </div>
-          <MapContainer center={mapCenter} zoom={mapZoom} scrollWheelZoom={true} className="leaflet-map">
+          <MapContainer 
+            center={mapCenter} 
+            zoom={mapZoom} 
+            scrollWheelZoom={true} 
+            className="leaflet-map"
+            maxBounds={BOUNDS_RECT}
+            maxBoundsViscosity={0.85}
+          >
             <TileLayer 
               url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" 
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' 

@@ -185,6 +185,20 @@
       "estado": "Pendiente",
       "lat": 9.936396442157497,
       "lng": -84.07939910888673
+    },
+    {
+      "id": "5de1",
+      "tipo": "Asalto",
+      "descripcion": "ssss",
+      "distrito": "Damas",
+      "barrio": "Dos Cercas",
+      "direccion_exacta": "sss",
+      "fecha": "2026-03-15T14:58",
+      "id_creador": "ce10",
+      "nombre_creador": "Juan Pérez",
+      "estado": "Pendiente",
+      "lat": 9.930594666922344,
+      "lng": -84.07772541046144
     }
   ],
   "consultas": [
@@ -250,7 +264,15 @@
       "zona": "Centro",
       "lat": 9.749950714105271,
       "lng": -84.01573687791826
+    },
+    {
+      "id": "1774559339147",
+      "nombre_oficiales": "Guillermo Ortiz",
+      "unidad": "1345p",
+      "estado": "Activa",
+      "zona": "Centro",
+      "lat": 9.91886557188696,
+      "lng": -84.03983116149904
     }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  ]
 }
