@@ -44,7 +44,7 @@ function Footer() {
               </div>
 
               {/*Grid column: Contact */}
-              <div className="col-lg-4 col-md-6 mb-4 mb-md-0 text-start">
+              <div className="col-lg-3 col-md-6 mb-4 mb-md-0 text-start">
                 <a href="/contactenos" className="btn btn-contact-orange text-uppercase fw-bold mb-3">
                   <i className="fa-solid fa-envelope-open-text me-2"></i> Contáctenos
                 </a>
@@ -66,9 +66,9 @@ function Footer() {
                 <div className="social-card">
                     <h5 className="text-uppercase footer-title">Nuestras Redes Oficiales</h5>
                     <div className="social-icons d-flex gap-3 mt-3">
-                        <a href="https://www.facebook.com/MuniDesamparados" target="_blank" rel="noopener noreferrer" className="social-icon facebook text-white fs-4"><i className="fa-brands fa-facebook-f"></i></a>
-                        <a href="https://www.instagram.com/munidesampa/?locale=es&hl=en" target="_blank" rel="noopener noreferrer" className="social-icon instagram text-white fs-4"><i className="fa-brands fa-instagram"></i></a>
-                        <a href="https://www.youtube.com/channel/UCkaBSMbgBnzEUuowilq8hKQ" target="_blank" rel="noopener noreferrer" className="social-icon youtube text-white fs-4"><i className="fa-brands fa-youtube"></i></a>
+                        <a href="https://www.facebook.com/MuniDesamparados" target="_blank" rel="noopener noreferrer" className="social-icon facebook"><i className="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/munidesampa/?locale=es&hl=en" target="_blank" rel="noopener noreferrer" className="social-icon instagram"><i className="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/channel/UCkaBSMbgBnzEUuowilq8hKQ" target="_blank" rel="noopener noreferrer" className="social-icon youtube"><i className="fa-brands fa-youtube"></i></a>
                     </div>
                 </div>
               </div>

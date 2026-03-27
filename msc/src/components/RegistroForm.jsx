@@ -166,7 +166,9 @@ const RegistroForm = () => {
         Swal.fire({
           title: 'Error',
           text: 'Este correo electrónico ya está registrado 💜',
-          icon: 'error'
+          icon: 'error',
+          background: 'var(--bg-main)',
+          color: 'var(--text-main)'
         });
         return;
       }
@@ -185,7 +187,9 @@ const RegistroForm = () => {
       Swal.fire({
         title: '¡Éxito!',
         text: 'Registro exitoso. ¡Bienvenido!',
-        icon: 'success'
+        icon: 'success',
+        background: 'var(--bg-main)',
+        color: 'var(--text-main)'
       });
       navigate('/login');
 
@@ -253,20 +257,20 @@ const RegistroForm = () => {
           error={errors.confirmarContra}
         />
 
-        <div style={{ margin: "15px 0", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-          <label style={{ color: "#fff", display: "flex", alignItems: "center", gap: "8px", fontSize: "0.9rem", cursor: "pointer" }}>
+        <div className="terminos-checkbox-container">
+          <label className="terminos-label">
             <input 
               type="checkbox" 
               checked={aceptaTerminos}
               onChange={(e) => setAceptaTerminos(e.target.checked)}
-              style={{ width: "16px", height: "16px", cursor: "pointer" }}
+              className="terminos-checkbox"
             />
             Acepto los términos y condiciones
           </label>
-          <Link to="/terminos" target="_blank" rel="noopener noreferrer" style={{ color: "#ff8c00", textDecoration: "underline", fontSize: "0.85rem" }}>
+          <Link to="/terminos" target="_blank" rel="noopener noreferrer" className="terminos-link">
             Ver términos y condiciones
           </Link>
-          {errors.terminos && <span style={{ color: "#ff4d4d", fontSize: "0.8rem", marginTop: "5px" }}>{errors.terminos}</span>}
+          {errors.terminos && <span className="error-message">{errors.terminos}</span>}
         </div>
 
         <AuthButton text="CREAR CUENTA" className="btn-registro" />

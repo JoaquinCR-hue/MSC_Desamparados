@@ -106,8 +106,8 @@ function FormLogin() {
       icon: "success",
       timer: 2000,
       showConfirmButton: false,
-      background: "#1f2937",
-      color: "#fff"
+      background: "var(--bg-main)",
+      color: "var(--text-main)"
     }).then(() => {
       if (usuarioExistente.role === "admin") {
         navigate("/gestion-usuarios");

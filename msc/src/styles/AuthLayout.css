@@ -10,6 +10,10 @@
   padding: 20px;
 }
 
+[data-theme='light'] .auth-page-container {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.9)), url('../../Img/mapa_desamparados_generado.png');
+}
+
 .auth-card {
   background-color: var(--bg-main);
   border: 1px solid var(--border-strong);
@@ -21,4 +25,42 @@
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   color: var(--text-secondary);
+}
+
+/* Estilos para el checkbox de términos en RegistroForm */
+.terminos-checkbox-container {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.terminos-label {
+  color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.terminos-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--primary-color);
+}
+
+.terminos-link {
+  color: var(--primary-color);
+  text-decoration: underline;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.terminos-link:hover {
+  opacity: 0.8;
 }

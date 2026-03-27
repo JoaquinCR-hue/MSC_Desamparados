@@ -2,9 +2,9 @@ import React from 'react';
 
 function TerminosContent() {
   return (
-    <div style={{ padding: '40px 20px', maxWidth: '800px', margin: '40px auto', backgroundColor: '#1e1e1e', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.3)', flex: 1 }}>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px', color: '#ff8c00' }}>TÉRMINOS Y CONDICIONES DE USO</h1>
-      <p><strong>Última actualización:</strong> {(new Date()).toLocaleDateString()}</p>
+    <div className="terminos-content-wrapper">
+      <h1>TÉRMINOS Y CONDICIONES DE USO</h1>
+      <span className="terminos-last-update"><strong>Última actualización:</strong> {(new Date()).toLocaleDateString()}</span>
       
       <p>Bienvenido(a) a <strong>MSC Desamparados</strong>. Al registrarse y utilizar este sitio web, usted acepta cumplir con los presentes Términos y Condiciones. Si no está de acuerdo con ellos, le recomendamos no utilizar la plataforma.</p>
 
@@ -28,7 +28,7 @@ function TerminosContent() {
 
       <p>La plataforma se reserva el derecho de modificar estos Términos y Condiciones en cualquier momento. Cualquier cambio será publicado oportunamente en el sitio web.</p>
 
-      <p style={{ marginTop: '30px', fontWeight: 'bold' }}>Al registrarse en la plataforma, el usuario declara haber leído, comprendido y aceptado en su totalidad estos Términos y Condiciones.</p>
+      <p className="terminos-footer-note">Al registrarse en la plataforma, el usuario declara haber leído, comprendido y aceptado en su totalidad estos Términos y Condiciones.</p>
     </div>
   );
 }
