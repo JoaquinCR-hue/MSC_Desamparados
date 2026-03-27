@@ -54,14 +54,14 @@
     gap: 1.25rem;
     padding: 1rem;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-card);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-main);
 }
 
 .legend-item-v2:hover {
     transform: translateX(8px);
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--bg-card-hover);
     border-color: rgba(242, 92, 5, 0.3);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
@@ -110,7 +110,7 @@
 
 .label-desc {
     font-size: 0.8rem;
-    color: #94a3b8;
+    color: var(--text-muted);
 }
 
 /* Stats Styling */
@@ -129,7 +129,7 @@
     width: 4px;
 }
 .stats-scroll::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-main);
 }
 .stats-scroll::-webkit-scrollbar-thumb {
     background: #f25c05;
@@ -137,16 +137,16 @@
 }
 
 .stat-card-v2 {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--bg-card);
     padding: 1.25rem;
     border-radius: 12px;
     margin-bottom: 1rem;
-    border: 1px solid rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-main);
     transition: background 0.2s ease;
 }
 
 .stat-card-v2:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: var(--bg-card-hover);
 }
 
 .stat-header-v2 {
@@ -158,7 +158,7 @@
 
 .dist-name-v2 {
     font-weight: 600;
-    color: #e2e8f0;
+    color: var(--text-main);
     font-size: 0.9rem;
 }
 
@@ -174,7 +174,7 @@
 
 .progress-track {
     height: 8px;
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--bg-darker);
     border-radius: 10px;
     overflow: hidden;
 }
@@ -188,22 +188,27 @@
 
 /* Popup Styles */
 .premium-popup .leaflet-popup-content-wrapper {
-    background: #1a1c22;
-    color: white;
+    background: var(--bg-main);
+    color: var(--text-main);
     border-radius: 16px;
     padding: 0;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--border-main);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
 }
 
 .premium-popup .leaflet-popup-tip {
-    background: #1a1c22;
+    background: var(--bg-main);
 }
 
 .premium-popup .leaflet-popup-content {
     margin: 0;
     width: 280px !important;
+}
+
+.premium-popup .leaflet-popup-close-button {
+    color: var(--text-main) !important;
+    padding: 12px !important;
 }
 
 .popup-banner {
@@ -225,24 +230,24 @@
 
 .popup-date {
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--text-muted);
 }
 
 .popup-info {
     padding: 18px;
 }
 
-.info-dist {
+.premium-popup .info-dist {
     display: block;
     font-size: 1.2rem;
     margin-bottom: 10px;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-main);
 }
 
 .info-desc {
     font-size: 0.9rem;
-    color: #cbd5e1;
+    color: var(--text-secondary);
     line-height: 1.5;
     margin-bottom: 15px;
 }
@@ -252,12 +257,12 @@
     align-items: center;
     gap: 8px;
     font-size: 0.8rem;
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--bg-darker);
     padding: 6px 12px;
     border-radius: 8px;
     width: fit-content;
     color: #f25c05;
-    border: 1px solid rgba(242, 92, 5, 0.1);
+    border: 1px solid var(--border-main);
 }
 
 @media (max-width: 1024px) {

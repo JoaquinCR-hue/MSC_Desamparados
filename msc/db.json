@@ -131,20 +131,6 @@
       "lng": -84.0811
     },
     {
-      "id": "2c06",
-      "tipo": "Robo De Vehículo",
-      "descripcion": "No los vi.",
-      "distrito": "Frailes",
-      "barrio": "San Cristóbal Norte",
-      "direccion_exacta": "Al frente de la Plaza de Frailes",
-      "fecha": "2026-03-26T11:12",
-      "id_creador": "ce10",
-      "nombre_creador": "Juan Pérez",
-      "estado": "Pendiente",
-      "lat": 9.7709,
-      "lng": -84.0531
-    },
-    {
       "id": "7c6f",
       "tipo": "Ventas de drogas",
       "descripcion": "venta de droga",
@@ -171,34 +157,6 @@
       "estado": "Pendiente",
       "lat": 9.896347234907655,
       "lng": -84.08806264400484
-    },
-    {
-      "id": "aa9b",
-      "tipo": "Asalto",
-      "descripcion": "3 hombres armados ",
-      "distrito": "Patarrá",
-      "barrio": "Centro",
-      "direccion_exacta": "en la pulperia",
-      "fecha": "2026-03-26T11:42",
-      "id_creador": "b230",
-      "nombre_creador": "Joaquin Aguilar",
-      "estado": "Pendiente",
-      "lat": 9.936396442157497,
-      "lng": -84.07939910888673
-    },
-    {
-      "id": "5de1",
-      "tipo": "Asalto",
-      "descripcion": "ssss",
-      "distrito": "Damas",
-      "barrio": "Dos Cercas",
-      "direccion_exacta": "sss",
-      "fecha": "2026-03-15T14:58",
-      "id_creador": "ce10",
-      "nombre_creador": "Juan Pérez",
-      "estado": "Pendiente",
-      "lat": 9.930594666922344,
-      "lng": -84.07772541046144
     }
   ],
   "consultas": [
@@ -248,15 +206,6 @@
       "lng": -84.06634107233359
     },
     {
-      "id": "1774539416744",
-      "nombre_oficiales": "Oficial Test",
-      "unidad": "U-123",
-      "estado": "Activa",
-      "zona": "Distrito Central",
-      "lat": 9.92675061043482,
-      "lng": -84.04875755702845
-    },
-    {
       "id": "1774473425984",
       "nombre_oficiales": "Guillermo Ortiz",
       "unidad": "1345p",
@@ -264,15 +213,7 @@
       "zona": "Centro",
       "lat": 9.749950714105271,
       "lng": -84.01573687791826
-    },
-    {
-      "id": "1774559339147",
-      "nombre_oficiales": "Guillermo Ortiz",
-      "unidad": "1345p",
-      "estado": "Activa",
-      "zona": "Centro",
-      "lat": 9.91886557188696,
-      "lng": -84.03983116149904
     }
-  ]
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }
