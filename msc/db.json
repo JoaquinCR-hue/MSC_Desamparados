@@ -188,31 +188,26 @@
   ],
   "policias": [
     {
-      "nombre_oficiales": "Pedro Nuñez",
-      "unidad": "1512d",
-      "estado": "En Incidente",
-      "zona": "Oficina Central",
-      "lat": 9.89835335823442,
-      "lng": -84.06123440527765,
-      "id": "1774295082074"
+      "id": "1774627488644",
+      "nombre_oficiales": "Gonzalo",
+      "unidad": "2026",
+      "estado": "Activa",
+      "zona": "San Miguel",
+      "tipo_unidad": "Motocicleta",
+      "horario": "8:00am a 2:00Pm",
+      "lat": 9.81724286814358,
+      "lng": -84.06223559279027
     },
     {
-      "id": "1774295108405",
-      "nombre_oficiales": "Pedro Nuñez",
-      "unidad": "1512d",
+      "id": "1774628986922",
+      "unidad": "1313",
+      "nombre_oficiales": "Pepe",
+      "tipo_unidad": "Motocicleta",
+      "zona": "San Cristóbal",
+      "horario": "8:00am a 1:00PM",
       "estado": "Activa",
-      "zona": "Centro",
-      "lat": 9.898839572022146,
-      "lng": -84.06634107233359
-    },
-    {
-      "id": "1774473425984",
-      "nombre_oficiales": "Guillermo Ortiz",
-      "unidad": "1345p",
-      "estado": "Activa",
-      "zona": "Centro",
-      "lat": 9.749950714105271,
-      "lng": -84.01573687791826
+      "lat": 9.762186918546083,
+      "lng": -83.99391587864397
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

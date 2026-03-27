@@ -45,3 +45,28 @@
     --border-main: rgba(0, 0, 0, 0.08);
     --border-strong: #e2e8f0;
 }
+
+/* Base Utility Theme Classes */
+.bg-main {
+    background-color: var(--bg-main) !important;
+}
+
+.bg-secondary {
+    background-color: var(--bg-secondary) !important;
+}
+
+.text-main {
+    color: var(--text-main) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+.border-main {
+    border-color: var(--border-main) !important;
+}
+
+.border-secondary {
+    border-color: var(--border-strong) !important;
+}

@@ -12,23 +12,44 @@ const ORS_BASE_URL = 'https://api.openrouteservice.org/v2/directions/driving-car
  * Si no hay API key, devuelve una ruta simulada (línea recta).
  * @param {[number, number]} origen  [lat, lng]
  * @param {[number, number]} destino [lat, lng]
- * @returns {object} { coordenadas: [[lat,lng],...], distanciaKm: number, duracionMin: number, simulada: bool }
+ * @param {boolean} isEmergency      Si es true, prioriza la distancia más corta. Si es false, la más rápida.
  */
-async function calcularRuta(origen, destino) {
+async function calcularRuta(origen, destino, isEmergency = false, mode = 'Auto') {
   // Modo simulado si no hay key configurada
   if (!ORS_API_KEY || ORS_API_KEY === 'YOUR_ORS_API_KEY') {
     return _rutaSimulada(origen, destino);
   }
 
   try {
+    let profile = 'driving-car';
+    let durationMultiplier = 1.0;
+
+    if (mode === 'Peatón') {
+      profile = 'foot-walking';
+    } else if (mode === 'Motocicleta') {
+      profile = 'driving-car';
+      durationMultiplier = 0.70; // Motocicleta evade el tráfico (~30% más rápido)
+    }
+
+    if (isEmergency) {
+      durationMultiplier *= 0.85; // Prioridad emergencia (luces/sirenas) 15% más rápido
+    }
+
+    const url = `https://api.openrouteservice.org/v2/directions/${profile}`;
+
     const body = {
       coordinates: [
         [origen[1], origen[0]],   // ORS usa [lng, lat]
         [destino[1], destino[0]],
-      ],
+      ]
     };
 
-    const response = await fetch(ORS_BASE_URL, {
+    // Si es emergencia (patrullas), buscar la ruta más corta (callejones/atajos).
+    if (isEmergency) {
+      body.preference = 'shortest';
+    }
+
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Authorization': ORS_API_KEY,
@@ -43,7 +64,8 @@ async function calcularRuta(origen, destino) {
     const data = await response.json();
     const segment = data.routes[0];
     const distanciaKm = (segment.summary.distance / 1000).toFixed(2);
-    const duracionMin = Math.round(segment.summary.duration / 60);
+    // Aplicar multiplicador realista
+    const duracionMin = Math.round((segment.summary.duration / 60) * durationMultiplier);
 
     // Decodificar geometría encoded polyline a [lat, lng][]
     const coords = decodePolyline(segment.geometry);

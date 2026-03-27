@@ -1,10 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import PatrolMap from '../components/PatrolMap';
+import BitacoraPatrullaje from '../components/BitacoraPatrullaje';
 import Footer from '../components/Footer';
 import '../styles/FuncionarioDashboard.css';
 
 const PatrolMapPage = () => {
+  const [refreshGlobal, setRefreshGlobal] = useState(0);
+
+  const handleGlobalUpdate = () => {
+    setRefreshGlobal(prev => prev + 1);
+  };
   return (
     <div className="funcionario-dashboard-page">
       <Navbar />
@@ -17,7 +23,11 @@ const PatrolMapPage = () => {
         </header>
 
         <section className="map-section-wrapper">
-          <PatrolMap />
+          <PatrolMap refreshTrigger={refreshGlobal} onPatrolUpdate={handleGlobalUpdate} />
+        </section>
+
+        <section className="bitacora-section-wrapper mt-5 px-3">
+          <BitacoraPatrullaje refreshTrigger={refreshGlobal} onGlobalUpdate={handleGlobalUpdate} />
         </section>
       </div>
       <Footer />

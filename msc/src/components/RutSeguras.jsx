@@ -91,6 +91,7 @@ const RutSeguras = () => {
   const [origenLabel,  setOrigenLabel]  = useState('');
   const [destinoLabel, setDestinoLabel] = useState('');
   const [modoSeleccion, setModoSeleccion] = useState(null); // 'origen' | 'destino' | null
+  const [modoViaje, setModoViaje] = useState('Auto'); // 'Auto' | 'Motocicleta' | 'Peatón'
 
   const [rutaCoordenadas, setRutaCoordenadas] = useState(null);
   const [rutaColor,       setRutaColor]       = useState('#4CAF50');
@@ -150,8 +151,8 @@ const RutSeguras = () => {
     setAnalizando(true);
 
     try {
-      // 1. Calcular ruta
-      const ruta = await ServiceRutas.calcularRuta(origen, destino);
+      // 1. Calcular ruta (con el modo de viaje seleccionado)
+      const ruta = await ServiceRutas.calcularRuta(origen, destino, false, modoViaje);
       setRutaCoordenadas(ruta.coordenadas);
       setInfoRuta({ distanciaKm: ruta.distanciaKm, duracionMin: ruta.duracionMin, simulada: ruta.simulada });
 
@@ -240,20 +241,31 @@ const RutSeguras = () => {
           </div>
 
           {/* Acciones */}
-          <div className="search-actions">
+          <div className="search-actions d-flex flex-column gap-3">
+            <div className="btn-group w-100" role="group">
+              <input type="radio" className="btn-check" name="modoViaje" id="btnAuto" autoComplete="off" checked={modoViaje === 'Auto'} onChange={(e) => setModoViaje('Auto')} />
+              <label className="btn btn-outline-primary" htmlFor="btnAuto"><i className="fa-solid fa-car me-2"></i>Auto</label>
+
+              <input type="radio" className="btn-check" name="modoViaje" id="btnMoto" autoComplete="off" checked={modoViaje === 'Motocicleta'} onChange={(e) => setModoViaje('Motocicleta')} />
+              <label className="btn btn-outline-primary" htmlFor="btnMoto"><i className="fa-solid fa-motorcycle me-2"></i>Moto</label>
+
+              <input type="radio" className="btn-check" name="modoViaje" id="btnPie" autoComplete="off" checked={modoViaje === 'Peatón'} onChange={(e) => setModoViaje('Peatón')} />
+              <label className="btn btn-outline-primary" htmlFor="btnPie"><i className="fa-solid fa-person-walking me-2"></i>A Pie</label>
+            </div>
+
             {origen && destino && !resultadoAnalisis && !analizando && (
-              <button className="ctrl-btn-analizar" onClick={handleCalcularRuta}>
+              <button className="ctrl-btn-analizar w-100" onClick={handleCalcularRuta}>
                 <i className="fa-solid fa-magnifying-glass-chart"></i> Analizar Ruta
               </button>
             )}
             {analizando && (
-              <button className="ctrl-btn-analizar" disabled>
+              <button className="ctrl-btn-analizar w-100" disabled>
                 <i className="fa-solid fa-spinner fa-spin"></i> Analizando…
               </button>
             )}
-            {(origen || destino) && (
-              <button className="ctrl-btn-limpiar" onClick={handleLimpiar}>
-                <i className="fa-solid fa-rotate-left"></i> Limpiar
+            {resultadoAnalisis && (
+              <button className="ctrl-btn-analizar w-100 btn-limpiar" onClick={handleLimpiar}>
+                <i className="fa-solid fa-trash-can"></i> Limpiar Ruta
               </button>
             )}
           </div>
