@@ -56,14 +56,14 @@ const RegistroForm = () => {
             } else {
               Swal.fire({
                 title: 'Seguridad',
-                text: 'por su seguridad y la de nustros habitantes no puedes registrarte sin una cedula valida',
+                text: 'Por su seguridad y la de nuestros habitantes no puedes registrarte sin una cedula valida',
                 icon: 'warning'
               });
             }
           } else {
             Swal.fire({
               title: 'Seguridad',
-              text: 'por su seguridad y la de nustros habitantes no puedes registrarte sin una cedula valida',
+              text: 'Por su seguridad y la de nuestros habitantes no puedes registrarte sin una cedula valida',
               icon: 'warning'
             });
           }
@@ -82,7 +82,7 @@ const RegistroForm = () => {
           } else {
             Swal.fire({
               title: 'Seguridad',
-              text: 'por su seguridad y la de nustros habitantes no puedes registrarte sin una cedula valida',
+              text: 'Por su seguridad y la de nuestros habitantes no puedes registrarte sin una cedula valida',
               icon: 'warning'
             });
           }
@@ -123,7 +123,7 @@ const RegistroForm = () => {
       newErrors.cedula = "Debe ingresar una cédula válida de 9 dígitos";
       Swal.fire({
         title: 'Seguridad',
-        text: 'por su seguridad y la de nustros habitantes no puedes registrarte sin una cedula valida',
+        text: 'Por su seguridad y la de nuestros habitantes no puedes registrarte sin una cedula valida',
         icon: 'warning'
       });
     }
@@ -159,13 +159,13 @@ const RegistroForm = () => {
 
     try {
       const usuariosExistentes = await ServiceUsuarios.getUsuarios();
-      const existe = usuariosExistentes.find(u => u.email === correoUsuario);
+      const existe = usuariosExistentes.find(u => u.email === correoUsuario || u.cedula === cedula);
 
       if (existe) {
-        setErrors(prev => ({ ...prev, email: "Este correo electrónico ya está registrado" }));
+        setErrors(prev => ({ ...prev, email: "Este usuario ya está registrado" }));
         Swal.fire({
           title: 'Error',
-          text: 'Este correo electrónico ya está registrado 💜',
+          text: 'Este usuario ya está registrado 💜',
           icon: 'error',
           background: 'var(--bg-main)',
           color: 'var(--text-main)'

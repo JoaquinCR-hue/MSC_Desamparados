@@ -71,6 +71,114 @@
       "telefono": "86292379",
       "role": "ciudadano",
       "cedula": "120050880"
+    },
+    {
+      "id": "7398",
+      "nombre": "Jaime Caro Escobar",
+      "email": "jaimeescoba@gmail.com",
+      "telefono": "60121314",
+      "role": "funcionario",
+      "pass": "Jaime1",
+      "cedula": "123456789"
+    },
+    {
+      "id": "054c",
+      "nombre": "Francisco Calvo Aguero",
+      "email": "clavo@gmail.com",
+      "telefono": "60622312",
+      "role": "funcionario",
+      "pass": "Falvo1",
+      "cedula": "121720028"
+    },
+    {
+      "id": "4acd",
+      "nombre": "ADALBERTO FRANCISCO ANGELES CALVO MADRIZ",
+      "email": "probando@gmail.com",
+      "telefono": "20202020",
+      "role": "funcionario",
+      "pass": "Calvo1",
+      "cedula": "300831002"
+    },
+    {
+      "id": "9491",
+      "nombre": "ALEX FRANCISCO CALVO VARGAS",
+      "email": "alex@gmail.com",
+      "telefono": "23244556",
+      "role": "funcionario",
+      "pass": "Alex01",
+      "cedula": "114460299"
+    },
+    {
+      "id": "ef9f",
+      "nombre": "ALLAN FRANCISCO CALVO MUÑOZ",
+      "email": "allan@gmail.com",
+      "telefono": "20242528",
+      "role": "funcionario",
+      "pass": "Allan1",
+      "cedula": "206210388"
+    },
+    {
+      "id": "3e92",
+      "nombre": "ALLAN FRANCISCO CALVO SERRANO",
+      "email": "chico@gmail.com",
+      "telefono": "78799089",
+      "role": "funcionario",
+      "pass": "Chico1",
+      "cedula": "303390537"
+    },
+    {
+      "id": "c5ea",
+      "nombre": "ALONSO FRANCISCO CALVO MATA",
+      "email": "alonso@gmail.com",
+      "telefono": "23272829",
+      "role": "funcionario",
+      "pass": "Alonso1",
+      "cedula": "305670788"
+    },
+    {
+      "id": "3956",
+      "nombre": "ALVARO FRANCISCO CALVO COLLADO",
+      "email": "alvaro@gmail.com",
+      "telefono": "60504090",
+      "role": "funcionario",
+      "pass": "Alvaro1",
+      "cedula": "700730769"
+    },
+    {
+      "id": "21a6",
+      "nombre": "ANDEL FRANCISCO CALVO RANGEL",
+      "email": "andel@gmail.com",
+      "telefono": "70121324",
+      "role": "funcionario",
+      "pass": "Andel1",
+      "cedula": "110420340"
+    },
+    {
+      "id": "c0dc",
+      "nombre": "ANDRES FRANCISCO CALVO SANCHEZ",
+      "email": "andres@gmail.com",
+      "telefono": "70232446",
+      "role": "funcionario",
+      "pass": "Andres1",
+      "cedula": "111810588"
+    },
+    {
+      "id": "797f",
+      "nombre": "ANGEL FRANCISCO CALVO FERNANDEZ",
+      "cedula": "601710903",
+      "email": "angel@gmail.com",
+      "telefono": "60454667",
+      "role": "funcionario",
+      "pass": "Angel1"
+    },
+    {
+      "id": "e712",
+      "nombre": "ANTHONY FRANCISCO CALVO GARCIA",
+      "cedula": "111950318",
+      "email": "anthony@gmail.com",
+      "telefono": "60454647",
+      "role": "funcionario",
+      "pass": "Anthony1"
     }
   ],
   "reportes": [
@@ -189,25 +297,51 @@
   "policias": [
     {
       "id": "1774627488644",
-      "nombre_oficiales": "Gonzalo",
+      "nombre_oficiales": "Gonzalo Ramirez Cubero",
       "unidad": "2026",
       "estado": "Activa",
       "zona": "San Miguel",
       "tipo_unidad": "Motocicleta",
-      "horario": "8:00am a 2:00Pm",
-      "lat": 9.81724286814358,
-      "lng": -84.06223559279027
+      "horario": "14:00 - 22:00",
+      "lat": 9.832382983909708,
+      "lng": -84.05055999755861
     },
     {
       "id": "1774628986922",
       "unidad": "1313",
-      "nombre_oficiales": "Pepe",
+      "nombre_oficiales": "Pepe Cancela",
       "tipo_unidad": "Motocicleta",
       "zona": "San Cristóbal",
-      "horario": "8:00am a 1:00PM",
+      "horario": "06:00 - 14:00",
       "estado": "Activa",
       "lat": 9.762186918546083,
       "lng": -83.99391587864397
+    },
+    {
+      "id": "1774806495777",
+      "nombre_oficiales": "Jaime Caro Escobar",
+      "unidad": "1234g",
+      "estado": "Activa",
+      "zona": "Frailes",
+      "tipo_unidad": "Patrulla",
+      "horaInicio": "06:00",
+      "horaFin": "14:00",
+      "lat": 9.75871435532019,
+      "lng": -84.07596588134767,
+      "horario": "06:00 - 14:00"
+    },
+    {
+      "id": "1774806571529",
+      "nombre_oficiales": "Michelle Gomez Talosa",
+      "unidad": "5758c ",
+      "estado": "Activa",
+      "zona": "Rosario",
+      "tipo_unidad": "Patrulla",
+      "horaInicio": "06:00",
+      "horaFin": "14:00",
+      "lat": 9.79168118494341,
+      "lng": -84.08789634704591,
+      "horario": "06:00 - 14:00"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

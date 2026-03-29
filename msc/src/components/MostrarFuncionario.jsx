@@ -5,7 +5,7 @@ import '../styles/MostrarFuncionario.css';
 const MostrarFuncionario = () => {
   const [funcionarios, setFuncionarios] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newFunc, setNewFunc] = useState({ nombre: '', email: '', telefono: '', role: 'admin', pass: '' });
+  const [newFunc, setNewFunc] = useState({ nombre: '', cedula: '', email: '', telefono: '', role: 'admin', pass: '' });
 
   // Edit state
   const [editingId, setEditingId] = useState(null);
@@ -44,13 +44,27 @@ const MostrarFuncionario = () => {
 
   const handleAddSubmit = async (e) => {
     e.preventDefault();
+
+    // Validaciones
+    if (!newFunc.nombre || !newFunc.cedula || !newFunc.email || !newFunc.telefono || !newFunc.pass) {
+      import('sweetalert2').then(Swal => {
+        Swal.default.fire({
+          title: 'Campos Incompletos',
+          text: 'Por favor, rellene todos los campos del funcionario.',
+          icon: 'warning',
+          confirmButtonColor: '#3b82f6'
+        });
+      });
+      return;
+    }
+
     const funcData = {
       ...newFunc,
       id: Math.random().toString(16).slice(2, 6)
     };
     await ServiceUsuarios.postUsuarios(funcData);
     setShowAddForm(false);
-    setNewFunc({ nombre: '', email: '', telefono: '', role: 'admin', pass: '' });
+    setNewFunc({ nombre: '', cedula: '', email: '', telefono: '', role: 'admin', pass: '' });
     loadData();
 
     import('sweetalert2').then(Swal => {
@@ -64,6 +78,19 @@ const MostrarFuncionario = () => {
   };
 
   const handleSaveEdit = async (id) => {
+    // Validaciones
+    if (!editFunc.nombre || !editFunc.cedula || !editFunc.email || !editFunc.telefono) {
+      import('sweetalert2').then(Swal => {
+        Swal.default.fire({
+          title: 'Campos Incompletos',
+          text: 'No puede dejar campos vacíos al editar el funcionario.',
+          icon: 'warning',
+          confirmButtonColor: '#3b82f6'
+        });
+      });
+      return;
+    }
+
     await ServiceUsuarios.putUsuarios(editFunc, id);
     setEditingId(null);
     setEditFunc(null);
@@ -86,11 +113,11 @@ const MostrarFuncionario = () => {
         <form className="add-form" onSubmit={handleAddSubmit}>
           <h4>Agregar Nuevo Funcionario</h4>
           <div className="form-grid">
-            <input type="text" placeholder="Nombre completo" required value={newFunc.nombre} onChange={e => setNewFunc({ ...newFunc, nombre: e.target.value })} />
-            <input type="text" placeholder="Cedula" required value={newFunc.cedula} onChange={e => setNewFunc({ ...newFunc, cedula: e.target.value })} />
-            <input type="email" placeholder="Correo electrónico" required value={newFunc.email} onChange={e => setNewFunc({ ...newFunc, email: e.target.value })} />
-            <input type="text" placeholder="Teléfono" required value={newFunc.telefono} onChange={e => setNewFunc({ ...newFunc, telefono: e.target.value })} />
-            <input type="password" placeholder="Contraseña" required value={newFunc.pass} onChange={e => setNewFunc({ ...newFunc, pass: e.target.value })} />
+            <input type="text" placeholder="Nombre completo" value={newFunc.nombre} onChange={e => setNewFunc({ ...newFunc, nombre: e.target.value })} />
+            <input type="text" placeholder="Cedula" value={newFunc.cedula} onChange={e => setNewFunc({ ...newFunc, cedula: e.target.value })} />
+            <input type="email" placeholder="Correo electrónico" value={newFunc.email} onChange={e => setNewFunc({ ...newFunc, email: e.target.value })} />
+            <input type="text" placeholder="Teléfono" value={newFunc.telefono} onChange={e => setNewFunc({ ...newFunc, telefono: e.target.value })} />
+            <input type="password" placeholder="Contraseña" value={newFunc.pass} onChange={e => setNewFunc({ ...newFunc, pass: e.target.value })} />
             <select value={newFunc.role} onChange={e => setNewFunc({ ...newFunc, role: e.target.value })}>
               <option value="admin">Administrador</option>
               <option value="funcionario">Funcionario</option>

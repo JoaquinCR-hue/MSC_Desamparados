@@ -2,7 +2,6 @@ import {BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom
 import Inicio from '../pages/Inicio';
 import Login from '../pages/Login';
 import Registrarse from '../pages/Registrarse';
-import ViewAdmin from '../pages/ViewAdmin'; 
 import ViewCiudadano from '../pages/ViewCiudadano';
 import ViewFuncionario from '../pages/ViewFuncionario';
 import ReportarIncidente from '../pages/ReportarIncidente';
@@ -43,7 +42,6 @@ function Routing() {
             <Route path="/registrarse" element={<Registrarse />} />
             
             {/* Views para cada rol principal */}
-            <Route path="/VistaAdmin" element={<RoleRoute allowedRoles={[]}><ViewAdmin /></RoleRoute>} />
             <Route path="/VistaCiudadano" element={<RoleRoute allowedRoles={['ciudadano']}><ViewCiudadano /></RoleRoute>} />
             <Route path="/VistaFuncionario" element={<RoleRoute allowedRoles={['funcionario']}><ViewFuncionario /></RoleRoute>} />
             

@@ -6,6 +6,7 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import ServiceReportes from '../services/ServiceReportes';
 import ServicePolicia from '../services/ServicePolicia';
 import ServiceRutas from '../services/ServiceRutas';
+import ServiceUsuarios from '../services/ServiceUsuarios';
 import Swal from 'sweetalert2';
 import '../styles/PatrolMap.css';
 import desamparadosGeo from '../data/desamparados.json';
@@ -129,6 +130,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
   const [mapMode, setMapMode] = useState('night');
   const [reportes, setReportes] = useState([]);
   const [patrullas, setPatrullas] = useState([]);
+  const [funcionariosDisponibles, setFuncionariosDisponibles] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Rutas State
@@ -156,6 +158,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
     try {
       const dataRep = await ServiceReportes.getReportes();
       const dataPol = await ServicePolicia.getPolicias();
+      const dataUsu = await ServiceUsuarios.getUsuarios();
 
       const hoy = new Date();
       const unaSemanaAtras = new Date();
@@ -171,6 +174,10 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       
       setReportes(reportesFiltrados);
       setPatrullas(validPatrols);
+
+      if (dataUsu) {
+        setFuncionariosDisponibles(dataUsu.filter(u => u.role === 'admin' || u.role === 'funcionario'));
+      }
       
       // Cleanup orphan routes (if patrol or incident was deleted)
       setActiveRoutes(prev => prev.filter(route => 
@@ -240,6 +247,16 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       fetchDatos();
       if (onPatrolUpdate) onPatrolUpdate();
     }
+  };
+
+  const handleOfficialToggle = (nombre) => {
+    let currentOficiales = formData.nombre_oficiales.split(',').map(n => n.trim()).filter(n => n);
+    if (currentOficiales.includes(nombre)) {
+      currentOficiales = currentOficiales.filter(n => n !== nombre);
+    } else {
+      currentOficiales.push(nombre);
+    }
+    setFormData({ ...formData, nombre_oficiales: currentOficiales.join(', ') });
   };
 
   const handleSavePatrol = async () => {
@@ -628,6 +645,31 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
               />
             </Form.Group>
             <Form.Group className="mb-3">
+              <Form.Label className="text-main fw-bold">Seleccionar Oficiales Registrados</Form.Label>
+              <div className="officials-selection-grid p-3 border border-secondary rounded overflow-auto mb-2" style={{ maxHeight: '150px', backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                {funcionariosDisponibles.length > 0 ? (
+                  <div className="row">
+                    {funcionariosDisponibles.map(func => (
+                      <div key={func.id} className="col-md-6 mb-2">
+                        <Form.Check 
+                          type="checkbox"
+                          id={`func-${func.id}`}
+                          label={func.nombre}
+                          checked={formData.nombre_oficiales.split(',').map(n => n.trim()).includes(func.nombre)}
+                          onChange={() => handleOfficialToggle(func.nombre)}
+                          className="text-main premium-check"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-2">
+                    <small className="text-muted"><i className="fa-solid fa-user-slash"></i> No hay funcionarios registrados.</small>
+                  </div>
+                )}
+              </div>
+            </Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label className="text-main fw-bold">Nombres de Oficiales a Cargo <span className="text-danger">*</span></Form.Label>
               <Form.Control
                 type="text"
@@ -637,6 +679,9 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
                 className="bg-main text-main border-secondary"
                 placeholder="Ej. Oficial Ramírez, Oficial Salas"
               />
+              <Form.Text className="text-muted">
+                Puede seleccionar arriba o escribir nombres manualmente (separados por coma).
+              </Form.Text>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label className="text-main fw-bold">Tipo de Unidad <span className="text-danger">*</span></Form.Label>
