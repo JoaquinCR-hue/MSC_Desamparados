@@ -100,7 +100,7 @@
       "cedula": "122560828"
     },
     {
-      "id": "804a1",
+      "id": "80681",
       "email": "white@gmail.com",
       "pass": "Jheycob11",
       "nombre": "ESTEBAN JESUS VALVERDE LOPEZ",
@@ -109,7 +109,7 @@
       "cedula": "112580626"
     },
     {
-      "id": "804a1",
+      "id": "823a1",
       "email": "orange@gmail.com",
       "pass": "Jheycob11",
       "nombre": "GAEL JESUS VALVERDE LOPEZ",
@@ -328,6 +328,160 @@
       "estado": "Pendiente",
       "lat": 9.896347234907655,
       "lng": -84.08806264400484
+    },
+    {
+      "id": "462a",
+      "tipo": "Ventas de drogas",
+      "descripcion": "En un bunker",
+      "distrito": "San Juan de Dios",
+      "barrio": "Ita",
+      "direccion_exacta": "Al frente de la plaza",
+      "fecha": "2026-03-27T10:18",
+      "id_creador": "804a1",
+      "nombre_creador": "GAEL JESUS VALVERDE LOPEZ",
+      "estado": "Pendiente",
+      "lat": 9.882676637874992,
+      "lng": -84.08004283905031
+    },
+    {
+      "id": "6de5",
+      "tipo": "Violencia domestica",
+      "descripcion": "Frente a la pulperia Don Pedro",
+      "distrito": "Patarrá",
+      "barrio": "Guatuso",
+      "direccion_exacta": "Frente a la plaza",
+      "fecha": "2026-03-28T12:25",
+      "id_creador": "804a1",
+      "nombre_creador": "GAEL JESUS VALVERDE LOPEZ",
+      "estado": "Pendiente",
+      "lat": 9.881917432725297,
+      "lng": -84.0291452407837
+    },
+    {
+      "id": "0716",
+      "tipo": "Femicidio",
+      "descripcion": "Mujer hallada sin vida",
+      "distrito": "Frailes",
+      "barrio": "Centro",
+      "direccion_exacta": "Frente a la PulperiaJoako",
+      "fecha": "2026-03-28T12:30",
+      "id_creador": "823a1",
+      "nombre_creador": "GAEL JESUS VALVERDE LOPEZ",
+      "estado": "Pendiente",
+      "lat": 9.759800994387472,
+      "lng": -84.04751300811769
+    },
+    {
+      "id": "12fa",
+      "tipo": "Robo",
+      "descripcion": "Sejto con camisa roja, tenis blancas, pantalon gris y pelo largo negro.",
+      "distrito": "Desamparados",
+      "barrio": "Centro",
+      "direccion_exacta": "Frente al parque",
+      "fecha": "2026-03-29T13:07",
+      "id_creador": "804a1",
+      "nombre_creador": "CREWELL DE JESUS VALVERDE LOPEZ",
+      "estado": "Pendiente",
+      "lat": 9.8989,
+      "lng": -84.0664
+    },
+    {
+      "id": "7b22",
+      "tipo": "Tacha De Vehículo",
+      "descripcion": "Quebraron los vidrios de la ventana  ",
+      "distrito": "Desamparados",
+      "barrio": "Contadores",
+      "direccion_exacta": "Por la iglesia catolica",
+      "fecha": "2026-03-29T11:07",
+      "id_creador": "12341",
+      "nombre_creador": "DENIS JESUS VALVERDE LOPEZ",
+      "estado": "Pendiente",
+      "lat": 9.895786444334378,
+      "lng": -84.06922817230226
+    },
+    {
+      "id": "b6b0",
+      "tipo": "Maltrato animal",
+      "descripcion": "Le pego una patada",
+      "distrito": "Desamparados",
+      "barrio": "Calle Fallas",
+      "direccion_exacta": "Frente a la clinica",
+      "fecha": "2026-03-28T13:12",
+      "id_creador": "804a1",
+      "nombre_creador": "EMILIANO JESUS VALVERDE LOPEZ",
+      "estado": "Pendiente",
+      "lat": 9.892828860915474,
+      "lng": -84.07000064849855
+    },
+    {
+      "id": "4594",
+      "tipo": "Ventas de drogas",
+      "descripcion": "Un bunker",
+      "distrito": "Desamparados",
+      "barrio": "Centro",
+      "direccion_exacta": "Atras del pali",
+      "fecha": "2026-03-28T14:15",
+      "id_creador": "80681",
+      "nombre_creador": "ESTEBAN JESUS VALVERDE LOPEZ",
+      "estado": "Pendiente",
+      "lat": 9.891647319229099,
+      "lng": -84.07257556915285
+    },
+    {
+      "id": "1cb3",
+      "tipo": "Balacera",
+      "descripcion": "Hombres despues de comprar droga, se tiraron bala",
+      "distrito": "Desamparados",
+      "barrio": "Centro",
+      "direccion_exacta": "Atras del pali",
+      "fecha": "2026-03-28T13:16",
+      "id_creador": "80681",
+      "nombre_creador": "ESTEBAN JESUS VALVERDE LOPEZ",
+      "estado": "Pendiente",
+      "lat": 9.898913003560374,
+      "lng": -84.05995845794679
+    },
+    {
+      "id": "0071",
+      "tipo": "Balacera",
+      "descripcion": "Balacera de bandas",
+      "distrito": "Desamparados",
+      "barrio": "Dorado",
+      "direccion_exacta": "Frente a la Municipalidad",
+      "fecha": "2026-03-28T14:19",
+      "id_creador": "a999",
+      "nombre_creador": "ADRIAN DAVID MORA CASTILLO",
+      "estado": "Pendiente",
+      "lat": 9.896377957822434,
+      "lng": -84.06733989715578
+    },
+    {
+      "id": "9e44",
+      "tipo": "Maltrato animal",
+      "descripcion": "Hombre patea a perro.",
+      "distrito": "Desamparados",
+      "barrio": "Contadores",
+      "direccion_exacta": "Por Multicentro",
+      "fecha": "2026-03-29T13:21",
+      "id_creador": "a999",
+      "nombre_creador": "ADRIAN DAVID MORA CASTILLO",
+      "estado": "Pendiente",
+      "lat": 9.900856525371003,
+      "lng": -84.06905651092531
+    },
+    {
+      "id": "e909",
+      "tipo": "Homicidio",
+      "descripcion": "En balacera de bandas",
+      "distrito": "Desamparados",
+      "barrio": "Centro",
+      "direccion_exacta": "Atras del multicentro",
+      "fecha": "2026-03-29T13:23",
+      "id_creador": "ce10",
+      "nombre_creador": "Juan Pérez",
+      "estado": "Pendiente",
+      "lat": 9.89739197846608,
+      "lng": -84.07120227813722
     }
   ],
   "consultas": [
@@ -451,9 +605,7 @@
       "unidad": "4545S",
       "estado": "Activa",
       "zona": "San Rafael Arriba",
-      "tipo_unidad": "Patrulla",
-      "horaInicio": "06:00",
-      "horaFin": "14:00",
+      "tipo_unidad": "Motocicleta",
       "lat": 9.87439044258393,
       "lng": -84.07433509826662,
       "horario": "06:00 - 14:00"
@@ -560,6 +712,5 @@
       "lng": -84.07206058502199,
       "horario": "06:00 - 14:00"
     }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  ]
 }
