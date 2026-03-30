@@ -73,6 +73,60 @@
       "cedula": "120050880"
     },
     {
+      "id": "804a1",
+      "email": "blanco@gmail.com",
+      "pass": "Jheycob11",
+      "nombre": "CREWELL DE JESUS VALVERDE LOPEZ",
+      "telefono": "86292379",
+      "role": "ciudadano",
+      "cedula": "110240345"
+    },
+    {
+      "id": "12341",
+      "email": "negro@gmail.com",
+      "pass": "Jheycob11",
+      "nombre": "DENIS JESUS VALVERDE LOPEZ",
+      "telefono": "86292379",
+      "role": "ciudadano",
+      "cedula": "602710847"
+    },
+    {
+      "id": "804a1",
+      "email": "gris@gmail.com",
+      "pass": "Jheycob11",
+      "nombre": "EMILIANO JESUS VALVERDE LOPEZ",
+      "telefono": "86292379",
+      "role": "ciudadano",
+      "cedula": "122560828"
+    },
+    {
+      "id": "804a1",
+      "email": "white@gmail.com",
+      "pass": "Jheycob11",
+      "nombre": "ESTEBAN JESUS VALVERDE LOPEZ",
+      "telefono": "86292379",
+      "role": "ciudadano",
+      "cedula": "112580626"
+    },
+    {
+      "id": "804a1",
+      "email": "orange@gmail.com",
+      "pass": "Jheycob11",
+      "nombre": "GAEL JESUS VALVERDE LOPEZ",
+      "telefono": "86292379",
+      "role": "ciudadano",
+      "cedula": "123140542"
+    },
+    {
+      "id": "804a1",
+      "email": "oso@gmail.com",
+      "pass": "Jheycob11",
+      "nombre": "JESUS ALEXANDER VALVERDE LOPEZ",
+      "telefono": "86292379",
+      "role": "ciudadano",
+      "cedula": "116170268"
+    },
+    {
       "id": "7398",
       "nombre": "Jaime Caro Escobar",
       "email": "jaimeescoba@gmail.com",
@@ -179,6 +233,15 @@
       "telefono": "60454647",
       "role": "funcionario",
       "pass": "Anthony1"
+    },
+    {
+      "id": "4cb1",
+      "email": "porras.kimberly333@gmail.com",
+      "pass": "2ucbo3ak",
+      "nombre": "Kim Porras",
+      "telefono": "67678909",
+      "role": "ciudadano",
+      "cedula": "702350570"
     }
   ],
   "reportes": [
@@ -292,6 +355,19 @@
       "fecha": "2026-03-26T16:44:09.412Z",
       "estado": "Pendiente",
       "respuesta": ""
+    },
+    {
+      "id": "669d",
+      "cedula": "702430964",
+      "nombreCompleto": "John Brenes",
+      "correo": "john0242010@gmail.com",
+      "telefono": "23232323",
+      "tipoConsulta": "Consulta",
+      "descripcion": "No funciona la cedula",
+      "fecha": "2026-03-30T05:31:17.131Z",
+      "estado": "Respondida",
+      "respuesta": "Hacienda esta caida.",
+      "fechaRespuesta": "2026-03-30T05:32:00.843Z"
     }
   ],
   "policias": [
@@ -303,8 +379,8 @@
       "zona": "San Miguel",
       "tipo_unidad": "Motocicleta",
       "horario": "14:00 - 22:00",
-      "lat": 9.832382983909708,
-      "lng": -84.05055999755861
+      "lat": 9.844222567317168,
+      "lng": -84.03511047363283
     },
     {
       "id": "1774628986922",
@@ -341,6 +417,147 @@
       "horaFin": "14:00",
       "lat": 9.79168118494341,
       "lng": -84.08789634704591,
+      "horario": "06:00 - 14:00"
+    },
+    {
+      "id": "1774842362196",
+      "nombre_oficiales": "ANTHONY FRANCISCO CALVO GARCIA",
+      "unidad": "8989P",
+      "estado": "Activa",
+      "zona": "Patarrá",
+      "tipo_unidad": "Patrulla",
+      "horaInicio": "06:00",
+      "horaFin": "14:00",
+      "lat": 9.869147730495406,
+      "lng": -84.02661323547363,
+      "horario": "06:00 - 14:00"
+    },
+    {
+      "id": "1774842398999",
+      "nombre_oficiales": "ANGEL FRANCISCO CALVO FERNANDEZ",
+      "unidad": "7878",
+      "estado": "Activa",
+      "zona": "Los Guido",
+      "tipo_unidad": "Patrulla",
+      "horaInicio": "06:00",
+      "horaFin": "14:00",
+      "lat": 9.870162455479006,
+      "lng": -84.04789924621582,
+      "horario": "06:00 - 14:00"
+    },
+    {
+      "id": "1774842636975",
+      "nombre_oficiales": "ANDEL FRANCISCO CALVO RANGEL",
+      "unidad": "4545S",
+      "estado": "Activa",
+      "zona": "San Rafael Arriba",
+      "tipo_unidad": "Patrulla",
+      "horaInicio": "06:00",
+      "horaFin": "14:00",
+      "lat": 9.87439044258393,
+      "lng": -84.07433509826662,
+      "horario": "06:00 - 14:00"
+    },
+    {
+      "id": "1774842689311",
+      "nombre_oficiales": "ALVARO FRANCISCO CALVO COLLADO",
+      "unidad": "3536Sa",
+      "estado": "Activa",
+      "zona": "San Juan de Dios",
+      "tipo_unidad": "Patrulla",
+      "horaInicio": "06:00",
+      "horaFin": "14:00",
+      "lat": 9.879463955422542,
+      "lng": -84.08703804016115,
+      "horario": "06:00 - 14:00"
+    },
+    {
+      "id": "1774842772714",
+      "nombre_oficiales": "ALONSO FRANCISCO CALVO MATA",
+      "unidad": "2324G",
+      "estado": "Activa",
+      "zona": "Gravilias",
+      "tipo_unidad": "Patrulla",
+      "horaInicio": "06:00",
+      "horaFin": "14:00",
+      "lat": 9.888088747664915,
+      "lng": -84.05785560607912,
+      "horario": "06:00 - 14:00"
+    },
+    {
+      "id": "1774842820976",
+      "nombre_oficiales": "ALONSO FRANCISCO CALVO MATA",
+      "unidad": "7867D",
+      "estado": "En Incidente",
+      "zona": "Damas",
+      "tipo_unidad": "Patrulla",
+      "lat": 9.886672437012887,
+      "lng": -84.0447235107422,
+      "horario": "06:00 - 14:00"
+    },
+    {
+      "id": "1774842882860",
+      "nombre_oficiales": "ALLAN FRANCISCO CALVO MUÑOZ",
+      "unidad": "9809S",
+      "estado": "Activa",
+      "zona": "San Antonio",
+      "tipo_unidad": "Patrulla",
+      "horaInicio": "06:00",
+      "horaFin": "14:00",
+      "lat": 9.899419013112333,
+      "lng": -84.04686927795412,
+      "horario": "06:00 - 14:00"
+    },
+    {
+      "id": "1774842924480",
+      "nombre_oficiales": "ADALBERTO FRANCISCO ANGELES CALVO MADRIZ",
+      "unidad": "8790D",
+      "estado": "Activa",
+      "zona": "Desamparados",
+      "tipo_unidad": "Patrulla",
+      "horaInicio": "06:00",
+      "horaFin": "14:00",
+      "lat": 9.895022240087153,
+      "lng": -84.0684986114502,
+      "horario": "06:00 - 14:00"
+    },
+    {
+      "id": "1774842971061",
+      "nombre_oficiales": "ALEX FRANCISCO CALVO VARGAS",
+      "unidad": "7694S",
+      "estado": "Activa",
+      "zona": "San Rafael Abajo",
+      "tipo_unidad": "Patrulla",
+      "horaInicio": "06:00",
+      "horaFin": "14:00",
+      "lat": 9.893162049164879,
+      "lng": -84.08120155334474,
+      "horario": "06:00 - 14:00"
+    },
+    {
+      "id": "1774843541734",
+      "nombre_oficiales": "ANDRES FRANCISCO CALVO SANCHEZ",
+      "unidad": "6784G",
+      "estado": "Activa",
+      "zona": "Gravilias",
+      "tipo_unidad": "Patrulla",
+      "horaInicio": "06:00",
+      "horaFin": "14:00",
+      "lat": 9.876314158741701,
+      "lng": -84.06000137329103,
+      "horario": "06:00 - 14:00"
+    },
+    {
+      "id": "1774843638513",
+      "nombre_oficiales": "ALLAN FRANCISCO CALVO MUÑOZ",
+      "unidad": "5555D",
+      "estado": "Activa",
+      "zona": "Desamparados",
+      "tipo_unidad": "Patrulla",
+      "horaInicio": "06:00",
+      "horaFin": "14:00",
+      "lat": 9.892369350968865,
+      "lng": -84.07206058502199,
       "horario": "06:00 - 14:00"
     }
   ],
