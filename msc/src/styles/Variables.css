@@ -1,0 +1,72 @@
+/* src/styles/Variables.css */
+
+:root {
+    /* Current Dark Theme (Default) */
+    --bg-main: #1a1c22;
+    --bg-secondary: #1e2128;
+    --bg-darker: #0f1115;
+    --bg-card: rgba(45, 49, 58, 0.4);
+    --bg-card-hover: rgba(45, 49, 58, 0.6);
+    --bg-glass: rgba(26, 28, 34, 0.8);
+    
+    --text-main: #ffffff;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
+    --text-hover: #ffffff;
+    
+    --border-main: rgba(255, 255, 255, 0.1);
+    --border-strong: #334155;
+    
+    --title-gradient: linear-gradient(135deg, var(--primary-color), var(--text-main));
+    
+    /* Constants */
+    --primary-color: #f25c05;
+    --primary-hover: #d94e04;
+    --success-color: #00C853;
+    --warning-color: #eab308;
+}
+
+/* Light Theme Variables */
+[data-theme='light'] {
+    --bg-main: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-darker: #f1f5f9;
+    --bg-card: rgba(241, 245, 249, 0.9);
+    --bg-card-hover: rgba(226, 232, 240, 0.9);
+    --bg-glass: rgba(255, 255, 255, 0.9);
+    
+    --text-main: #1e293b;
+    --text-secondary: #334155;
+    --text-muted: #475569;
+    --text-dim: #64748b;
+    --text-hover: #f25c05;
+    
+    --border-main: rgba(0, 0, 0, 0.08);
+    --border-strong: #e2e8f0;
+}
+
+/* Base Utility Theme Classes */
+.bg-main {
+    background-color: var(--bg-main) !important;
+}
+
+.bg-secondary {
+    background-color: var(--bg-secondary) !important;
+}
+
+.text-main {
+    color: var(--text-main) !important;
+}
+
+.text-secondary {
+    color: var(--text-secondary) !important;
+}
+
+.border-main {
+    border-color: var(--border-main) !important;
+}
+
+.border-secondary {
+    border-color: var(--border-strong) !important;
+}

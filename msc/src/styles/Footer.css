@@ -1,0 +1,152 @@
+.custom-footer {
+    background-color: var(--bg-main) !important;
+    padding: 20px 0 0 0 !important;
+    color: var(--text-secondary) !important;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    border-top: 1px solid var(--border-strong);
+    margin-top: auto;
+}
+
+.footer-logo-container {
+    background-color: #f25c05 !important;
+    width: 45px !important;
+    height: 45px !important;
+    border-radius: 8px !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(242, 92, 5, 0.3);
+    flex-shrink: 0;
+}
+
+.footer-logo-icon {
+    font-size: 20px !important;
+    color: #ffffff !important;
+}
+
+.footer-logo-main {
+    color: var(--text-main) !important;
+    font-weight: 800;
+    font-size: 1.15rem !important;
+    line-height: 1.1;
+}
+
+.footer-about-text {
+    color: var(--text-muted) !important;
+    font-size: 0.8rem !important;
+    line-height: 1.4 !important;
+    margin-top: 10px;
+    text-align: justify;
+}
+
+.footer-title {
+    color: #f25c05 !important;
+    font-weight: 700;
+    font-size: 0.95rem !important;
+    margin-bottom: 12px !important;
+    letter-spacing: 0.05em;
+}
+
+.footer-links li {
+    margin-bottom: 6px !important;
+}
+
+.footer-links a, .footer-links span {
+    color: var(--text-secondary) !important;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 0.85rem !important;
+}
+
+.footer-links a:hover {
+    color: #f25c05 !important;
+}
+
+.footer-links i {
+    color: #f25c05 !important;
+    width: 16px;
+    text-align: center;
+}
+
+/* Specificity boost for Social Icons */
+.custom-footer .social-card {
+    background: var(--bg-secondary) !important;
+    border: 1px solid var(--border-main) !important;
+    border-radius: 12px !important;
+    padding: 1.2rem !important;
+    text-align: center;
+}
+
+.custom-footer .social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px !important;
+    height: 38px !important;
+    border-radius: 50%;
+    color: var(--text-main) !important;
+    font-size: 1.15rem !important;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--bg-darker) !important;
+    border: 1px solid var(--border-main) !important;
+}
+
+[data-theme='light'] .custom-footer .social-icon {
+    color: var(--text-secondary) !important;
+    border-color: var(--border-strong) !important;
+    background: var(--bg-secondary) !important;
+}
+
+.custom-footer .social-icon:hover {
+    transform: translateY(-4px) scale(1.1);
+    color: #ffffff !important;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Light mode specific hover: Naranja as requested */
+[data-theme='light'] .custom-footer .social-icon:hover {
+    color: var(--primary-color) !important;
+    background: #ffffff !important;
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 5px 15px rgba(242, 92, 5, 0.2);
+}
+
+.social-icon.facebook:hover { background: #1877f2 !important; border-color: #1877f2 !important; }
+.social-icon.instagram:hover { background: #e4405f !important; border-color: #e4405f !important; }
+.social-icon.youtube:hover { background: #ff0000 !important; border-color: #ff0000 !important; }
+
+/* In light mode, override brand hovers with Orange */
+[data-theme='light'] .social-icon.facebook:hover,
+[data-theme='light'] .social-icon.instagram:hover,
+[data-theme='light'] .social-icon.youtube:hover { 
+    background: #ffffff !important;
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.footer-copyright {
+    background-color: var(--bg-darker) !important;
+    padding: 12px 0 !important;
+    margin-top: 25px !important;
+    text-align: center;
+    color: var(--text-muted) !important;
+    font-size: 0.8rem !important;
+    border-top: 1px solid var(--border-main);
+}
+
+.btn-contact-orange {
+    background-color: #f25c05 !important;
+    color: white !important;
+    border: none;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 12px rgba(242, 92, 5, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-contact-orange:hover {
+    background-color: #d94e04 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(242, 92, 5, 0.3);
+}

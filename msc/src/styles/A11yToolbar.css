@@ -1,0 +1,124 @@
+/* src/styles/A11yToolbar.css */
+
+.a11y-toolbar-container {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+}
+
+.a11y-toggle-btn {
+  background-color: #00FFFF; /* Celeste */
+  color: #121418;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 10px 0 0 10px;
+  cursor: pointer;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: all 0.3s ease;
+}
+
+.a11y-toggle-btn:hover {
+  background-color: #00cccc;
+}
+
+.a11y-menu-panel {
+  background: var(--bg-main);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-main);
+  padding: 20px;
+  border-radius: 15px 0 0 15px;
+  color: var(--text-main);
+  width: 250px;
+  box-shadow: -5px 0 15px rgba(0,0,0,0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(100%);
+  position: absolute;
+  right: -250px; /* Hide slightly differently */
+}
+
+/* Adjust layout so it doesn't jump */
+.a11y-toolbar-container.open .a11y-menu-panel {
+  transform: translateX(0);
+  right: 0;
+}
+
+.a11y-toolbar-container.open .a11y-toggle-btn {
+  margin-right: 250px; /* Push button to the left */
+}
+
+.a11y-menu-panel h3 {
+  font-size: 1.1rem;
+  margin: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+  text-align: center;
+}
+
+.a11y-option-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-main);
+  color: var(--text-secondary);
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.a11y-option-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.a11y-option-btn.active {
+  background: rgba(0, 255, 255, 0.2);
+  border-color: #00FFFF;
+  color: #00FFFF;
+}
+
+.a11y-option-btn i {
+  font-size: 1.2rem;
+  width: 20px;
+  text-align: center;
+}
+
+/* --------- GLOBAL A11Y CLASSES --------- */
+
+/* Large Text */
+html.a11y-large-text {
+  font-size: 110% !important; /* Increment root font size safely */
+}
+
+/* High Contrast mode */
+#root.a11y-high-contrast {
+  filter: contrast(135%) saturate(110%) brightness(90%) !important;
+}
+
+/* Grayscale Mode */
+#root.a11y-grayscale {
+  filter: grayscale(100%) !important;
+}
+
+/* Highlight Links */
+body.a11y-highlight-links a {
+  text-decoration: underline !important;
+  text-decoration-thickness: 3px !important;
+  color: #FFEB3B !important;
+  background-color: rgba(0,0,0,0.8) !important;
+  font-weight: 900 !important;
+  padding: 2px !important;
+}
