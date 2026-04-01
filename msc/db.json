@@ -157,6 +157,20 @@
       "estado": "Pendiente",
       "lat": 9.896347234907655,
       "lng": -84.08806264400484
+    },
+    {
+      "id": "d2bb",
+      "tipo": "Tacha De Vehículo",
+      "descripcion": "camiseta roja gorra blanca",
+      "distrito": "San Rafael Abajo",
+      "barrio": "Valencia",
+      "direccion_exacta": "Hola",
+      "fecha": "2026-03-27T18:50",
+      "id_creador": "b230",
+      "nombre_creador": "Joaquin Aguilar",
+      "estado": "Pendiente",
+      "lat": 9.8967,
+      "lng": -84.0811
     }
   ],
   "consultas": [
@@ -195,8 +209,8 @@
       "zona": "San Miguel",
       "tipo_unidad": "Motocicleta",
       "horario": "8:00am a 2:00Pm",
-      "lat": 9.81724286814358,
-      "lng": -84.06223559279027
+      "lat": 9.846446141872207,
+      "lng": -84.0454156397139
     },
     {
       "id": "1774628986922",
@@ -208,6 +222,17 @@
       "estado": "Activa",
       "lat": 9.762186918546083,
       "lng": -83.99391587864397
+    },
+    {
+      "id": "1774658940019",
+      "unidad": "1313",
+      "nombre_oficiales": "Pepe",
+      "tipo_unidad": "Patrulla",
+      "zona": "Patarrá",
+      "horario": "10:00 - 15:00",
+      "estado": "Activa",
+      "lat": 9.876180966429917,
+      "lng": -84.03872101051662
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
