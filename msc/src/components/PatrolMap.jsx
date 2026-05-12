@@ -3,17 +3,18 @@ import { MapContainer, TileLayer, CircleMarker, Popup, Marker, useMapEvents, Geo
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button, Form, Modal } from 'react-bootstrap';
-import ServiceReportes from '../services/ServiceReportes';
-import ServicePolicia from '../services/ServicePolicia';
-import ServiceRutas from '../services/ServiceRutas';
+import ReportService from '../services/ReportService';
+import PoliceService from '../services/PoliceService';
+import RouteService from '../services/RouteService';
+import UserService from '../services/UserService';
 import Swal from 'sweetalert2';
 import '../styles/PatrolMap.css';
 import desamparadosGeo from '../data/desamparados.json';
 import distritosGeo from '../data/distritos.json';
 
 // Función para generar iconos dinámicos según el tipo de unidad
-const getPatrolIcon = (tipo) => {
-  const isMoto = tipo === 'Motocicleta';
+const getPatrolIcon = (type) => {
+  const isMoto = type === 'Motocicleta';
   const iconClass = isMoto ? 'fa-motorcycle' : 'fa-truck-fast';
   
   return L.divIcon({
@@ -36,7 +37,7 @@ const BOUNDS_DESAMPARADOS = {
   maxLng: -83.92,
 };
 
-// Algoritmo Ray-Casting para saber si un punto está dentro de un polígono
+// Algoritmo Ray-Casting para verificar si un punto está dentro de un polígono
 const isPointInPolygon = (point, polygon) => {
   let x = point[0], y = point[1];
   let inside = false;
@@ -50,10 +51,10 @@ const isPointInPolygon = (point, polygon) => {
 };
 
 // Verificación estricta contra el GeoJSON de Desamparados
-const dentroDeDesamparados = (lat, lng) => {
+const withinDesamparados = (lat, lng) => {
   if (!desamparadosGeo || !desamparadosGeo.features || !desamparadosGeo.features[0]) return true;
   const geometry = desamparadosGeo.features[0].geometry;
-  const point = [lng, lat]; // GeoJSON usa [lng, lat]
+  const point = [lng, lat]; // GeoJSON usa formato [lng, lat]
   
   if (geometry.type === 'Polygon') {
     return isPointInPolygon(point, geometry.coordinates[0]);
@@ -63,8 +64,8 @@ const dentroDeDesamparados = (lat, lng) => {
   return false;
 };
 
-// Obtiene el nombre del distrito basado en las coordenadas pasadas 
-const getDistritoByLatLng = (lat, lng) => {
+// Obtiene el nombre del distrito basado en las coordenadas proporcionadas
+const getDistrictByLatLng = (lat, lng) => {
   if (!distritosGeo || !distritosGeo.features) return 'Desamparados';
   const point = [lng, lat];
   
@@ -95,11 +96,11 @@ const TILE_LAYERS = {
   day: { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png' },
 };
 
-// Componente para manejar clics en el mapa
+// Componente para manejar eventos de clic en el mapa
 function MapClickHandler({ onMapClick }) {
   useMapEvents({
     click(e) {
-      if (!dentroDeDesamparados(e.latlng.lat, e.latlng.lng)) {
+      if (!withinDesamparados(e.latlng.lat, e.latlng.lng)) {
         Swal.fire({
           icon: 'warning',
           title: 'Fuera de Límites',
@@ -114,6 +115,7 @@ function MapClickHandler({ onMapClick }) {
   return null;
 }
 
+// Asegura que el mapa se renderice correctamente tras cambios de tamaño
 function MapRefresher() {
   const map = useMap();
   useEffect(() => {
@@ -127,21 +129,22 @@ function MapRefresher() {
 
 const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
   const [mapMode, setMapMode] = useState('night');
-  const [reportes, setReportes] = useState([]);
-  const [patrullas, setPatrullas] = useState([]);
+  const [reports, setReports] = useState([]);
+  const [patrols, setPatrols] = useState([]);
+  const [availableOfficers, setAvailableOfficers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Rutas State
+  // Estados para la gestión de rutas
   const [routingSource, setRoutingSource] = useState(null);
   const [activeRoutes, setActiveRoutes] = useState([]);
-  const [calculandoRuta, setCalculandoRuta] = useState(false);
+  const [isCalculatingRoute, setIsCalculatingRoute] = useState(false);
 
-  // Modal state
+  // Estados para el control de modales
   const [showModal, setShowModal] = useState(false);
   const [currentLatlng, setCurrentLatlng] = useState(null);
   const [editingPatrol, setEditingPatrol] = useState(null);
 
-  // Form state
+  // Estado para el formulario de patrullas
   const [formData, setFormData] = useState({
     nombre_oficiales: '',
     unidad: '',
@@ -152,30 +155,37 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
     horaFin: ''
   });
 
-  const fetchDatos = async () => {
+  // Función para obtener todos los datos necesarios del backend
+  const fetchData = async () => {
     try {
-      const dataRep = await ServiceReportes.getReportes();
-      const dataPol = await ServicePolicia.getPolicias();
+      const dataRep = await ReportService.getReports();
+      const dataPol = await PoliceService.getPatrols();
+      const dataUsu = await UserService.getUsers();
 
-      const hoy = new Date();
-      const unaSemanaAtras = new Date();
-      unaSemanaAtras.setDate(hoy.getDate() - 7);
+      const now = new Date();
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(now.getDate() - 7);
 
-      const reportesFiltrados = dataRep.filter(r => {
+      // Filtrar reportes para mostrar solo los de la última semana
+      const filteredReports = dataRep.filter(r => {
         if (!r.fecha) return false;
-        const fechaReporte = new Date(r.fecha);
-        return fechaReporte >= unaSemanaAtras;
+        const reportDate = new Date(r.fecha);
+        return reportDate >= oneWeekAgo;
       });
 
       const validPatrols = dataPol || [];
       
-      setReportes(reportesFiltrados);
-      setPatrullas(validPatrols);
+      setReports(filteredReports);
+      setPatrols(validPatrols);
+
+      if (dataUsu) {
+        setAvailableOfficers(dataUsu.filter(u => u.role === 'admin' || u.role === 'funcionario'));
+      }
       
-      // Cleanup orphan routes (if patrol or incident was deleted)
+      // Limpiar rutas huérfanas si la patrulla o el incidente han sido eliminados
       setActiveRoutes(prev => prev.filter(route => 
         validPatrols.some(p => p.id === route.patrolId) && 
-        reportesFiltrados.some(r => r.id === route.incidentId)
+        filteredReports.some(r => r.id === route.incidentId)
       ));
 
       setLoading(false);
@@ -186,30 +196,30 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
   };
 
   useEffect(() => {
-    fetchDatos();
+    fetchData();
   }, [refreshTrigger]);
 
   const handleMapClick = (latlng) => {
     setCurrentLatlng(latlng);
     setEditingPatrol(null);
-    const autoDistrito = getDistritoByLatLng(latlng.lat, latlng.lng);
-    setFormData({ nombre_oficiales: '', unidad: '', estado: 'Activa', zona: autoDistrito, tipo_unidad: 'Patrulla', horaInicio: '', horaFin: '' });
+    const autoDistrict = getDistrictByLatLng(latlng.lat, latlng.lng);
+    setFormData({ nombre_oficiales: '', unidad: '', estado: 'Activa', zona: autoDistrict, tipo_unidad: 'Patrulla', horaInicio: '', horaFin: '' });
     setShowModal(true);
   };
 
-  const handleEditClick = (patrulla) => {
-    setEditingPatrol(patrulla);
-    const horarioStr = patrulla.horario || '';
-    const [hInicio, hFin] = horarioStr.includes(' - ') ? horarioStr.split(' - ') : ['', ''];
+  const handleEditClick = (patrol) => {
+    setEditingPatrol(patrol);
+    const scheduleStr = patrol.horario || '';
+    const [hStart, hEnd] = scheduleStr.includes(' - ') ? scheduleStr.split(' - ') : ['', ''];
 
     setFormData({
-      nombre_oficiales: patrulla.nombre_oficiales,
-      unidad: patrulla.unidad,
-      estado: patrulla.estado,
-      zona: patrulla.zona || 'Desamparados',
-      tipo_unidad: patrulla.tipo_unidad || 'Patrulla',
-      horaInicio: hInicio,
-      horaFin: hFin
+      nombre_oficiales: patrol.nombre_oficiales,
+      unidad: patrol.unidad,
+      estado: patrol.estado,
+      zona: patrol.zona || 'Desamparados',
+      tipo_unidad: patrol.tipo_unidad || 'Patrulla',
+      horaInicio: hStart,
+      horaFin: hEnd
     });
     setShowModal(true);
   };
@@ -229,7 +239,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
     });
 
     if (result.isConfirmed) {
-      await ServicePolicia.deletePolicias(id);
+      await PoliceService.deletePatrol(id);
       Swal.fire({
         title: 'Eliminada',
         text: 'La patrulla ha sido retirada del mapa.',
@@ -237,9 +247,19 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
         background: '#1f2937',
         color: '#fff'
       });
-      fetchDatos();
+      fetchData();
       if (onPatrolUpdate) onPatrolUpdate();
     }
+  };
+
+  const handleOfficialToggle = (name) => {
+    let currentOfficers = formData.nombre_oficiales.split(',').map(n => n.trim()).filter(n => n);
+    if (currentOfficers.includes(name)) {
+      currentOfficers = currentOfficers.filter(n => n !== name);
+    } else {
+      currentOfficers.push(name);
+    }
+    setFormData({ ...formData, nombre_oficiales: currentOfficers.join(', ') });
   };
 
   const handleSavePatrol = async () => {
@@ -248,41 +268,41 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       return;
     }
 
-    const newPatrol = {
+    const newPatrolData = {
       ...formData,
       lat: editingPatrol ? editingPatrol.lat : currentLatlng.lat,
       lng: editingPatrol ? editingPatrol.lng : currentLatlng.lng
     };
 
-    const finalHorario = `${formData.horaInicio} - ${formData.horaFin}`;
+    const finalSchedule = `${formData.horaInicio} - ${formData.horaFin}`;
 
     if (editingPatrol) {
       const updatedPatrol = {
         ...editingPatrol,
         ...formData,
-        horario: finalHorario
+        horario: finalSchedule
       };
       delete updatedPatrol.horaInicio;
       delete updatedPatrol.horaFin;
       
-      await ServicePolicia.putPolicias(updatedPatrol, editingPatrol.id);
+      await PoliceService.updatePatrol(updatedPatrol, editingPatrol.id);
       Swal.fire({ icon: 'success', title: 'Actualizada', text: 'Datos de la patrulla actualizados.', timer: 1500, showConfirmButton: false, background: '#1f2937', color: '#fff' });
     } else {
-      await ServicePolicia.postPolicias({ ...newPatrol, horario: finalHorario, id: Date.now().toString() });
+      await PoliceService.createPatrol({ ...newPatrolData, horario: finalSchedule, id: Date.now().toString() });
       Swal.fire({ icon: 'success', title: 'Patrulla Asignada', text: 'La patrulla ha sido desplegada en el mapa.', timer: 1500, showConfirmButton: false, background: '#1f2937', color: '#fff' });
     }
 
     setShowModal(false);
-    fetchDatos();
+    fetchData();
     if (onPatrolUpdate) onPatrolUpdate();
   };
 
-  const handleStartRouting = (patrulla) => {
-    setRoutingSource(patrulla);
+  const handleStartRouting = (patrol) => {
+    setRoutingSource(patrol);
     Swal.fire({
       icon: 'info',
       title: 'Modo Misión',
-      text: `Unidad ${patrulla.unidad} seleccionada. Haz clic en un incidente para trazar la ruta.`,
+      text: `Unidad ${patrol.unidad} seleccionada. Haz clic en un incidente para trazar la ruta.`,
       toast: true,
       position: 'top-end',
       showConfirmButton: false,
@@ -293,33 +313,33 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
 
   const ROUTE_COLORS = ['#00C853', '#00B0FF', '#FFD600', '#AA00FF', '#FF3D00', '#FF4081', '#00E5FF'];
 
-  const handleCalculateRoute = async (reporte) => {
+  const handleCalculateRoute = async (report) => {
     if (!routingSource) return;
-    setCalculandoRuta(true);
+    setIsCalculatingRoute(true);
     try {
-      const origen = [routingSource.lat, routingSource.lng];
-      const destino = [reporte.lat, reporte.lng];
+      const origin = [routingSource.lat, routingSource.lng];
+      const destination = [report.lat, report.lng];
       
-      // Pasamos true como tercer parámetro para indicar que es un vehículo de emergencia (ruta más corta)
-      const ruta = await ServiceRutas.calcularRuta(
-        origen,
-        destino,
+      // Se indica emergencia (true) para priorizar la ruta más corta
+      const route = await RouteService.calculateRoute(
+        origin,
+        destination,
         true,
         routingSource.tipo_unidad
       );
       
       const newRoute = {
-        ...ruta,
+        ...route,
         id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
         patrolId: routingSource.id,
-        incidentId: reporte.id,
+        incidentId: report.id,
         unidad: routingSource.unidad,
-        destinoTipo: reporte.tipo,
+        destinoTipo: report.tipo,
         color: ROUTE_COLORS[activeRoutes.length % ROUTE_COLORS.length]
       };
       
       setActiveRoutes(prev => [...prev, newRoute]);
-      setRoutingSource(null); // Limpiar para que la próxima asignación sea independiente
+      setRoutingSource(null); 
       
     } catch (error) {
       console.error("Error al calcular ruta:", error);
@@ -330,7 +350,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
         background: '#1f2937', color: '#fff'
       });
     } finally {
-      setCalculandoRuta(false);
+      setIsCalculatingRoute(false);
     }
   };
 
@@ -385,185 +405,183 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
             </div>
 
             <MapContainer
-          center={[9.892, -84.05]}
-          zoom={13}
-          scrollWheelZoom={true}
-          className="functional-map-instance"
-          zoomControl={false}
-          maxBounds={BOUNDS_RECT}
-          maxBoundsViscosity={0.85}
-        >
-          <MapRefresher />
-          <ZoomControl position="bottomright" />
-          <TileLayer
-            url={TILE_LAYERS[mapMode].url}
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          />
-          <GeoJSON
-            data={desamparadosGeo}
-            pathOptions={{ color: '#00FFFF', weight: 4, fillOpacity: 0.0, opacity: 0.8 }}
-          />
-          <GeoJSON
-            data={distritosGeo}
-            pathOptions={{ color: mapMode === 'day' ? '#000000' : '#FFFFFF', weight: 1.5, dashArray: '5, 5', fillOpacity: 0.05, opacity: 0.6 }}
-          />
-          <MapClickHandler onMapClick={handleMapClick} />
+              center={[9.892, -84.05]}
+              zoom={13}
+              scrollWheelZoom={true}
+              className="functional-map-instance"
+              zoomControl={false}
+              maxBounds={BOUNDS_RECT}
+              maxBoundsViscosity={0.85}
+            >
+              <MapRefresher />
+              <ZoomControl position="bottomright" />
+              <TileLayer
+                url={TILE_LAYERS[mapMode].url}
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+              />
+              <GeoJSON
+                data={desamparadosGeo}
+                pathOptions={{ color: '#00FFFF', weight: 4, fillOpacity: 0.0, opacity: 0.8 }}
+              />
+              <GeoJSON
+                data={distritosGeo}
+                pathOptions={{ color: mapMode === 'day' ? '#000000' : '#FFFFFF', weight: 1.5, dashArray: '5, 5', fillOpacity: 0.05, opacity: 0.6 }}
+              />
+              <MapClickHandler onMapClick={handleMapClick} />
 
-          {/* Render Reportes */}
-          {reportes.map(reporte => {
-            if (!reporte.lat || !reporte.lng) return null;
-            return (
-              <CircleMarker
-                key={reporte.id}
-                center={[reporte.lat, reporte.lng]}
-                pathOptions={{
-                  color: "#FF1744",
-                  fillColor: "#FF5252",
-                  fillOpacity: 0.6,
-                  weight: 2,
-                }}
-                radius={8}
-              >
-                <Popup className="premium-popup dark-popup">
-                  <div className="popup-banner bg-danger">
-                    <span className="popup-type"><i className="fa-solid fa-triangle-exclamation"></i> {reporte.tipo}</span>
-                  </div>
-                  <div className="popup-info">
-                    <span className="info-dist fw-bold">{reporte.distrito}</span>
-                    <p className="info-desc mt-2 mb-1">{reporte.descripcion}</p>
-                    {reporte.anonimo ? (
-                      <p className="text-warning mb-1"><small><i className="fa-solid fa-user-secret"></i> Reporte Anónimo</small></p>
-                    ) : (
-                      <p className="text-info mb-1"><small><i className="fa-solid fa-user"></i> Autor: {reporte.nombre_creador || 'Ciudadano'}</small></p>
-                    )}
-                    <small className="text-secondary">{new Date(reporte.fecha).toLocaleString()}</small>
-                    
-                    {routingSource && (
-                      <div className="mt-3">
-                        <Button 
-                          variant="success" 
-                          size="sm" 
-                          onClick={() => handleCalculateRoute(reporte)}
-                          disabled={calculandoRuta}
-                          className="w-100 fw-bold d-flex align-items-center justify-content-center gap-2"
-                        >
-                          {calculandoRuta ? (
-                            <><i className="fa-solid fa-spinner fa-spin"></i> Trazando...</>
-                          ) : (
-                            <><i className="fa-solid fa-location-crosshairs"></i> Asignar a {routingSource.unidad}</>
-                          )}
-                        </Button>
+              {/* Renderizado de Reportes */}
+              {reports.map(report => {
+                if (!report.lat || !report.lng) return null;
+                return (
+                  <CircleMarker
+                    key={report.id}
+                    center={[report.lat, report.lng]}
+                    pathOptions={{
+                      color: "#FF1744",
+                      fillColor: "#FF5252",
+                      fillOpacity: 0.6,
+                      weight: 2,
+                    }}
+                    radius={8}
+                  >
+                    <Popup className="premium-popup dark-popup">
+                      <div className="popup-banner bg-danger">
+                        <span className="popup-type"><i className="fa-solid fa-triangle-exclamation"></i> {report.tipo}</span>
                       </div>
-                    )}
-                  </div>
-                </Popup>
-              </CircleMarker>
-            );
-          })}
+                      <div className="popup-info">
+                        <span className="info-dist fw-bold">{report.distrito}</span>
+                        <p className="info-desc mt-2 mb-1">{report.descripcion}</p>
+                        {report.anonimo ? (
+                          <p className="text-warning mb-1"><small><i className="fa-solid fa-user-secret"></i> Reporte Anónimo</small></p>
+                        ) : (
+                          <p className="text-info mb-1"><small><i className="fa-solid fa-user"></i> Autor: {report.nombre_creador || 'Ciudadano'}</small></p>
+                        )}
+                        <small className="text-secondary">{new Date(report.fecha).toLocaleString()}</small>
+                        
+                        {routingSource && (
+                          <div className="mt-3">
+                            <Button 
+                              variant="success" 
+                              size="sm" 
+                              onClick={() => handleCalculateRoute(report)}
+                              disabled={isCalculatingRoute}
+                              className="w-100 fw-bold d-flex align-items-center justify-content-center gap-2"
+                            >
+                              {isCalculatingRoute ? (
+                                <><i className="fa-solid fa-spinner fa-spin"></i> Trazando...</>
+                              ) : (
+                                <><i className="fa-solid fa-location-crosshairs"></i> Asignar a {routingSource.unidad}</>
+                              )}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </Popup>
+                  </CircleMarker>
+                );
+              })}
 
-          {/* Render Patrullas */}
-          {patrullas.map(patrulla => {
-            if (!patrulla.lat || !patrulla.lng) return null;
-            return (
-              <Marker
-                key={patrulla.id}
-                position={[patrulla.lat, patrulla.lng]}
-                icon={getPatrolIcon(patrulla.tipo_unidad)}
-                draggable={true}
-                eventHandlers={{
-                  dragend: async (e) => {
-                    const marker = e.target;
-                    const position = marker.getLatLng();
-                    
-                    // Validar que la patrulla no se mueva fuera del cantón
-                    if (!dentroDeDesamparados(position.lat, position.lng)) {
-                      marker.setLatLng([patrulla.lat, patrulla.lng]); // Revertir posición
-                      Swal.fire({
-                        icon: 'warning',
-                        title: 'Fuera de Límites',
-                        text: 'Las unidades no pueden abandonar el cantón de Desamparados.',
-                        background: '#1f2937', color: '#fff'
-                      });
-                      return;
-                    }
+              {/* Renderizado de Patrullas */}
+              {patrols.map(patrol => {
+                if (!patrol.lat || !patrol.lng) return null;
+                return (
+                  <Marker
+                    key={patrol.id}
+                    position={[patrol.lat, patrol.lng]}
+                    icon={getPatrolIcon(patrol.tipo_unidad)}
+                    draggable={true}
+                    eventHandlers={{
+                      dragend: async (e) => {
+                        const marker = e.target;
+                        const position = marker.getLatLng();
+                        
+                        // Validar límites del cantón
+                        if (!withinDesamparados(position.lat, position.lng)) {
+                          marker.setLatLng([patrol.lat, patrol.lng]); 
+                          Swal.fire({
+                            icon: 'warning',
+                            title: 'Fuera de Límites',
+                            text: 'Las unidades no pueden abandonar el cantón de Desamparados.',
+                            background: '#1f2937', color: '#fff'
+                          });
+                          return;
+                        }
 
-                    const newZona = getDistritoByLatLng(position.lat, position.lng);
-                    
-                    const updatedPatrulla = {
-                      ...patrulla,
-                      lat: position.lat,
-                      lng: position.lng,
-                      zona: newZona
-                    };
-                    
-                    await ServicePolicia.putPolicias(updatedPatrulla, patrulla.id);
-                    fetchDatos();
-                    if (onPatrolUpdate) onPatrolUpdate();
-                    
-                    Swal.fire({
-                      icon: 'success',
-                      title: 'Unidad Trasladada',
-                      text: `U-${patrulla.unidad} ha sido movida a ${newZona}`,
-                      toast: true,
-                      position: 'bottom-end',
-                      showConfirmButton: false,
-                      timer: 3000,
-                      background: '#1f2937', color: '#fff'
-                    });
-                  }
-                }}
-              >
-                <Popup className="premium-popup patrol-popup">
-                  <div className={`popup-banner ${patrulla.estado === 'Activa' ? 'bg-primary' : 'bg-secondary'}`}>
-                    <span className="popup-type">
-                      <i className={`fa-solid ${patrulla.tipo_unidad === 'Motocicleta' ? 'fa-motorcycle' : 'fa-truck-fast'}`}></i> Unidad: {patrulla.unidad}
-                    </span>
-                  </div>
-                  <div className="popup-info text-center mt-2">
-                    <p className="mb-1"><strong>Oficiales:</strong> {patrulla.nombre_oficiales}</p>
-                    <p className="mb-1"><strong>Horario:</strong> <i className="fa-regular fa-clock"></i> {patrulla.horario || 'N/A'}</p>
-                    <p className="mb-2"><strong>Estado:</strong> <span className={`badge ${patrulla.estado === 'Activa' ? 'bg-success' : 'bg-warning'}`}>{patrulla.estado}</span></p>
+                        const newZone = getDistrictByLatLng(position.lat, position.lng);
+                        
+                        const updatedPatrol = {
+                          ...patrol,
+                          lat: position.lat,
+                          lng: position.lng,
+                          zona: newZone
+                        };
+                        
+                        await PoliceService.updatePatrol(updatedPatrol, patrol.id);
+                        fetchData();
+                        if (onPatrolUpdate) onPatrolUpdate();
+                        
+                        Swal.fire({
+                          icon: 'success',
+                          title: 'Unidad Trasladada',
+                          text: `U-${patrol.unidad} ha sido movida a ${newZone}`,
+                          toast: true,
+                          position: 'bottom-end',
+                          showConfirmButton: false,
+                          timer: 3000,
+                          background: '#1f2937', color: '#fff'
+                        });
+                      }
+                    }}
+                  >
+                    <Popup className="premium-popup patrol-popup">
+                      <div className={`popup-banner ${patrol.estado === 'Activa' ? 'bg-primary' : 'bg-secondary'}`}>
+                        <span className="popup-type">
+                          <i className={`fa-solid ${patrol.tipo_unidad === 'Motocicleta' ? 'fa-motorcycle' : 'fa-truck-fast'}`}></i> Unidad: {patrol.unidad}
+                        </span>
+                      </div>
+                      <div className="popup-info text-center mt-2">
+                        <p className="mb-1"><strong>Oficiales:</strong> {patrol.nombre_oficiales}</p>
+                        <p className="mb-1"><strong>Horario:</strong> <i className="fa-regular fa-clock"></i> {patrol.horario || 'N/A'}</p>
+                        <p className="mb-2"><strong>Estado:</strong> <span className={`badge ${patrol.estado === 'Activa' ? 'bg-success' : 'bg-warning'}`}>{patrol.estado}</span></p>
 
-                    <div className="d-flex justify-content-center gap-2 mt-3">
-                      <Button variant="outline-success" size="sm" onClick={() => handleStartRouting(patrulla)}>
-                        <i className="fa-solid fa-route"></i> Trazar Ruta
-                      </Button>
-                      <Button variant="outline-info" size="sm" onClick={() => handleEditClick(patrulla)}>
-                        <i className="fa-solid fa-pen"></i> Editar
-                      </Button>
-                      <Button variant="outline-danger" size="sm" onClick={() => handleDeleteClick(patrulla.id)}>
-                        <i className="fa-solid fa-trash"></i> Retirar
-                      </Button>
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            );
-          })}
+                        <div className="d-flex justify-content-center gap-2 mt-3">
+                          <Button variant="outline-success" size="sm" onClick={() => handleStartRouting(patrol)}>
+                            <i className="fa-solid fa-route"></i> Trazar Ruta
+                          </Button>
+                          <Button variant="outline-info" size="sm" onClick={() => handleEditClick(patrol)}>
+                            <i className="fa-solid fa-pen"></i> Editar
+                          </Button>
+                          <Button variant="outline-danger" size="sm" onClick={() => handleDeleteClick(patrol.id)}>
+                            <i className="fa-solid fa-trash"></i> Retirar
+                          </Button>
+                        </div>
+                      </div>
+                    </Popup>
+                  </Marker>
+                );
+              })}
 
-          {/* Render Active Routes */}
-          {activeRoutes.map(route => {
-            if (!route.coordenadas || route.coordenadas.length === 0) return null;
-            return (
-              <LayerGroup key={route.id}>
-                {/* Sombra de la ruta */}
-                <Polyline
-                  positions={route.coordenadas}
-                  pathOptions={{ color: 'rgba(0,0,0,0.5)', weight: 10, opacity: 1 }}
-                />
-                {/* Ruta principal */}
-                <Polyline
-                  positions={route.coordenadas}
-                  pathOptions={{ color: route.color, weight: 5, opacity: 0.9, dashArray: '10, 10' }}
-                />
-              </LayerGroup>
-            );
-          })}
-        </MapContainer>
+              {/* Renderizado de Rutas Activas */}
+              {activeRoutes.map(route => {
+                if (!route.coordenadas || route.coordenadas.length === 0) return null;
+                return (
+                  <LayerGroup key={route.id}>
+                    <Polyline
+                      positions={route.coordenadas}
+                      pathOptions={{ color: 'rgba(0,0,0,0.5)', weight: 10, opacity: 1 }}
+                    />
+                    <Polyline
+                      positions={route.coordenadas}
+                      pathOptions={{ color: route.color, weight: 5, opacity: 0.9, dashArray: '10, 10' }}
+                    />
+                  </LayerGroup>
+                );
+              })}
+            </MapContainer>
           </div>
         </div>
 
-        {/* Sidebar para Misiones Activas (Siempre visible para mantener el layout) */}
+        {/* Panel lateral de Misiones Activas */}
         <div className="patrol-sidebar-col">
           <div className="route-info-panel-static cont-temas h-100">
             <div className="route-info-content h-100 d-flex flex-column">
@@ -628,6 +646,31 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
               />
             </Form.Group>
             <Form.Group className="mb-3">
+              <Form.Label className="text-main fw-bold">Seleccionar Oficiales Registrados</Form.Label>
+              <div className="officials-selection-grid p-3 border border-secondary rounded overflow-auto mb-2" style={{ maxHeight: '150px', backgroundColor: 'rgba(0,0,0,0.3)' }}>
+                {availableOfficers.length > 0 ? (
+                  <div className="row">
+                    {availableOfficers.map(func => (
+                      <div key={func.id} className="col-md-6 mb-2">
+                        <Form.Check 
+                          type="checkbox"
+                          id={`func-${func.id}`}
+                          label={func.nombre}
+                          checked={formData.nombre_oficiales.split(',').map(n => n.trim()).includes(func.nombre)}
+                          onChange={() => handleOfficialToggle(func.nombre)}
+                          className="text-main premium-check"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-2">
+                    <small className="text-muted"><i className="fa-solid fa-user-slash"></i> No hay funcionarios registrados.</small>
+                  </div>
+                )}
+              </div>
+            </Form.Group>
+            <Form.Group className="mb-3">
               <Form.Label className="text-main fw-bold">Nombres de Oficiales a Cargo <span className="text-danger">*</span></Form.Label>
               <Form.Control
                 type="text"
@@ -637,6 +680,9 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
                 className="bg-main text-main border-secondary"
                 placeholder="Ej. Oficial Ramírez, Oficial Salas"
               />
+              <Form.Text className="text-muted">
+                Puede seleccionar arriba o escribir nombres manualmente (separados por coma).
+              </Form.Text>
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label className="text-main fw-bold">Tipo de Unidad <span className="text-danger">*</span></Form.Label>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ServiceReportes from '../services/ServiceReportes';
+import ReportService from '../services/ReportService';
 import Swal from 'sweetalert2';
 import '../styles/NotificationBell.css';
 
@@ -25,7 +25,7 @@ const NotificationBell = () => {
   useEffect(() => {
     const fetchCurrent = async () => {
       try {
-        const data = await ServiceReportes.getReportes();
+        const data = await ReportService.getReports();
         const sortedData = [...data].sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
         setRecentReports(sortedData.slice(0, 5));
         setReportesCount(data.length);
@@ -38,7 +38,7 @@ const NotificationBell = () => {
 
     const interval = setInterval(async () => {
       try {
-        const data = await ServiceReportes.getReportes();
+        const data = await ReportService.getReports();
         setReportesCount(prev => {
           if (prev > 0 && data.length > prev) {
             const diferencias = data.length - prev;
@@ -87,7 +87,7 @@ const NotificationBell = () => {
 
   const handleReportClick = (reporte) => {
     setIsOpen(false);
-    navigate('/gestion-reportes');
+    navigate('/manage-reports');
   };
 
   return (
@@ -145,7 +145,7 @@ const NotificationBell = () => {
           
           <div 
             className="notifications-footer"
-            onClick={() => { setIsOpen(false); navigate('/gestion-reportes'); }}
+            onClick={() => { setIsOpen(false); navigate('/manage-reports'); }}
           >
             Ver todos los reportes
           </div>

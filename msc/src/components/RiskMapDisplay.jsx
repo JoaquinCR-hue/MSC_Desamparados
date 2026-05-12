@@ -5,11 +5,18 @@ import '../styles/RiskMapDisplay.css';
 import desamparadosGeo from '../data/desamparados.json';
 import distritosGeo from '../data/distritos.json';
 
+/**
+ * Capas base para el mapa (Día/Noche).
+ */
 const TILE_LAYERS = {
   night: { url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png' },
   day: { url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png' },
 };
 
+/**
+ * Componente auxiliar para refrescar el tamaño del mapa al cargar.
+ * Soluciona problemas de renderizado de Leaflet en contenedores dinámicos.
+ */
 const MapRefresher = () => {
   const map = useMap();
   React.useEffect(() => {
@@ -21,16 +28,29 @@ const MapRefresher = () => {
   return null;
 };
 
-const RiskMapDisplay = ({ reportes, agregatedStats }) => {
+/**
+ * Componente que muestra el mapa de calor/riesgo con marcadores circulares.
+ * @param {Array} reports - Lista de incidentes a mostrar.
+ * @param {Object} aggregatedStats - Estadísticas de conteo por distrito.
+ */
+const RiskMapDisplay = ({ reports, aggregatedStats }) => {
   const [mapMode, setMapMode] = React.useState('night');
   
+  /**
+   * Determina el color del marcador según la cantidad de incidentes en el distrito.
+   * @param {number} count - Cantidad de reportes.
+   * @returns {string} Código de color Hexadecimal.
+   */
   const getColor = (count) => {
-    if (count <= 2) return "#4CAF50"; // Green
-    if (count <= 5) return "#FFD600"; // Yellow
-    if (count <= 6) return "#FF9100"; // Orange
-    return "#FF1744"; // Red
+    if (count <= 2) return "#4CAF50"; // Verde (Bajo)
+    if (count <= 5) return "#FFD600"; // Amarillo (Medio)
+    if (count <= 6) return "#FF9100"; // Naranja (Alto)
+    return "#FF1744"; // Rojo (Crítico)
   };
 
+  /**
+   * Determina el color del borde del marcador.
+   */
   const getBorderColor = (count) => {
     if (count <= 2) return "#2E7D32";
     if (count <= 5) return "#F9A825";
@@ -41,6 +61,7 @@ const RiskMapDisplay = ({ reportes, agregatedStats }) => {
   return (
     <div className="risk-map-display-wrapper">
       <div className="map-section">
+        {/* Selector de modo del mapa (Día/Noche) */}
         <div className="map-mode-toggle cont-temas" style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 1000, background: 'rgba(26, 28, 34, 0.9)', padding: '5px', borderRadius: '10px' }}>
           <button
             className={`boton-n map-mode-btn ${mapMode === 'night' ? 'active' : ''}`}
@@ -73,6 +94,7 @@ const RiskMapDisplay = ({ reportes, agregatedStats }) => {
             url={TILE_LAYERS[mapMode].url}
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
           />
+          {/* Límites geográficos del cantón y distritos */}
           <GeoJSON 
             data={desamparadosGeo} 
             pathOptions={{ color: '#00FFFF', weight: 4, fillOpacity: 0.0, opacity: 0.8 }} 
@@ -82,17 +104,18 @@ const RiskMapDisplay = ({ reportes, agregatedStats }) => {
             pathOptions={{ color: mapMode === 'day' ? '#000000' : '#FFFFFF', weight: 1.5, dashArray: '5, 5', fillOpacity: 0.05, opacity: 0.6 }} 
           />
           
-          {reportes.map(reporte => {
-            if (!reporte.lat || !reporte.lng) return null;
+          {/* Renderizado de incidentes como marcadores circulares */}
+          {reports.map(report => {
+            if (!report.lat || !report.lng) return null;
 
-            const countInDistrict = agregatedStats[reporte.distrito] || 1;
+            const countInDistrict = aggregatedStats[report.distrito] || 1;
             const color = getColor(countInDistrict);
             const borderColor = getBorderColor(countInDistrict);
 
             return (
               <CircleMarker
-                key={reporte.id}
-                center={[reporte.lat, reporte.lng]}
+                key={report.id}
+                center={[report.lat, report.lng]}
                 pathOptions={{
                   color: borderColor,
                   fillColor: color,
@@ -103,16 +126,16 @@ const RiskMapDisplay = ({ reportes, agregatedStats }) => {
               >
                 <Popup className="premium-popup">
                   <div className="popup-banner">
-                    <span className="popup-type">{reporte.tipo}</span>
+                    <span className="popup-type">{report.tipo}</span>
                     <span className="popup-date">
-                      {new Date(reporte.fecha).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
+                      {new Date(report.fecha).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}
                     </span>
                   </div>
                   <div className="popup-info">
-                    <span className="info-dist">{reporte.distrito}</span>
-                    <p className="info-desc">{reporte.descripcion || "Incidente reportado por ciudadano."}</p>
+                    <span className="info-dist">{report.distrito}</span>
+                    <p className="info-desc">{report.descripcion || "Incidente reportado por ciudadano."}</p>
                     <div className="info-loc">
-                      <i className="fa-solid fa-location-crosshairs"></i> {reporte.barrio}
+                      <i className="fa-solid fa-location-crosshairs"></i> {report.barrio}
                     </div>
                   </div>
                 </Popup>
@@ -122,6 +145,7 @@ const RiskMapDisplay = ({ reportes, agregatedStats }) => {
         </MapContainer>
       </div>
 
+      {/* Barra lateral con leyenda y estadísticas por distrito */}
       <aside className="sidebar-section">
         <div className="legend-container">
           <h3><i className="fa-solid fa-layer-group"></i> Escala de Riesgo</h3>
@@ -162,8 +186,8 @@ const RiskMapDisplay = ({ reportes, agregatedStats }) => {
         <div className="ranking-container">
           <h3><i className="fa-solid fa-chart-line"></i> Estadísticas</h3>
           <div className="stats-scroll">
-            {Object.keys(agregatedStats).length > 0 ? (
-              Object.entries(agregatedStats)
+            {Object.keys(aggregatedStats).length > 0 ? (
+              Object.entries(aggregatedStats)
                 .sort((a, b) => b[1] - a[1])
                 .map(([dist, count]) => (
                   <div key={dist} className="stat-card-v2">
@@ -195,3 +219,4 @@ const RiskMapDisplay = ({ reportes, agregatedStats }) => {
 };
 
 export default RiskMapDisplay;
+

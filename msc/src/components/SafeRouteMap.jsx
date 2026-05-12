@@ -5,31 +5,41 @@ import {
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import '../styles/RutasSeguras.css';
+import '../styles/SafeRoutes.css';
 import desamparadosGeo from '../data/desamparados.json';
 import distritosGeo from '../data/distritos.json';
 
-// ── Límites del cantón de Desamparados ───────────────────────────────────────
+/**
+ * Límites geográficos del cantón de Desamparados para restringir el mapa.
+ */
 const BOUNDS_DESAMPARADOS = {
-  minLat: 9.70, // Ajustado para incluir zonas del sur como Frailes
+  minLat: 9.70, // Incluye zonas del sur como Frailes
   maxLat: 9.98,
   minLng: -84.18,
   maxLng: -83.92,
 };
 
-const dentroDeDesamparados = (lat, lng) =>
+/**
+ * Valida si un punto geográfico está dentro de los límites de Desamparados.
+ * @param {number} lat - Latitud.
+ * @param {number} lng - Longitud.
+ * @returns {boolean} True si está dentro.
+ */
+const isInsideDesamparados = (lat, lng) =>
   lat >= BOUNDS_DESAMPARADOS.minLat &&
   lat <= BOUNDS_DESAMPARADOS.maxLat &&
   lng >= BOUNDS_DESAMPARADOS.minLng &&
   lng <= BOUNDS_DESAMPARADOS.maxLng;
 
-// Rectángulo de límite para visualizar en el mapa
+// Rectángulo de límites para visualizar en el mapa (maxBounds)
 const BOUNDS_RECT = [
   [BOUNDS_DESAMPARADOS.minLat, BOUNDS_DESAMPARADOS.minLng],
   [BOUNDS_DESAMPARADOS.maxLat, BOUNDS_DESAMPARADOS.maxLng],
 ];
 
-// ── Capas de mapa: nocturno y diurno ─────────────────────────────────────────
+/**
+ * Configuración de capas de mapa (Modo Noche y Día).
+ */
 const TILE_LAYERS = {
   night: {
     url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
@@ -44,7 +54,9 @@ const TILE_LAYERS = {
 };
 const ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
-// ── Íconos personalizados para marcadores A y B ───────────────────────────────
+/**
+ * Crea un ícono personalizado con una letra para los puntos de origen (A) y destino (B).
+ */
 const makeIcon = (letter, color) => L.divIcon({
   className: '',
   html: `
@@ -68,15 +80,20 @@ const makeIcon = (letter, color) => L.divIcon({
   popupAnchor: [0, -36],
 });
 
-const iconOrigen = makeIcon('A', '#00C853');
-const iconDestino = makeIcon('B', '#FF1744');
+const originIcon = makeIcon('A', '#00C853');
+const destinationIcon = makeIcon('B', '#FF1744');
 
-// ── Capturar clics en el mapa ─────────────────────────────────────────────────
+/**
+ * Sub-componente para capturar clics del usuario en el mapa.
+ */
 const MapClickHandler = ({ onClick }) => {
   useMapEvents({ click: (e) => onClick(e.latlng) });
   return null;
 };
 
+/**
+ * Sub-componente para forzar el refresco de Leaflet al cargar.
+ */
 const MapRefresher = () => {
   const map = useMap();
   React.useEffect(() => {
@@ -88,53 +105,63 @@ const MapRefresher = () => {
   return null;
 };
 
-// ============================================================================
+/**
+ * Componente del mapa de rutas seguras.
+ * Visualiza el origen, destino, la ruta trazada y los incidentes cercanos.
+ */
 const SafeRouteMap = ({
-  origen,
-  destino,
-  onOrigenChange,
-  onDestinoChange,
-  rutaCoordenadas,
-  rutaColor,
-  reportes,
-  modoSeleccion,
-  onFueraLimite,
+  origin,
+  destination,
+  onOriginChange,
+  onDestinationChange,
+  routeCoordinates,
+  routeColor,
+  reports,
+  selectionMode,
+  onOutOfBounds,
 }) => {
   const [mapMode, setMapMode] = useState('night'); // 'night' | 'day'
-  const [alertaFuera, setAlertaFuera] = useState(false);
+  const [outOfBoundsAlert, setOutOfBoundsAlert] = useState(false);
 
-  const getColorIncidente = (count) => {
+  /**
+   * Determina el color del incidente según la gravedad (estático por ahora).
+   */
+  const getIncidentColor = (count) => {
     if (count <= 2) return '#4CAF50';
     if (count <= 5) return '#FFD600';
     if (count <= 6) return '#FF9100';
     return '#FF1744';
   };
 
+  /**
+   * Maneja el clic en el mapa para asignar origen o destino según el modo.
+   */
   const handleClick = useCallback((latlng) => {
     const { lat, lng } = latlng;
 
-    // Validar que esté dentro del cantón
-    if (!dentroDeDesamparados(lat, lng)) {
-      setAlertaFuera(true);
-      setTimeout(() => setAlertaFuera(false), 3000);
-      if (onFueraLimite) onFueraLimite();
+    // Validar que el punto seleccionado esté dentro del cantón
+    if (!isInsideDesamparados(lat, lng)) {
+      setOutOfBoundsAlert(true);
+      setTimeout(() => setOutOfBoundsAlert(false), 3000);
+      if (onOutOfBounds) onOutOfBounds();
       return;
     }
 
-    const punto = [lat, lng];
-    if (modoSeleccion === 'origen') {
-      onOrigenChange(punto);
-    } else if (modoSeleccion === 'destino') {
-      onDestinoChange(punto);
+    const point = [lat, lng];
+    if (selectionMode === 'origin') {
+      onOriginChange(point);
+    } else if (selectionMode === 'destination') {
+      onDestinationChange(point);
     }
-  }, [modoSeleccion, onOrigenChange, onDestinoChange, onFueraLimite]);
+  }, [selectionMode, onOriginChange, onDestinationChange, onOutOfBounds]);
 
-  const cursorClass = modoSeleccion ? 'map-cursor-crosshair' : '';
+  const cursorClass = selectionMode ? 'map-cursor-crosshair' : '';
   const tileLayer = TILE_LAYERS[mapMode];
 
   return (
     <>
       <div className={`safe-route-map-wrapper ${cursorClass}`}>
+        {/* Toggle de Modo Día/Noche */}
         <div className="map-mode-toggle cont-temas" style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 1000, background: 'rgba(26, 28, 34, 0.9)', padding: '5px', borderRadius: '10px' }}>
           <button
             className={`boton-n map-mode-btn ${mapMode === 'night' ? 'active' : ''}`}
@@ -154,24 +181,21 @@ const SafeRouteMap = ({
           </button>
         </div>
 
-        {/* ── Hint de selección ─────────────────────────────────────────── */}
-        {modoSeleccion && (
+        {/* Indicador visual de qué punto se está seleccionando */}
+        {selectionMode && (
           <div className="map-selection-hint">
-            <i className={`fa-solid ${modoSeleccion === 'origen' ? 'fa-location-dot' : 'fa-flag-checkered'}`}></i>
-            Haz clic en el mapa para marcar el {modoSeleccion === 'origen' ? 'ORIGEN (A)' : 'DESTINO (B)'}
+            <i className={`fa-solid ${selectionMode === 'origin' ? 'fa-location-dot' : 'fa-flag-checkered'}`}></i>
+            Haz clic en el mapa para marcar el {selectionMode === 'origin' ? 'ORIGEN (A)' : 'DESTINO (B)'}
           </div>
         )}
 
-        {/* ── Alerta: fuera de Desamparados ────────────────────────────── */}
-        {alertaFuera && (
+        {/* Alerta de punto fuera de límites */}
+        {outOfBoundsAlert && (
           <div className="map-out-of-bounds-alert">
             <i className="fa-solid fa-circle-exclamation"></i>
             El punto está fuera del cantón de Desamparados
           </div>
         )}
-
-        {/* ── Toggle día/noche ─────────────────────────────────────────── */}
-
 
         <MapContainer
           center={[9.892, -84.05]}
@@ -186,6 +210,7 @@ const SafeRouteMap = ({
           <ZoomControl position="bottomright" />
           <TileLayer url={tileLayer.url} attribution={ATTR} />
 
+          {/* GeoJSON del cantón y distritos */}
           <GeoJSON 
             data={desamparadosGeo} 
             pathOptions={{ color: '#00FFFF', weight: 4, fillOpacity: 0.0, opacity: 0.8 }} 
@@ -196,16 +221,16 @@ const SafeRouteMap = ({
           />
           <MapClickHandler onClick={handleClick} />
 
-          {/* Incidentes existentes del backend */}
-          {reportes.map(reporte => {
-            if (!reporte.lat || !reporte.lng) return null;
+          {/* Visualización de incidentes históricos recientes */}
+          {reports.map(report => {
+            if (!report.lat || !report.lng) return null;
             return (
               <CircleMarker
-                key={reporte.id}
-                center={[reporte.lat, reporte.lng]}
+                key={report.id}
+                center={[report.lat, report.lng]}
                 pathOptions={{
                   color: 'rgba(255,255,255,0.3)',
-                  fillColor: getColorIncidente(1),
+                  fillColor: getIncidentColor(1),
                   fillOpacity: 0.35,
                   weight: 1,
                 }}
@@ -213,15 +238,15 @@ const SafeRouteMap = ({
               >
                 <Popup className="premium-popup">
                   <div className="popup-banner">
-                    <span className="popup-type">{reporte.tipo}</span>
+                    <span className="popup-type">{report.tipo}</span>
                     <span className="popup-date">
-                      {reporte.fecha ? new Date(reporte.fecha).toLocaleDateString('es-CR', { day: 'numeric', month: 'short' }) : ''}
+                      {report.fecha ? new Date(report.fecha).toLocaleDateString('es-CR', { day: 'numeric', month: 'short' }) : ''}
                     </span>
                   </div>
                   <div className="popup-info">
-                    <span className="info-dist">{reporte.distrito}</span>
+                    <span className="info-dist">{report.distrito}</span>
                     <div className="info-loc">
-                      <i className="fa-solid fa-location-crosshairs"></i> {reporte.barrio}
+                      <i className="fa-solid fa-location-crosshairs"></i> {report.barrio}
                     </div>
                   </div>
                 </Popup>
@@ -229,39 +254,38 @@ const SafeRouteMap = ({
             );
           })}
 
-          {/* Polilínea de la ruta calculada */}
-          {rutaCoordenadas && rutaCoordenadas.length > 1 && (
+          {/* Dibujo de la ruta calculada con polilínea */}
+          {routeCoordinates && routeCoordinates.length > 1 && (
             <>
               <Polyline
-                positions={rutaCoordenadas}
+                positions={routeCoordinates}
                 pathOptions={{ color: 'rgba(0,0,0,0.4)', weight: 10, opacity: 1 }}
               />
               <Polyline
-                positions={rutaCoordenadas}
-                pathOptions={{ color: rutaColor, weight: 5, opacity: 0.95 }}
+                positions={routeCoordinates}
+                pathOptions={{ color: routeColor, weight: 5, opacity: 0.95 }}
               />
             </>
           )}
 
-          {/* Marcador A – Origen */}
-          {origen && (
-            <Marker position={origen} icon={iconOrigen}>
-              <Popup><strong>📍 Origen</strong><br />{origen[0].toFixed(5)}, {origen[1].toFixed(5)}</Popup>
+          {/* Marcador del Punto A (Origen) */}
+          {origin && (
+            <Marker position={origin} icon={originIcon}>
+              <Popup><strong>📍 Origen</strong><br />{origin[0].toFixed(5)}, {origin[1].toFixed(5)}</Popup>
             </Marker>
           )}
 
-          {/* Marcador B – Destino */}
-          {destino && (
-            <Marker position={destino} icon={iconDestino}>
-              <Popup><strong>🏁 Destino</strong><br />{destino[0].toFixed(5)}, {destino[1].toFixed(5)}</Popup>
+          {/* Marcador del Punto B (Destino) */}
+          {destination && (
+            <Marker position={destination} icon={destinationIcon}>
+              <Popup><strong>🏁 Destino</strong><br />{destination[0].toFixed(5)}, {destination[1].toFixed(5)}</Popup>
             </Marker>
           )}
         </MapContainer>
-
-
       </div>
     </>
   );
 };
 
 export default SafeRouteMap;
+
