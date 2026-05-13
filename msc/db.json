@@ -258,6 +258,34 @@
       "estado": "Pendiente",
       "lat": 9.896262412116453,
       "lng": -84.08800899982454
+    },
+    {
+      "id": "90a0",
+      "tipo": "Asalto",
+      "descripcion": "Un motorizado en una ns200 negra",
+      "distrito": "San Rafael Arriba",
+      "barrio": "Centro",
+      "direccion_exacta": "frente  a la plaza",
+      "fecha": "2026-05-12T15:41",
+      "id_creador": "a999",
+      "nombre_creador": "ADRIAN DAVID MORA CASTILLO",
+      "estado": "Pendiente",
+      "lat": 9.8783,
+      "lng": -84.0736
+    },
+    {
+      "id": "1f47",
+      "tipo": "Asalto",
+      "descripcion": "hombre con puñal en mano",
+      "distrito": "Los Guido",
+      "barrio": "Sector 4",
+      "direccion_exacta": "frente a la pulperia",
+      "fecha": "2026-05-13T09:12",
+      "id_creador": "b230",
+      "nombre_creador": "Joaquin Aguilar",
+      "estado": "Pendiente",
+      "lat": 9.793740535875482,
+      "lng": -84.0883255004883
     }
   ],
   "consults": [

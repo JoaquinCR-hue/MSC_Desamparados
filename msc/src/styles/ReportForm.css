@@ -28,7 +28,7 @@
   margin-bottom: 30px;
 }
 
-.reportar-header h2 {
+.report-header h2 {
   background: var(--title-gradient);
   -webkit-background-clip: text;
   background-clip: text;
@@ -39,7 +39,7 @@
   display: inline-block;
 }
 
-.reportar-header p {
+.report-header p {
   color: var(--text-secondary);
   font-size: 1rem;
 }
@@ -117,7 +117,7 @@ select option {
   box-shadow: 0 6px 20px rgba(242, 92, 5, 0.4);
 }
 
-.reportar-form-wrapper.map-layout {
+.report-form-wrapper.map-layout {
   max-width: 1000px;
 }
 
@@ -172,7 +172,7 @@ select option {
     padding: 20px;
   }
   
-  .reportar-header h2 {
+  .report-header h2 {
     font-size: 1.5rem;
   }
   

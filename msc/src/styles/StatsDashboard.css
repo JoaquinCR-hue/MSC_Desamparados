@@ -1,10 +1,10 @@
-.estadisticas-page {
+.statistics-page {
     min-height: 100vh;
     background: var(--bg-darker);
     color: var(--text-main);
 }
 
-.estadisticas-main {
+.statistics-main {
     padding: 2rem 5%;
     max-width: 1400px;
     margin: 0 auto;

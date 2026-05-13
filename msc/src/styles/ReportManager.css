@@ -1,10 +1,10 @@
-.gestion-reportes-page {
+.manage-reports-page {
     background-color: var(--bg-main);
     min-height: 100vh;
     color: var(--text-main);
 }
 
-.gestion-reportes-main {
+.manage-reports-main {
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;

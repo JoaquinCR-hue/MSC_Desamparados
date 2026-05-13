@@ -1,4 +1,4 @@
-.gestion-container {
+.management-container {
     background-color: var(--bg-darker);
     min-height: 100vh;
     padding: 40px 20px;
@@ -6,7 +6,7 @@
     color: var(--text-secondary);
 }
 
-.gestion-header {
+.management-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
@@ -15,12 +15,12 @@
     gap: 20px;
 }
 
-.gestion-title-wrapper {
+.management-title-wrapper {
     display: flex;
     flex-direction: column;
 }
 
-.gestion-subtitle {
+.management-subtitle {
     color: #f25c05;
     font-size: 0.8rem;
     font-weight: 700;
@@ -31,7 +31,7 @@
     align-items: center;
 }
 
-.gestion-subtitle::before {
+.management-subtitle::before {
     content: '';
     display: inline-block;
     width: 30px;
@@ -40,7 +40,7 @@
     margin-right: 10px;
 }
 
-.gestion-title {
+.management-title {
     font-size: 3.5rem;
     font-weight: 900;
     font-style: italic;
@@ -51,14 +51,14 @@
     text-transform: uppercase;
 }
 
-.gestion-subtext {
+.management-subtext {
     color: #64748b;
     font-size: 0.9rem;
     margin-top: 10px;
     font-family: monospace;
 }
 
-.gestion-actions {
+.management-actions {
     display: flex;
     gap: 15px;
 }
@@ -94,7 +94,7 @@
     .stats-grid {
         grid-template-columns: 1fr;
     }
-    .gestion-title {
+    .management-title {
         font-size: 2.5rem;
     }
 }

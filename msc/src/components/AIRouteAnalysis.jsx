@@ -159,12 +159,12 @@ const AIRouteAnalysis = ({
 
   // ── Estado: Análisis finalizado con éxito ─────────────────────────────────
   if (analysisResult) {
-    const { nivelRiesgo, colorRiesgo, iconRiesgo, incidentesCercanos, total } = analysisResult;
+    const { riskLevel, riskColor, riskIcon, nearbyIncidents = [], total = 0 } = analysisResult;
     return (
       <aside className="ai-panel resultado">
         <div className="ai-panel-header">
-          <div className="ai-badge" style={{ background: `${colorRiesgo}22`, color: colorRiesgo, borderColor: `${colorRiesgo}44` }}>
-            <i className={`fa-solid ${iconRiesgo}`}></i> Análisis Completado
+          <div className="ai-badge" style={{ background: `${riskColor}22`, color: riskColor, borderColor: `${riskColor}44` }}>
+            <i className={`fa-solid ${riskIcon}`}></i> Análisis Completado
           </div>
           <h2>Resultado del Análisis</h2>
         </div>
@@ -179,25 +179,25 @@ const AIRouteAnalysis = ({
         )}
 
         {/* Indicador de Nivel de Riesgo */}
-        <div className="riesgo-badge" style={{ '--riesgo-color': colorRiesgo }}>
-          <i className={`fa-solid ${iconRiesgo}`}></i>
+        <div className="riesgo-badge" style={{ '--riesgo-color': riskColor }}>
+          <i className={`fa-solid ${riskIcon}`}></i>
           <div>
-            <span className="riesgo-nivel">{nivelRiesgo}</span>
+            <span className="riesgo-nivel">{riskLevel}</span>
             <span className="riesgo-sub">{total} incidente{total !== 1 ? 's' : ''} cerca del trayecto</span>
           </div>
         </div>
 
         {/* Lista de incidentes específicos detectados */}
-        {incidentesCercanos.length > 0 && (
+        {nearbyIncidents.length > 0 && (
           <div className="incidentes-section">
             <h4><i className="fa-solid fa-triangle-exclamation"></i> Incidentes Detectados</h4>
             <div className="incidentes-scroll">
-              {incidentesCercanos.map((incident, index) => (
+              {nearbyIncidents.map((incident, index) => (
                 <div key={index} className="incidente-card">
                   <div className="incidente-tipo">{incident.tipo || 'Incidente'}</div>
                   <div className="incidente-meta">
                     <span><i className="fa-solid fa-location-pin"></i> {incident.barrio || incident.distrito}</span>
-                    <span><i className="fa-solid fa-arrows-left-right"></i> ~{incident.distanciaMetros}m</span>
+                    <span><i className="fa-solid fa-arrows-left-right"></i> ~{incident.distanceMeters}m</span>
                   </div>
                 </div>
               ))}

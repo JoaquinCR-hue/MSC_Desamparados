@@ -9,7 +9,7 @@ import Footer from '../components/Footer';
  */
 function ManageConsults() {
   return (
-    <div className="gestion-consultas-page-wrapper min-vh-100" style={{ backgroundColor: 'var(--bg-main)' }}>
+    <div className="manage-consults-page-wrapper min-vh-100" style={{ backgroundColor: 'var(--bg-main)' }}>
       <Navbar />
       <div className="container mt-4 pt-5 pb-5">
         <ConsultManager />

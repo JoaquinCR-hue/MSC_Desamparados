@@ -10,9 +10,9 @@ import '../styles/UserManager.css';
  */
 function ManageUsers() {
   return (
-    <div className="gestion-page-container">
+    <div className="manage-users-page">
       <Navbar />
-      <div className="gestion-content">
+      <div className="manage-users-content">
         <UserManager />
       </div>
       <Footer />

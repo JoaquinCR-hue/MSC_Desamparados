@@ -10,9 +10,9 @@ import '../styles/ReportManager.css';
  */
 const ManageReports = () => {
   return (
-    <div className="gestion-reportes-page">
+    <div className="manage-reports-page">
       <Navbar />
-      <main className="gestion-reportes-main">
+      <main className="manage-reports-main">
         <ReportManager />
       </main>
       <Footer />

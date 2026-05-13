@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { MapContainer, TileLayer, useMap, useMapEvents, Marker } from 'react-leaflet';
+import { MapContainer, TileLayer, useMap, useMapEvents, Marker, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import ReportService from '../services/ReportService';
 import VoiceInput from './shared/VoiceInput';
 import desamparadosGeo from '../data/desamparados.json';
+import distritosGeo from '../data/distritos.json';
 
 // Corrección para el icono predeterminado de Leaflet en React
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
@@ -54,25 +55,67 @@ const withinDesamparados = (lat, lng) => {
   return false;
 };
 
+// Normaliza cadenas para comparación (quita tildes y caracteres especiales)
+const normalizeString = (str) => {
+  if (!str) return "";
+  return str.normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^\w\s]/gi, '')
+            .toLowerCase()
+            .trim();
+};
+
+// Obtiene el nombre del distrito basado en las coordenadas proporcionadas
+const getDistrictByLatLng = (lat, lng) => {
+  if (!distritosGeo || !distritosGeo.features) return null;
+  const point = [lng, lat];
+  
+  for (const feature of distritosGeo.features) {
+    const geometry = feature.geometry;
+    let inside = false;
+    
+    if (geometry.type === 'Polygon') {
+      inside = isPointInPolygon(point, geometry.coordinates[0]);
+    } else if (geometry.type === 'MultiPolygon') {
+      inside = geometry.coordinates.some(poly => isPointInPolygon(point, poly[0]));
+    }
+    
+    if (inside) {
+      const detectedName = feature.properties.name;
+      const normalizedDetected = normalizeString(detectedName);
+      
+      // Buscar el nombre original en nuestras llaves de districtsData
+      const originalName = Object.keys(districtsData).find(key => 
+        normalizeString(key) === normalizedDetected || 
+        normalizedDetected.includes(normalizeString(key)) ||
+        normalizeString(key).includes(normalizedDetected)
+      );
+      
+      return originalName || detectedName;
+    }
+  }
+  return null;
+};
+
 const BOUNDS_RECT = [
   [BOUNDS_DESAMPARADOS.minLat, BOUNDS_DESAMPARADOS.minLng],
   [BOUNDS_DESAMPARADOS.maxLat, BOUNDS_DESAMPARADOS.maxLng],
 ];
 
 const districtsData = {
-  "Desamparados": { center: [9.8989, -84.0664], barrios: ["Centro", "Calle Fallas", "Contadores", "Cucubres", "Dorado", "Lomas", "Metrópoli"] },
-  "San Miguel": { center: [9.8763, -84.0620], barrios: ["Centro", "Capitán", "Valle", "Loto", "San Martín", "Higuito"] },
+  "Desamparados": { center: [9.8967, -84.0706], barrios: ["Centro", "Calle Fallas", "Contadores", "Cucubres", "Dorado", "Lomas", "Metrópoli"] },
+  "San Miguel": { center: [9.8475, -84.0481], barrios: ["Centro", "Capitán", "Valle", "Loto", "San Martín", "Higuito"] },
   "San Juan de Dios": { center: [9.8828, -84.0850], barrios: ["Centro", "Ita", "Novedades", "Roble"] },
-  "San Rafael Arriba": { center: [9.8783, -84.0736], barrios: ["Centro", "Huaso", "Maiquetía"] },
-  "San Antonio": { center: [9.8972, -84.0494], barrios: ["Centro", "Palo Grande", "Plaza", "Río"] },
-  "Frailes": { center: [9.7709, -84.0531], barrios: ["Centro", "Santa Elena", "San Cristóbal Norte"] },
-  "Patarrá": { center: [9.8819, -84.0322], barrios: ["Centro", "Guatuso", "Liceo", "Fátima"] },
-  "San Cristóbal": { center: [9.7915, -83.9934], barrios: ["Cristóbal Norte", "Cristóbal Sur", "San Antonio"] },
-  "Rosario": { center: [9.7845, -84.0203], barrios: ["Centro", "Quebrada"] },
-  "Damas": { center: [9.8911, -84.0503], barrios: ["Centro", "Dos Cercas", "San Juan"] },
-  "San Rafael Abajo": { center: [9.8967, -84.0811], barrios: ["Centro", "Mónaco", "Valencia", "San José"] },
-  "Gravilias": { center: [9.8922, -84.0644], barrios: ["Centro", "Porvenir", "Clínica", "Asunción"] },
-  "Los Guido": { center: [9.8661, -84.0558], barrios: ["Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5"] }
+  "San Rafael Arriba": { center: [9.8725, -84.0715], barrios: ["Centro", "Huaso", "Maiquetía"] },
+  "San Antonio": { center: [9.8989, -84.0469], barrios: ["Centro", "Palo Grande", "Plaza", "Río"] },
+  "Frailes": { center: [9.7547, -84.0692], barrios: ["Centro", "Santa Elena", "San Cristóbal Norte"] },
+  "Patarrá": { center: [9.8636, -84.0247], barrios: ["Centro", "Guatuso", "Liceo", "Fátima"] },
+  "San Cristóbal": { center: [9.7491, -83.9914], barrios: ["Cristóbal Norte", "Cristóbal Sur", "San Antonio"] },
+  "Rosario": { center: [9.7975, -84.0872], barrios: ["Centro", "Quebrada"] },
+  "Damas": { center: [9.8889, -84.0453], barrios: ["Centro", "Dos Cercas", "San Juan"] },
+  "San Rafael Abajo": { center: [9.8944, -84.0836], barrios: ["Centro", "Mónaco", "Valencia", "San José"] },
+  "Gravilias": { center: [9.8861, -84.0575], barrios: ["Centro", "Porvenir", "Clínica", "Asunción"] },
+  "Los Guido": { center: [9.8703, -84.0483], barrios: ["Sector 1", "Sector 2", "Sector 3", "Sector 4", "Sector 5"] }
 };
 
 const MapUpdater = ({ center, zoom }) => {
@@ -83,7 +126,7 @@ const MapUpdater = ({ center, zoom }) => {
   return null;
 };
 
-const LocationPicker = ({ position, setPosition }) => {
+const LocationPicker = ({ position, setPosition, onDistrictDetected }) => {
   useMapEvents({
     click(e) {
       if (!withinDesamparados(e.latlng.lat, e.latlng.lng)) {
@@ -94,7 +137,15 @@ const LocationPicker = ({ position, setPosition }) => {
         });
         return;
       }
-      setPosition([e.latlng.lat, e.latlng.lng]);
+      
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+      setPosition([lat, lng]);
+      
+      const districtName = getDistrictByLatLng(lat, lng);
+      if (districtName) {
+        onDistrictDetected(districtName);
+      }
     },
   });
   return position ? <Marker position={position} /> : null;
@@ -169,6 +220,14 @@ const ReportForm = () => {
     setFormData(prev => ({
       ...prev,
       [field]: prev[field] ? `${prev[field]} ${text}` : text
+    }));
+  };
+
+  const handleDistrictDetectedFromMap = (districtName) => {
+    setFormData(prev => ({
+      ...prev,
+      distrito: districtName,
+      barrio: prev.distrito === districtName ? prev.barrio : ""
     }));
   };
 
@@ -350,8 +409,21 @@ const ReportForm = () => {
               url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" 
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>' 
             />
+            {/* GeoJSON del cantón y distritos */}
+            <GeoJSON 
+              data={desamparadosGeo} 
+              pathOptions={{ color: '#00FFFF', weight: 4, fillOpacity: 0.0, opacity: 0.8 }} 
+            />
+            <GeoJSON 
+              data={distritosGeo} 
+              pathOptions={{ color: '#000000', weight: 1.5, dashArray: '5, 5', fillOpacity: 0.05, opacity: 0.6 }} 
+            />
             <MapUpdater center={mapCenter} zoom={mapZoom} />
-            <LocationPicker position={location} setPosition={setLocation} />
+            <LocationPicker 
+              position={location} 
+              setPosition={setLocation} 
+              onDistrictDetected={handleDistrictDetectedFromMap}
+            />
           </MapContainer>
         </div>
       </div>

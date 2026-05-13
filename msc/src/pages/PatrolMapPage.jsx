@@ -36,7 +36,7 @@ const PatrolMapPage = () => {
         </section>
 
         {/* Bitácora de unidades en servicio */}
-        <section className="bitacora-section-wrapper mt-5 px-3">
+        <section className="patrol-log-section-wrapper mt-5 px-3">
           <PatrolLog refreshTrigger={refreshCounter} onGlobalUpdate={handleGlobalUpdate} />
         </section>
       </div>

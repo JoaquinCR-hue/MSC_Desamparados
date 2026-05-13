@@ -9,9 +9,9 @@ import Footer from '../components/Footer';
  */
 const Statistics = () => {
   return (
-    <div className="estadisticas-page">
+    <div className="statistics-page">
       <Navbar />
-      <main className="estadisticas-main">
+      <main className="statistics-main">
         <StatsDashboard />
       </main>
       <Footer />
