@@ -30,7 +30,7 @@
 }
 
 .header-badge {
-    background: rgba(242, 92, 5, 0.1);
+    background: rgba(0, 163, 255, 0.1);
     color: var(--primary-color);
     padding: 6px 16px;
     border-radius: 20px;
@@ -83,7 +83,7 @@
 
 .filter-group input:focus, .filter-group select:focus {
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(242, 92, 5, 0.1);
+    box-shadow: 0 0 0 3px rgba(0, 163, 255, 0.1);
 }
 
 /* Table Styles */
@@ -118,7 +118,7 @@
 }
 
 .custom-table tr:hover {
-    background: rgba(242, 92, 5, 0.02);
+    background: rgba(0, 163, 255, 0.02);
 }
 
 .loc-info strong {
@@ -168,7 +168,7 @@
     border-color: var(--primary-color); 
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(242, 92, 5, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 163, 255, 0.3);
 }
 
 .btn-delete:hover { 
@@ -253,7 +253,7 @@
 }
 
 .modal-badge {
-    background: rgba(242, 92, 5, 0.1);
+    background: rgba(0, 163, 255, 0.1);
     color: var(--primary-color);
     padding: 8px 16px;
     border-radius: 8px;
@@ -262,7 +262,7 @@
     width: fit-content;
     text-transform: uppercase;
     letter-spacing: 1px;
-    border: 1px solid rgba(242, 92, 5, 0.2);
+    border: 1px solid rgba(0, 163, 255, 0.2);
 }
 
 .modal-title {

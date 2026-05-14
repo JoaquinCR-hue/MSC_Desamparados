@@ -18,14 +18,14 @@
 
 .header-badge {
     display: inline-block;
-    background: rgba(242, 92, 5, 0.1);
-    color: #f25c05;
+    background: rgba(0, 163, 255, 0.1);
+    color: var(--primary-color);
     padding: 4px 12px;
     border-radius: 6px;
     font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 1px;
-    border: 1px solid rgba(242, 92, 5, 0.2);
+    border: 1px solid rgba(0, 163, 255, 0.2);
     margin-bottom: 1rem;
 }
 
@@ -33,7 +33,7 @@
     font-size: 2.8rem;
     font-weight: 800;
     margin-bottom: 0.5rem;
-    background: linear-gradient(90deg, #f25c05, var(--text-main));
+    background: linear-gradient(90deg, var(--primary-color), var(--text-main));
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -48,7 +48,7 @@
 .alert-banner-v2 {
     background: var(--bg-main);
     border: 1px solid var(--border-main);
-    border-left: 4px solid #f25c05;
+    border-left: 4px solid var(--primary-color);
     border-radius: 12px;
     padding: 1.25rem 2rem;
     margin-bottom: 2.5rem;
@@ -66,7 +66,7 @@
 
 .alert-content i {
     font-size: 1.5rem;
-    color: #f25c05;
+    color: var(--primary-color);
 }
 
 .premium-loader {
@@ -81,7 +81,7 @@
 .pulse-loader {
     width: 60px;
     height: 60px;
-    background: #f25c05;
+    background: var(--primary-color);
     border-radius: 50%;
     animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }

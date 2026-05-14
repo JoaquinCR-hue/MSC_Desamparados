@@ -79,8 +79,8 @@
 .form-group-custom select:focus,
 .form-group-custom textarea:focus {
   outline: none;
-  border-color: #f25c05;
-  box-shadow: 0 0 0 2px rgba(242, 92, 5, 0.2);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 163, 255, 0.2);
 }
 
 .form-group-custom textarea {
@@ -94,7 +94,7 @@ select option {
 }
 
 .submit-report-btn {
-  background-color: #f25c05;
+  background-color: var(--primary-color);
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -108,13 +108,13 @@ select option {
   justify-content: center;
   gap: 10px;
   margin-top: 10px;
-  box-shadow: 0 4px 15px rgba(242, 92, 5, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 163, 255, 0.3);
 }
 
 .submit-report-btn:hover {
-  background-color: #d94e04;
+  background-color: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(242, 92, 5, 0.4);
+  box-shadow: 0 6px 20px rgba(0, 163, 255, 0.4);
 }
 
 .report-form-wrapper.map-layout {

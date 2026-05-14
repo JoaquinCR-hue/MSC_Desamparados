@@ -24,8 +24,8 @@
 }
 
 .input-group input:focus {
-  border-color: #f25c05;
-  box-shadow: 0 0 8px rgba(242, 92, 5, 0.3);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 8px rgba(0, 163, 255, 0.3);
 }
 
 /* Estilos de error */
@@ -46,7 +46,7 @@
 
 .loading-text {
   font-size: 0.8rem;
-  color: #f25c05;
+  color: var(--primary-color);
   margin-left: 10px;
   font-style: italic;
   font-weight: 400;

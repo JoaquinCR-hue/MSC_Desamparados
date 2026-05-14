@@ -55,7 +55,7 @@
 
 .sidebar-item.active {
     background: #fff0e6;
-    color: #f25c05;
+    color: var(--primary-color);
 }
 
 .sidebar-item i {
@@ -179,7 +179,7 @@
     bottom: -50px;
     width: 250px;
     height: 250px;
-    background: radial-gradient(circle, rgba(242, 92, 5, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(0, 163, 255, 0.15) 0%, transparent 70%);
     z-index: 0;
 }
 
@@ -192,7 +192,7 @@
     align-items: center;
     justify-content: center;
     font-size: 2.5rem;
-    color: #f25c05;
+    color: var(--primary-color);
     z-index: 1;
     overflow: hidden;
 }
@@ -234,11 +234,11 @@
     font-family: 'Orbitron', sans-serif;
     font-size: 3.5rem;
     font-weight: 700;
-    color: #f25c05;
+    color: var(--primary-color);
 }
 
 .btn-call-now {
-    background: linear-gradient(135deg, #f25c05, #ea580c);
+    background: linear-gradient(135deg, var(--primary-color), #ea580c);
     color: white;
     padding: 14px 28px;
     border-radius: 14px;
@@ -252,7 +252,7 @@
 
 .btn-call-now:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 15px rgba(242, 92, 5, 0.3);
+    box-shadow: 0 10px 15px rgba(0, 163, 255, 0.3);
 }
 
 /* Directory Grid */
@@ -274,7 +274,7 @@
 }
 
 .directory-card:hover {
-    border-color: #f25c05;
+    border-color: var(--primary-color);
     box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
 }
 
@@ -295,7 +295,7 @@
     align-items: center;
     justify-content: center;
     font-size: 1.6rem;
-    color: #f25c05;
+    color: var(--primary-color);
     overflow: hidden;
 }
 
@@ -327,7 +327,7 @@
     font-family: 'Orbitron', sans-serif;
     font-size: 1.3rem;
     font-weight: 700;
-    color: #f25c05;
+    color: var(--primary-color);
 }
 
 .card-description {
@@ -396,7 +396,7 @@
 
 .footer-actions a {
     text-decoration: none;
-    color: #f25c05;
+    color: var(--primary-color);
     font-weight: 600;
     display: flex;
     align-items: center;

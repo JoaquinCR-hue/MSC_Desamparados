@@ -32,7 +32,7 @@
 .sidebar-section h3 {
     font-size: 1.1rem;
     font-weight: 700;
-    color: #f25c05;
+    color: var(--primary-color);
     margin-bottom: 1.25rem;
     display: flex;
     align-items: center;
@@ -62,7 +62,7 @@
 .legend-item-v2:hover {
     transform: translateX(8px);
     background: var(--bg-card-hover);
-    border-color: rgba(242, 92, 5, 0.3);
+    border-color: rgba(0, 163, 255, 0.3);
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -132,7 +132,7 @@
     background: var(--bg-main);
 }
 .stats-scroll::-webkit-scrollbar-thumb {
-    background: #f25c05;
+    background: var(--primary-color);
     border-radius: 2px;
 }
 
@@ -163,13 +163,13 @@
 }
 
 .count-badge-v2 {
-    background: rgba(242, 92, 5, 0.1);
-    color: #f25c05;
+    background: rgba(0, 163, 255, 0.1);
+    color: var(--primary-color);
     padding: 4px 10px;
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 800;
-    border: 1px solid rgba(242, 92, 5, 0.2);
+    border: 1px solid rgba(0, 163, 255, 0.2);
 }
 
 .progress-track {
@@ -212,12 +212,12 @@
 }
 
 .popup-banner {
-    background: rgba(242, 92, 5, 0.1);
+    background: rgba(0, 163, 255, 0.1);
     padding: 12px 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(242, 92, 5, 0.2);
+    border-bottom: 1px solid rgba(0, 163, 255, 0.2);
 }
 
 .popup-type {
@@ -225,7 +225,7 @@
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: #f25c05;
+    color: var(--primary-color);
 }
 
 .popup-date {
@@ -261,7 +261,7 @@
     padding: 6px 12px;
     border-radius: 8px;
     width: fit-content;
-    color: #f25c05;
+    color: var(--primary-color);
     border: 1px solid var(--border-main);
 }
 
