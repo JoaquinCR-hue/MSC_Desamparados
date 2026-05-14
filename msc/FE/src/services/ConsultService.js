@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 // URL base del endpoint de consultas
-const CONSULTS_URL = 'http://localhost:3001/consults';
+const CONSULTS_URL = 'http://127.0.0.1:3000/api/v1/consults';
 
 const ConsultService = {
   /**
