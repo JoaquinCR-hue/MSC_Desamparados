@@ -7,10 +7,12 @@ import '../styles/ConsultManager.css';
 function ConsultManager() {
     const [consults, setConsults] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    const fetchConsults = async () => {
+    const fetchConsults = async (search = '') => {
         try {
-            const data = await ConsultService.getConsults();
+            const query = search ? `?search=${encodeURIComponent(search)}` : '';
+            const data = await ConsultService.getConsults(query);
             // Ordenar por estado: 'Pendiente' primero, luego por fecha descendente
             const sortedData = data.sort((a, b) => {
                 if (a.estado === 'Pendiente' && b.estado !== 'Pendiente') return -1;
@@ -26,8 +28,11 @@ function ConsultManager() {
     };
 
     useEffect(() => {
-        fetchConsults();
-    }, []);
+        const timeoutId = setTimeout(() => {
+            fetchConsults(searchTerm);
+        }, 500); // 500ms debounce
+        return () => clearTimeout(timeoutId);
+    }, [searchTerm]);
 
     // Función para registrar una respuesta oficial a una consulta
     const handleRespond = async (consult) => {
@@ -91,6 +96,19 @@ function ConsultManager() {
             <div className="info-banner-v2">
                 <i className="fa-solid fa-circle-info"></i>
                 <p className="mb-0">Administre las comunicaciones entrantes y brinde respuestas oficiales para mejorar la satisfacción comunitaria.</p>
+            </div>
+
+            <div className="search-container" style={{ margin: '25px 0', display: 'flex', justifyContent: 'flex-end' }}>
+                <div style={{ position: 'relative', width: '100%', maxWidth: '450px' }}>
+                    <i className="fa-solid fa-magnifying-glass" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }}></i>
+                    <input 
+                        type="text" 
+                        placeholder="Buscar por nombre, cédula o descripción..." 
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{ padding: '12px 15px 12px 40px', borderRadius: '8px', border: '1px solid var(--border-strong)', width: '100%', backgroundColor: 'var(--bg-card)', color: 'var(--text-main)', fontSize: '0.95rem', outline: 'none' }}
+                    />
+                </div>
             </div>
 
             {consults.length === 0 ? (

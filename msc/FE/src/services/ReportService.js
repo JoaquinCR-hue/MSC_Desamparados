@@ -10,13 +10,13 @@ const getAuthHeaders = () => {
 };
 
 /**
- * Obtiene todos los reportes (Requiere Auth).
+ * Obtiene todos los reportes (Requiere Auth), soporta filtros avanzados.
  */
-async function getReports() {
+async function getReports(queryParams = '') {
   try {
-    const response = await fetch(BASE_URL, { headers: getAuthHeaders() });
+    const response = await fetch(`${BASE_URL}${queryParams}`, { headers: getAuthHeaders() });
     const result = await response.json();
-    const reportData = result.data || [];
+    const reportData = Array.isArray(result) ? result : (result.data || []);
 
     return reportData.map((report) => {
       if (report.lat && report.lng) {

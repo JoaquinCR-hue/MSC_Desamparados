@@ -6,12 +6,13 @@ const CONSULTS_URL = 'http://127.0.0.1:3000/api/v1/consults';
 
 const ConsultService = {
   /**
-   * Obtiene todas las consultas registradas en el sistema.
+   * Obtiene todas las consultas registradas en el sistema, con soporte para filtros.
+   * @param {string} queryParams - Parámetros de búsqueda opcionales
    * @returns {Promise<Array>} Lista de consultas
    */
-  getConsults: async () => {
+  getConsults: async (queryParams = '') => {
     try {
-      const response = await axios.get(CONSULTS_URL);
+      const response = await axios.get(`${CONSULTS_URL}${queryParams}`);
       return response.data;
     } catch (error) {
       console.error('Error al obtener las consultas:', error);
