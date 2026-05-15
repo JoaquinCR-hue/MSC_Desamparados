@@ -1,14 +1,20 @@
 const express = require('express');
 const router = express.Router();
+const { verifyToken, authorize } = require('../middlewares/authMiddleware');
 
+const authRoutes = require('./authRoutes');
 const usersRoutes = require('./users');
 const reportsRoutes = require('./reports');
 const consultsRoutes = require('./consults');
 const patrolsRoutes = require('./patrols');
 
-router.use('/users', usersRoutes);
-router.use('/reports', reportsRoutes);
-router.use('/consults', consultsRoutes);
-router.use('/patrols', patrolsRoutes);
+// Rutas públicas
+router.use('/auth', authRoutes);
+
+// Rutas protegidas (requieren autenticación)
+router.use('/users', verifyToken, authorize('admin'), usersRoutes);
+router.use('/reports', verifyToken, reportsRoutes);
+router.use('/consults', verifyToken, consultsRoutes);
+router.use('/patrols', verifyToken, authorize(['admin', 'funcionario']), patrolsRoutes);
 
 module.exports = router;

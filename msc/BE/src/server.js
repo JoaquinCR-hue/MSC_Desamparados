@@ -1,5 +1,6 @@
 const app = require('./app');
 const { sequelize } = require('./models');
+const seedDatabase = require('./seed');
 
 const PORT = process.env.PORT || 3000;
 
@@ -11,8 +12,11 @@ const startServer = async () => {
     console.log('✅ Conexion a la base de datos establecida exitosamente.');
 
     // Sincronizar modelos con la BD (crea tablas si no existen)
-    // En producción se recomienda usar migraciones en lugar de sync
-    // await sequelize.sync({ force: false });
+    await sequelize.sync({ force: false });
+    console.log('✅ Modelos sincronizados con la base de datos.');
+
+    // Sembrar datos iniciales (roles)
+    await seedDatabase();
 
     app.listen(PORT, () => {
       console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
