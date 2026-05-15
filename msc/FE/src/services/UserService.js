@@ -1,5 +1,5 @@
 // Servicio de gestión de usuarios — operaciones CRUD contra el backend
-const BASE_URL = 'http://127.0.0.1:3001/users';
+const BASE_URL = 'http://127.0.0.1:3000/api/v1/users';
 
 /**
  * Obtiene la lista completa de usuarios registrados en el sistema.
@@ -8,8 +8,8 @@ const BASE_URL = 'http://127.0.0.1:3001/users';
 async function getUsers() {
   try {
     const serverResponse = await fetch(BASE_URL);
-    const userData = await serverResponse.json();
-    return userData;
+    const result = await serverResponse.json();
+    return result.data;
   } catch (error) {
     console.error('Error al obtener los usuarios:', error);
   }
@@ -27,8 +27,8 @@ async function createUser(user) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user),
     });
-    const userData = await response.json();
-    return userData;
+    const result = await response.json();
+    return result.data;
   } catch (error) {
     console.error('Error al crear el usuario:', error);
   }
@@ -47,8 +47,8 @@ async function updateUser(user, id) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(user),
     });
-    const userData = await response.json();
-    return userData;
+    const result = await response.json();
+    return result.data;
   } catch (error) {
     console.error('Error al actualizar el usuario:', error);
   }
@@ -64,8 +64,8 @@ async function deleteUser(id) {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: 'DELETE',
     });
-    const userData = await response.json();
-    return userData;
+    const result = await response.json();
+    return result.data;
   } catch (error) {
     console.error('Error al eliminar el usuario:', error);
   }
@@ -80,12 +80,13 @@ async function deleteUser(id) {
 async function recoverPassword(id, updatedData) {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
-      method: 'PATCH',
+      method: 'PUT', // Changed PATCH to PUT since our controllers don't have PATCH explicitly mapped by default, or we can use PUT
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedData),
     });
     if (!response.ok) throw new Error('No se pudo actualizar el usuario');
-    return await response.json();
+    const result = await response.json();
+    return result.data;
   } catch (error) {
     console.error('Error en recoverPassword:', error);
     throw error;

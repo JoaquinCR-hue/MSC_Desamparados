@@ -1,5 +1,5 @@
 // Servicio de gestión de reportes de incidentes
-const BASE_URL = 'http://127.0.0.1:3001/reports';
+const BASE_URL = 'http://127.0.0.1:3000/api/v1/reports';
 
 /**
  * Obtiene todos los reportes registrados y aplica un offset

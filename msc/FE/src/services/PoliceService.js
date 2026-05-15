@@ -1,5 +1,5 @@
 // Servicio de gestión de unidades de patrullaje policial
-const BASE_URL = 'http://127.0.0.1:3001/patrols';
+const BASE_URL = 'http://127.0.0.1:3000/api/v1/patrols';
 
 /**
  * Obtiene todas las unidades de patrullaje registradas.

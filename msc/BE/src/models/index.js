@@ -1,38 +1,41 @@
-const { sequelize } = require('../config/database');
 const fs = require('fs');
 const path = require('path');
-const { DataTypes } = require('sequelize');
-
-// Objeto central que almacena todos los modelos registrados
+const Sequelize = require('sequelize');
+const process = require('process');
+const basename = path.basename(__filename);
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/database.js')[env];
 const db = {};
 
-// Ruta base donde se encuentran los archivos de modelos
-const modelsPath = __dirname;
+let sequelize;
+if (config.use_env_variable) {
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+} else {
+  sequelize = new Sequelize(config.database, config.username, config.password, config);
+}
 
-// Lee todos los archivos .js del directorio (excepto este mismo)
-// y los registra como modelos de Sequelize
-fs.readdirSync(modelsPath)
-  .filter((file) => {
+fs
+  .readdirSync(__dirname)
+  .filter(file => {
     return (
       file.indexOf('.') !== 0 &&
-      file !== path.basename(__filename) &&
-      file.slice(-3) === '.js'
+      file !== basename &&
+      file.slice(-3) === '.js' &&
+      file.indexOf('.test.js') === -1
     );
   })
-  .forEach((file) => {
-    // Carga el modelo y lo registra usando su nombre como clave
-    const model = require(path.join(modelsPath, file))(sequelize, DataTypes);
+  .forEach(file => {
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
     db[model.name] = model;
   });
 
-// Ejecuta las asociaciones entre modelos si están definidas
-Object.keys(db).forEach((modelName) => {
+Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
 });
 
-// Expone la instancia de sequelize para uso externo
 db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
 module.exports = db;
