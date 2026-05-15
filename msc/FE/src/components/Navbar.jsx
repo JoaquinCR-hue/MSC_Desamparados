@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import NotificationBell from './NotificationBell';
+import UserService from '../services/UserService';
+import Swal from 'sweetalert2';
 import '../styles/Navbar.css';
 
 /**
- * Barra de navegación principal de la aplicación.
- * Muestra diferentes enlaces según el rol del usuario autenticado.
- * Gestiona el menú desplegable, el modo oscuro/claro y el cierre de sesión.
+ * Barra de navegación principal con monitoreo de inactividad y seguridad JWT.
  */
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,34 +14,9 @@ const Navbar = () => {
   const menuRef = useRef(null);
   const navigate = useNavigate();
 
-  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
-  /**
-   * Alterna entre el tema oscuro y el tema claro,
-   * persistiendo la preferencia en localStorage.
-   */
-  const toggleTheme = () => {
-    const newTheme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-  };
-
-  // Aplica el atributo data-theme al documento cuando cambia el tema
-  useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
-
-  // Cierra el menú desplegable al hacer clic fuera de él
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setIsMenuOpen(false);
-      }
-    };
-    // Usamos 'click' en lugar de 'mousedown' para mejor compatibilidad móvil
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [menuRef]);
+  // Temporizadores para inactividad
+  const warningTimerRef = useRef(null);
+  const logoutTimerRef = useRef(null);
 
   /**
    * Obtiene el usuario autenticado desde sessionStorage.
@@ -58,6 +33,129 @@ const Navbar = () => {
   const isCitizen = user && user.role === 'ciudadano';
   const isOfficer = user && user.role === 'funcionario';
   const isAdmin = user && user.role === 'admin';
+
+  /**
+   * Lógica de Cierre de Sesión por Inactividad
+   */
+  const handleAutoLogout = () => {
+    sessionStorage.removeItem('user');
+    Swal.fire({
+      title: 'Sesión Cerrada',
+      text: 'Por seguridad de inactividad se ha cerrado la sesión, vuelve a iniciar sesión.',
+      icon: 'info',
+      confirmButtonText: 'Entendido',
+      background: 'var(--bg-main)',
+      color: 'var(--text-main)'
+    }).then(() => {
+      window.location.href = '/login';
+    });
+  };
+
+  /**
+   * Muestra la alerta de advertencia tras 3 minutos de inactividad.
+   */
+  const showInactivityWarning = () => {
+    Swal.fire({
+      title: '¿Sigues ahí?',
+      text: 'Tu sesión está a punto de expirar por inactividad.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, seguir aquí',
+      cancelButtonText: 'Cerrar sesión ahora',
+      timer: 60000, // 1 minuto para responder
+      timerProgressBar: true,
+      background: 'var(--bg-main)',
+      color: 'var(--text-main)'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // El usuario sigue activo, reiniciamos los timers
+        resetInactivityTimers();
+      } else if (result.dismiss === Swal.DismissReason.timer || result.isDismissed) {
+        // Se acabó el tiempo o el usuario decidió salir
+        handleAutoLogout();
+      }
+    });
+  };
+
+  /**
+   * Reinicia los temporizadores de inactividad.
+   */
+  const resetInactivityTimers = () => {
+    if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
+    if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+
+    if (user) {
+      // 3 minutos para la advertencia (180,000 ms)
+      warningTimerRef.current = setTimeout(showInactivityWarning, 180000);
+    }
+  };
+
+  // Monitorear actividad del usuario
+  useEffect(() => {
+    if (!user) return;
+
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    
+    const handleUserActivity = () => {
+      // Solo reiniciamos si no hay una alerta de Swal abierta
+      if (!Swal.isVisible()) {
+        resetInactivityTimers();
+      }
+    };
+
+    events.forEach(event => document.addEventListener(event, handleUserActivity));
+    resetInactivityTimers(); // Iniciar timers al cargar
+
+    return () => {
+      events.forEach(event => document.removeEventListener(event, handleUserActivity));
+      if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
+    };
+  }, [user]);
+
+  // Verificación de validez del Token
+  useEffect(() => {
+    if (!user || !user.token) return;
+
+    const checkTokenStatus = async () => {
+      try {
+        await UserService.checkStatus(user.token);
+      } catch (error) {
+        if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
+        if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
+        handleAutoLogout();
+      }
+    };
+
+    const interval = setInterval(checkTokenStatus, 60000); // Cada minuto
+    return () => clearInterval(interval);
+  }, [user]);
+
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+  };
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+  }, [theme]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [menuRef]);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('user');
+    window.location.href = '/';
+  };
 
   return (
     <>
@@ -102,7 +200,6 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Navigation Actions: Theme, Notifications, Menu, Report */}
           <div className="nav-actions">
             <button className="theme-toggle-btn" onClick={toggleTheme} title={theme === 'dark' ? 'Modo Día' : 'Modo Noche'}>
               {theme === 'dark' ? <i className="fa-solid fa-sun"></i> : <i className="fa-solid fa-moon"></i>}
@@ -157,15 +254,14 @@ const Navbar = () => {
                 )}
 
                 {(isOfficer || isAdmin) && (
-                  <Link to="/statistics" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
-                    <i className="fa-solid fa-chart-line"></i>Estadísticas
-                  </Link>
-                )}
-
-                {(isOfficer || isAdmin) && (
-                  <Link to="/manage-reports" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
-                    <i className="fa-solid fa-file-shield"></i>G.Reportes
-                  </Link>
+                  <>
+                    <Link to="/statistics" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                      <i className="fa-solid fa-chart-line"></i>Estadísticas
+                    </Link>
+                    <Link to="/manage-reports" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                      <i className="fa-solid fa-file-shield"></i>G.Reportes
+                    </Link>
+                  </>
                 )}
 
                 {user && <div className="dropdown-divider"></div>}
@@ -182,10 +278,7 @@ const Navbar = () => {
                     </Link>
                   </>
                 ) : (
-                  <button className="dropdown-item logout-btn" onClick={() => {
-                    sessionStorage.removeItem('user');
-                    window.location.href = '/';
-                  }}>
+                  <button className="dropdown-item logout-btn" onClick={handleLogout}>
                     <i className="fa-solid fa-power-off"></i>
                     Cerrar Sesión
                   </button>
