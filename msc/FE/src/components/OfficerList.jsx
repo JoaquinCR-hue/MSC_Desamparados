@@ -6,13 +6,15 @@ const OfficerList = () => {
   const [officers, setOfficers] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newOfficer, setNewOfficer] = useState({ nombre: '', cedula: '', email: '', telefono: '', role: 'admin', pass: '' });
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Estado para la edición
   const [editingId, setEditingId] = useState(null);
   const [editOfficer, setEditOfficer] = useState(null);
 
-  const loadData = async () => {
-    const data = await UserService.getUsers();
+  const loadData = async (search = '') => {
+    const query = search ? `?search=${encodeURIComponent(search)}` : '';
+    const data = await UserService.getUsers(query);
     if (data) {
       // Filtrar para mostrar solo aquellos que no son ciudadanos
       setOfficers(data.filter(u => u.role !== 'ciudadano'));
@@ -20,8 +22,11 @@ const OfficerList = () => {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    const timeoutId = setTimeout(() => {
+      loadData(searchTerm);
+    }, 500); // 500ms debounce
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   const handleDelete = async (id) => {
     import('sweetalert2').then(Swal => {
@@ -36,7 +41,7 @@ const OfficerList = () => {
       }).then(async (result) => {
         if (result.isConfirmed) {
           await UserService.deleteUser(id);
-          loadData();
+          loadData(searchTerm);
           Swal.default.fire('¡Eliminado!', 'El funcionario ha sido borrado.', 'success');
         }
       });
@@ -66,7 +71,7 @@ const OfficerList = () => {
     await UserService.createUser(officerData);
     setShowAddForm(false);
     setNewOfficer({ nombre: '', cedula: '', email: '', telefono: '', role: 'admin', pass: '' });
-    loadData();
+    loadData(searchTerm);
 
     import('sweetalert2').then(Swal => {
       Swal.default.fire('¡Agregado!', 'El funcionario ha sido registrado con éxito.', 'success');
@@ -95,7 +100,7 @@ const OfficerList = () => {
     await UserService.updateUser(editOfficer, id);
     setEditingId(null);
     setEditOfficer(null);
-    loadData();
+    loadData(searchTerm);
     import('sweetalert2').then(Swal => {
       Swal.default.fire('¡Actualizado!', 'Los datos se modificaron correctamente.', 'success');
     });
@@ -103,11 +108,21 @@ const OfficerList = () => {
 
   return (
     <div className="list-container">
-      <div className="list-controls">
+      <div className="list-controls" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h3 className="section-title">Lista de Funcionarios</h3>
-        <button className="btn-new" onClick={() => setShowAddForm(!showAddForm)}>
-          <i className={`fa-solid ${showAddForm ? 'fa-xmark' : 'fa-user-plus'}`}></i> {showAddForm ? 'CANCELAR' : 'NUEVO FUNCIONARIO'}
-        </button>
+        <div className="search-container" style={{ display: 'flex', gap: '10px' }}>
+          <input 
+            type="text" 
+            placeholder="Buscar por nombre, correo o cédula..." 
+            className="inline-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ minWidth: '300px' }}
+          />
+          <button className="btn-new" onClick={() => setShowAddForm(!showAddForm)}>
+            <i className={`fa-solid ${showAddForm ? 'fa-xmark' : 'fa-user-plus'}`}></i> {showAddForm ? 'CANCELAR' : 'NUEVO FUNCIONARIO'}
+          </button>
+        </div>
       </div>
 
       {showAddForm && (

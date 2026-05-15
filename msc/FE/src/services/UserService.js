@@ -46,11 +46,11 @@ async function checkStatus(token) {
 }
 
 /**
- * Obtiene la lista completa de usuarios (Solo Admin).
+ * Obtiene la lista completa de usuarios (Solo Admin), soporta filtros avanzados.
  */
-async function getUsers() {
+async function getUsers(queryParams = '') {
   const user = JSON.parse(sessionStorage.getItem('user'));
-  const response = await fetch(`${BASE_URL}/users`, {
+  const response = await fetch(`${BASE_URL}/users${queryParams}`, {
     headers: { 'Authorization': `Bearer ${user?.token}` }
   });
   const result = await response.json();

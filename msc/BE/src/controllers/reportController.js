@@ -1,16 +1,67 @@
 const { Report, Location, IncidentType, User, sequelize } = require('../models');
+const { Op } = require('sequelize');
 
+/**
+ * Obtiene todos los reportes, con soporte opcional para filtros, búsqueda por texto y ordenamiento.
+ * 
+ * Funcionalidades Avanzadas Soportadas:
+ * - Filtro por estado: ?status=Pendiente
+ * - Filtro por tipo: ?tipo=Robo
+ * - Búsqueda por texto (en descripción): ?search=auto
+ * - Ordenamiento dinámico: ?sortBy=date&order=DESC
+ * 
+ * @param {Object} req - Petición HTTP Express
+ * @param {Object} res - Respuesta HTTP Express
+ */
 exports.getAll = async (req, res) => {
     try {
+        const { status, tipo, search, sortBy, order } = req.query;
+
+        // Construir condiciones de búsqueda para el Reporte (Filtros y Búsqueda por texto)
+        const reportWhere = {};
+        
+        if (status) {
+            reportWhere.status = status;
+        }
+
+        if (search) {
+            reportWhere.description = {
+                [Op.like]: `%${search}%`
+            };
+        }
+
+        // Construir condiciones para el Tipo de Incidente
+        const typeWhere = {};
+        if (tipo) {
+            typeWhere.name = tipo;
+        }
+
+        // Construir configuración de ordenamiento dinámico
+        let orderArray = [['createdAt', 'DESC']]; // Orden por defecto
+        if (sortBy) {
+            const validSortFields = ['date', 'status', 'createdAt', 'updatedAt'];
+            if (validSortFields.includes(sortBy)) {
+                const sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
+                orderArray = [[sortBy, sortOrder]];
+            }
+        }
+
+        // Ejecutar la consulta con Sequelize usando las condiciones construidas
         const reports = await Report.findAll({
+            where: reportWhere,
+            order: orderArray,
             include: [
                 { model: Location, as: 'location' },
-                { model: IncidentType, as: 'incidentType' },
+                { 
+                    model: IncidentType, 
+                    as: 'incidentType',
+                    where: Object.keys(typeWhere).length > 0 ? typeWhere : undefined
+                },
                 { model: User, as: 'creator' }
             ]
         });
 
-        // Mapeo al formato plano del FE
+        // Mapeo al formato plano que espera el Frontend
         const mappedReports = reports.map(r => ({
             id: r.id,
             tipo: r.incidentType ? r.incidentType.name : 'Desconocido',
@@ -26,7 +77,7 @@ exports.getAll = async (req, res) => {
             lng: r.location ? r.location.lng : null
         }));
 
-        res.status(200).json(mappedReports); // El FE espera un array directo o con formato. ReportService hace await json().
+        res.status(200).json(mappedReports); 
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
     }
