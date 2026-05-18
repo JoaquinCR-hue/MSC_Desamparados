@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import ReportService from '../services/ReportService';
 import '../styles/ReportManager.css';
@@ -32,7 +33,8 @@ const ReportManager = () => {
   const user = userStr ? JSON.parse(userStr) : null;
   const canDelete = user && (user.role === 'admin' || user.role === 'funcionario');
 
-  const EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000; // Tiempo de expiración: 7 días
+  const EXPIRY_TIME = 3 * 24 * 60 * 60 * 1000; // Tiempo de expiración: 3 días
+  const locationState = useLocation().state;
 
   // Carga los reportes desde el servicio y realiza limpieza automática
   const loadReports = async () => {
@@ -59,6 +61,14 @@ const ReportManager = () => {
       }
       
       setReports(validReports);
+
+      // Si venimos de la campana de notificaciones con un ID específico
+      if (locationState?.openReportId) {
+        const reportToOpen = validReports.find(r => r.id === locationState.openReportId);
+        if (reportToOpen) {
+          setSelectedReport(reportToOpen);
+        }
+      }
     } catch (error) {
       console.error("Error loading reports", error);
     } finally {
@@ -68,7 +78,7 @@ const ReportManager = () => {
 
   useEffect(() => {
     loadReports();
-  }, []);
+  }, [locationState]);
 
   // Maneja la eliminación manual de un reporte
   const handleDelete = (id) => {
@@ -124,7 +134,7 @@ const ReportManager = () => {
     const timeLeft = expiresAt - Date.now();
     const oneDay = 24 * 60 * 60 * 1000;
     if (timeLeft < oneDay) return 'time-critical';
-    if (timeLeft < oneDay * 2) return 'time-warning';
+    if (timeLeft < oneDay * 1.5) return 'time-warning';
     return 'time-ok';
   };
 
@@ -197,15 +207,26 @@ const ReportManager = () => {
                     <td colSpan="5" className="text-center py-5 text-muted">No se encontraron reportes con los criterios seleccionados.</td>
                   </tr>
                 ) : (
-                  filteredReports.map((rep) => (
-                    <tr key={rep.id}>
-                      <td><span className="fw-bold">{rep.tipo}</span></td>
-                      <td>
-                        <div className="loc-info">
-                          <strong>{rep.distrito}</strong>
-                          <small>{rep.barrio}</small>
-                        </div>
-                      </td>
+                  filteredReports.map((rep) => {
+                    const isEmerg = Boolean(rep.isEmergency);
+                    const rowColor = isEmerg ? '#ff0000' : '#ff8800';
+                    return (
+                      <tr key={rep.id}>
+                        <td>
+                          <span 
+                            className="fw-bold" 
+                            style={{ color: rowColor }}
+                          >
+                            <i className={`fa-solid ${isEmerg ? 'fa-circle-exclamation fa-beat' : 'fa-triangle-exclamation'} me-2`}></i>
+                            {rep.tipo}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="loc-info">
+                            <strong>{rep.distrito}</strong>
+                            <small>{rep.barrio}</small>
+                          </div>
+                        </td>
                       <td>{new Date(rep.fecha).toLocaleDateString()}</td>
                       <td>
                         <span className={`time-badge ${getTimeLeftClass(rep.fecha)}`}>
@@ -232,8 +253,9 @@ const ReportManager = () => {
                           )}
                         </div>
                       </td>
-                    </tr>
-                  ))
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
@@ -268,7 +290,12 @@ const ReportManager = () => {
                 </MapContainer>
               </div>
               <div className="modal-info-side">
-                <span className="modal-badge">{selectedReport.tipo}</span>
+                <span 
+                  className="modal-badge"
+                  style={{ backgroundColor: Boolean(selectedReport.isEmergency) ? '#ff0000' : '#ff8800', color: 'white' }}
+                >
+                  {selectedReport.tipo}
+                </span>
                 <h2 className="modal-title">{selectedReport.distrito}</h2>
                 <div className="modal-description">
                   {selectedReport.descripcion || "Sin descripción adicional proporcionada por el usuario."}

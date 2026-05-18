@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import NotificationBell from './NotificationBell';
+import EmergencyButton from './EmergencyButton';
 import UserService from '../services/UserService';
 import Swal from 'sweetalert2';
 import '../styles/Navbar.css';
@@ -33,7 +34,12 @@ const Navbar = () => {
   /**
    * Lógica de Cierre de Sesión por Inactividad
    */
-  const handleAutoLogout = () => {
+  const handleAutoLogout = async () => {
+    try {
+      await UserService.logout();
+    } catch (err) {
+      console.error('Error al cerrar sesión auto:', err);
+    }
     sessionStorage.removeItem('user');
     Swal.fire({
       title: 'Sesión Cerrada',
@@ -108,13 +114,13 @@ const Navbar = () => {
     };
   }, [user]);
 
-  // Verificación de validez del Token (opcional pero complementaria)
+  // Verificación de validez de la sesión mediante cookies
   useEffect(() => {
-    if (!user || !user.token) return;
+    if (!user) return;
 
     const checkTokenStatus = async () => {
       try {
-        await UserService.checkStatus(user.token);
+        await UserService.checkStatus();
       } catch (error) {
         if (warningTimerRef.current) clearTimeout(warningTimerRef.current);
         if (logoutTimerRef.current) clearTimeout(logoutTimerRef.current);
@@ -147,7 +153,13 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [menuRef]);
 
-  const handleLogout = () => {
+  const handleLogout = async (e) => {
+    if (e) e.preventDefault();
+    try {
+      await UserService.logout();
+    } catch (err) {
+      console.error('Error al cerrar sesión en el servidor:', err);
+    }
     sessionStorage.removeItem('user');
     window.location.href = '/';
   };
@@ -244,13 +256,16 @@ const Navbar = () => {
             </div>
 
             {(isCitizen || isOfficer || isAdmin) && (
-              <button className="report-button" onClick={() => navigate('/report-incident')}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M11 5L6 9H2v6h4l5 4V5z" className="btn-icon-white" />
-                  <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" />
-                </svg>
-                Reportar
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <button className="report-button" onClick={() => navigate('/report-incident')}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11 5L6 9H2v6h4l5 4V5z" className="btn-icon-white" />
+                    <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" />
+                  </svg>
+                  Reportar
+                </button>
+                <EmergencyButton user={user} />
+              </div>
             )}
           </div>
         </nav>

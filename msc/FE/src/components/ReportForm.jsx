@@ -258,7 +258,10 @@ const ReportForm = () => {
       Swal.fire({
         title: '¡Reporte Enviado!',
         text: 'Incidente reportado con éxito. Gracias por colaborar con la seguridad local.',
-        icon: 'success'
+        icon: 'success',
+        confirmButtonColor: '#ff8800',
+        timer: 20000,
+        timerProgressBar: true
       });
 
       setFormData({ tipo: '', descripcion: '', distrito: '', barrio: '', direccion_exacta: '', fecha: '' });

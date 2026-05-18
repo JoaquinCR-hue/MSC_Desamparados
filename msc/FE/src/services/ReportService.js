@@ -1,11 +1,9 @@
-// Servicio de gestión de reportes de incidentes con autenticación JWT
-const BASE_URL = 'http://127.0.0.1:3000/api/v1/reports';
+// Servicio de gestión de reportes de incidentes con autenticación JWT mediante cookies
+const BASE_URL = '/api/v1/reports';
 
-const getAuthHeaders = () => {
-  const user = JSON.parse(sessionStorage.getItem('user'));
+const getHeaders = () => {
   return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${user?.token}`
+    'Content-Type': 'application/json'
   };
 };
 
@@ -14,7 +12,14 @@ const getAuthHeaders = () => {
  */
 async function getReports() {
   try {
-    const response = await fetch(BASE_URL, { headers: getAuthHeaders() });
+    // Añadimos un timestamp para evitar CUALQUIER tipo de cache del navegador
+    const response = await fetch(`${BASE_URL}?t=${Date.now()}`, { 
+      headers: getHeaders(),
+      credentials: 'include' 
+    });
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: No se pudieron obtener los reportes`);
+    }
     const result = await response.json();
     const reportData = result.data || [];
 
@@ -42,13 +47,18 @@ async function createReport(report) {
   try {
     const response = await fetch(BASE_URL, {
       method: 'POST',
-      headers: getAuthHeaders(),
+      headers: getHeaders(),
       body: JSON.stringify(report),
+      credentials: 'include'
     });
     const result = await response.json();
+    if (!response.ok) {
+      throw new Error(result.message || 'Error del servidor al crear reporte');
+    }
     return result.data;
   } catch (error) {
     console.error('Error al crear el reporte:', error);
+    throw error;
   }
 }
 
@@ -59,8 +69,9 @@ async function updateReport(report, id) {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: 'PUT',
-      headers: getAuthHeaders(),
+      headers: getHeaders(),
       body: JSON.stringify(report),
+      credentials: 'include'
     });
     const result = await response.json();
     return result.data;
@@ -76,7 +87,8 @@ async function deleteReport(id) {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: 'DELETE',
-      headers: getAuthHeaders(),
+      headers: getHeaders(),
+      credentials: 'include'
     });
     const result = await response.json();
     return result.data;

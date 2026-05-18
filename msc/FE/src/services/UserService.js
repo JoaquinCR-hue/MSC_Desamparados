@@ -1,14 +1,15 @@
 // Servicio de gestión de usuarios y autenticación — operaciones contra el backend Node.js
-const BASE_URL = 'http://127.0.0.1:3000/api/v1';
+const BASE_URL = '/api/v1';
 
 /**
- * Inicia sesión de un usuario y obtiene el token JWT.
+ * Inicia sesión de un usuario y obtiene el token JWT en cookie.
  */
 async function login(credentials) {
   const response = await fetch(`${BASE_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(credentials),
+    credentials: 'include'
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.message || 'Error al iniciar sesión');
@@ -16,13 +17,14 @@ async function login(credentials) {
 }
 
 /**
- * Registra un nuevo usuario en el sistema.
+ * Registra un nuevo usuario en el sistema y obtiene cookie.
  */
 async function register(userData) {
   const response = await fetch(`${BASE_URL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData),
+    credentials: 'include'
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.message || 'Error al registrarse');
@@ -30,15 +32,26 @@ async function register(userData) {
 }
 
 /**
- * Verifica si el token sigue siendo válido.
+ * Cierra la sesión (Limpia la cookie en el backend)
  */
-async function checkStatus(token) {
+async function logout() {
+  const response = await fetch(`${BASE_URL}/auth/logout`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include'
+  });
+  const result = await response.json();
+  return result;
+}
+
+/**
+ * Verifica si el token (cookie) sigue siendo válido.
+ */
+async function checkStatus() {
   const response = await fetch(`${BASE_URL}/auth/check-status`, {
     method: 'GET',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include'
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.message || 'Sesión expirada');
@@ -49,9 +62,8 @@ async function checkStatus(token) {
  * Obtiene la lista completa de usuarios (Solo Admin).
  */
 async function getUsers() {
-  const user = JSON.parse(sessionStorage.getItem('user'));
   const response = await fetch(`${BASE_URL}/users`, {
-    headers: { 'Authorization': `Bearer ${user?.token}` }
+    credentials: 'include'
   });
   const result = await response.json();
   return result.data;
@@ -61,14 +73,11 @@ async function getUsers() {
  * Crea un nuevo usuario (Solo Admin).
  */
 async function createUser(userData) {
-  const user = JSON.parse(sessionStorage.getItem('user'));
   const response = await fetch(`${BASE_URL}/users`, {
     method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${user?.token}`
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData),
+    credentials: 'include'
   });
   const result = await response.json();
   return result.data;
@@ -78,14 +87,11 @@ async function createUser(userData) {
  * Actualiza un usuario (Solo Admin).
  */
 async function updateUser(userData, id) {
-  const user = JSON.parse(sessionStorage.getItem('user'));
   const response = await fetch(`${BASE_URL}/users/${id}`, {
     method: 'PUT',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${user?.token}`
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(userData),
+    credentials: 'include'
   });
   const result = await response.json();
   return result.data;
@@ -95,10 +101,9 @@ async function updateUser(userData, id) {
  * Elimina un usuario (Solo Admin).
  */
 async function deleteUser(id) {
-  const user = JSON.parse(sessionStorage.getItem('user'));
   const response = await fetch(`${BASE_URL}/users/${id}`, {
     method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${user?.token}` }
+    credentials: 'include'
   });
   const result = await response.json();
   return result.data;
@@ -107,6 +112,7 @@ async function deleteUser(id) {
 export default { 
   login, 
   register, 
+  logout,
   checkStatus, 
   getUsers, 
   createUser, 

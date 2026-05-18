@@ -2,7 +2,10 @@
 import axios from 'axios';
 
 // URL base del endpoint de consultas
-const CONSULTS_URL = 'http://127.0.0.1:3000/api/v1/consults';
+const CONSULTS_URL = '/api/v1/consults';
+
+// Configurar Axios para enviar cookies por defecto
+axios.defaults.withCredentials = true;
 
 const ConsultService = {
   /**
@@ -12,7 +15,7 @@ const ConsultService = {
   getConsults: async () => {
     try {
       const response = await axios.get(CONSULTS_URL);
-      return response.data;
+      return response.data.data || [];
     } catch (error) {
       console.error('Error al obtener las consultas:', error);
       throw error;
@@ -27,7 +30,7 @@ const ConsultService = {
   createConsult: async (consult) => {
     try {
       const response = await axios.post(CONSULTS_URL, consult);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       console.error('Error al publicar la consulta:', error);
       throw error;
@@ -43,7 +46,7 @@ const ConsultService = {
   updateConsult: async (consult, id) => {
     try {
       const response = await axios.put(`${CONSULTS_URL}/${id}`, consult);
-      return response.data;
+      return response.data.data;
     } catch (error) {
       console.error('Error al actualizar la consulta:', error);
       throw error;

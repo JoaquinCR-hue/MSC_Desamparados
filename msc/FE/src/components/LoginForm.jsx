@@ -25,20 +25,21 @@ function LoginForm() {
     e.preventDefault();
 
     const nationalIdRegex = /^[1-9]\d{8}$/;
+    const cleanedId = nationalId.replace(/\D/g, '');
 
-    if (!nationalId || !password) {
+    if (!cleanedId || !password) {
       Swal.fire({ title: 'Error', text: 'Todos los campos son obligatorios 💜', icon: 'warning' });
       return;
     }
 
-    if (!nationalIdRegex.test(nationalId)) {
+    if (!nationalIdRegex.test(cleanedId)) {
       Swal.fire({ title: 'Formato Inválido', text: 'La cédula debe tener exactamente 9 dígitos.', icon: 'warning' });
       return;
     }
 
     try {
       // Llamada al servicio de autenticación JWT
-      const userData = await UserService.login({ nationalId, password });
+      const userData = await UserService.login({ nationalId: cleanedId, password });
 
       // Guardar datos del usuario y token en sessionStorage
       sessionStorage.setItem('user', JSON.stringify(userData));
@@ -77,7 +78,7 @@ function LoginForm() {
           label="Cédula"
           value={nationalId}
           placeholder="Ingrese su cédula"
-          onChange={(e) => setNationalId(e.target.value.replace(/\D/g, ''))}
+          onChange={(e) => setNationalId(e.target.value)}
         />
 
         <PasswordInput

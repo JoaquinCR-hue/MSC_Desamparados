@@ -129,7 +129,7 @@
 }
 
 .notification-item-type {
-    color: #ef4444;
+    color: var(--text-secondary);
     font-size: 0.85rem;
     font-weight: 700;
     display: flex;
@@ -175,4 +175,60 @@
 .notifications-footer:hover {
     background-color: var(--bg-secondary);
     color: var(--primary-hover);
+}
+
+.notifications-dropdown-v2 {
+    position: absolute;
+    top: 55px;
+    right: -10px;
+    width: 350px;
+    background-color: #1a1c22;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+    z-index: 2000;
+    overflow: hidden;
+    animation: bellFadeIn 0.3s ease-out;
+}
+
+.notifications-header-v2 {
+    padding: 14px 18px;
+    background-color: #0f1115;
+    border-bottom: 1px solid #334155;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-item-v2 {
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.notifications-footer-v2 {
+    padding: 12px;
+    text-align: center;
+    background-color: #0f1115;
+    cursor: pointer;
+    color: #f25c05;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-top: 1px solid #334155;
+}
+
+/* Estilos de Emergencia y Prioridad v2 */
+.notification-item-v2[data-emergency="true"] {
+    border-left: 10px solid #ff0000 !important;
+    background-color: rgba(255, 0, 0, 0.15) !important;
+}
+
+.notification-item-v2[data-emergency="false"] {
+    border-left: 10px solid #ff8800 !important;
+    background-color: rgba(255, 136, 0, 0.08) !important;
+}
+
+.notification-item.incident-item:hover {
+    background: linear-gradient(to right, rgba(249, 115, 22, 0.05), var(--bg-secondary)) !important;
 }

@@ -2,31 +2,51 @@ const { Report, Location, IncidentType, User, sequelize } = require('../models')
 
 exports.getAll = async (req, res) => {
     try {
+        // Limpieza automática: Borrar reportes de más de 3 días (72 horas)
+        const tresDiasAtras = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+        await Report.destroy({
+            where: {
+                date: {
+                    [require('sequelize').Op.lt]: tresDiasAtras
+                }
+            }
+        });
+
         const reports = await Report.findAll({
             include: [
                 { model: Location, as: 'location' },
                 { model: IncidentType, as: 'incidentType' },
                 { model: User, as: 'creator' }
-            ]
+            ],
+            order: [['date', 'DESC']]
         });
 
         // Mapeo al formato plano del FE
-        const mappedReports = reports.map(r => ({
-            id: r.id,
-            tipo: r.incidentType ? r.incidentType.name : 'Desconocido',
-            descripcion: r.description,
-            distrito: r.location ? r.location.district : '',
-            barrio: r.location ? r.location.neighborhood : '',
-            direccion_exacta: r.location ? r.location.exactAddress : '',
-            fecha: r.date,
-            id_creador: r.userId,
-            nombre_creador: r.creator ? r.creator.fullName : 'Anónimo',
-            estado: r.status,
-            lat: r.location ? r.location.lat : null,
-            lng: r.location ? r.location.lng : null
-        }));
+        const mappedReports = reports.map(r => {
+            const tipo = r.incidentType ? r.incidentType.name : 'Desconocido';
+            const desc = r.description || '';
+            const isEmergency = tipo.toUpperCase().includes('EMERG') || 
+                               tipo.toUpperCase().includes('SOS') || 
+                               desc.toUpperCase().includes('SOS');
+            
+            return {
+                id: r.id,
+                tipo: tipo,
+                descripcion: desc,
+                distrito: r.location ? r.location.district : '',
+                barrio: r.location ? r.location.neighborhood : '',
+                direccion_exacta: r.location ? r.location.exactAddress : '',
+                fecha: r.date,
+                id_creador: r.userId,
+                nombre_creador: r.creator ? r.creator.fullName : 'Anónimo',
+                estado: r.status,
+                lat: r.location ? r.location.lat : null,
+                lng: r.location ? r.location.lng : null,
+                isEmergency: isEmergency
+            };
+        });
 
-        res.status(200).json(mappedReports); // El FE espera un array directo o con formato. ReportService hace await json().
+        res.status(200).json({ status: 'success', data: mappedReports });
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
     }
@@ -64,7 +84,16 @@ exports.create = async (req, res) => {
         }, { transaction: t });
 
         await t.commit();
-        res.status(201).json({ status: 'success', data: report });
+        
+        // Preparar respuesta con bandera de emergencia
+        const responseData = {
+            ...report.toJSON(),
+            tipo: tipo,
+            descripcion: descripcion,
+            isEmergency: tipo.toUpperCase().includes('SOS') || tipo.toUpperCase().includes('EMERG') || descripcion.toUpperCase().includes('SOS')
+        };
+
+        res.status(201).json({ status: 'success', data: responseData });
     } catch (error) {
         await t.rollback();
         res.status(500).json({ status: 'error', message: error.message });
