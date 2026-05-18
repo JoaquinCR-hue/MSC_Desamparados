@@ -4,13 +4,15 @@ import '../styles/UserList.css';
 
 const UserList = () => {
   const [users, setUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   
   // Estado para la edición
   const [editingId, setEditingId] = useState(null);
   const [editUser, setEditUser] = useState(null);
 
-  const loadData = async () => {
-    const data = await UserService.getUsers();
+  const loadData = async (search = '') => {
+    const query = search ? `?search=${encodeURIComponent(search)}` : '';
+    const data = await UserService.getUsers(query);
     if (data) {
       // Filtrar para mostrar solo usuarios con rol 'ciudadano'
       setUsers(data.filter(u => u.role === 'ciudadano'));
@@ -18,8 +20,11 @@ const UserList = () => {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    const timeoutId = setTimeout(() => {
+      loadData(searchTerm);
+    }, 500); // 500ms debounce
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm]);
 
   const handleDelete = async (id) => {
     import('sweetalert2').then(Swal => {
@@ -34,7 +39,7 @@ const UserList = () => {
       }).then(async (result) => {
         if (result.isConfirmed) {
           await UserService.deleteUser(id);
-          loadData();
+          loadData(searchTerm);
           Swal.default.fire('¡Eliminado!', 'El usuario ha sido borrado exitosamente.', 'success');
         }
       });
@@ -50,7 +55,7 @@ const UserList = () => {
     await UserService.updateUser(editUser, id);
     setEditingId(null);
     setEditUser(null);
-    loadData();
+    loadData(searchTerm);
     import('sweetalert2').then(Swal => {
       Swal.default.fire('¡Actualizado!', 'Los datos del usuario se modificaron.', 'success');
     });
@@ -58,8 +63,18 @@ const UserList = () => {
 
   return (
     <div className="list-container">
-      <div className="list-controls">
+      <div className="list-controls" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h3 className="section-title">Lista de Usuarios Civiles</h3>
+        <div className="search-container">
+          <input 
+            type="text" 
+            placeholder="Buscar por nombre, correo o cédula..." 
+            className="inline-input"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ minWidth: '300px' }}
+          />
+        </div>
       </div>
 
       <div className="table-responsive">

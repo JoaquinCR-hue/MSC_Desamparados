@@ -345,11 +345,11 @@
       "unidad": "1313",
       "nombre_oficiales": "Pepe Cancela",
       "tipo_unidad": "Motocicleta",
-      "zona": "San Cristóbal",
+      "zona": "Desamparados",
       "horario": "06:00 - 14:00",
       "estado": "Activa",
-      "lat": 9.762186918546083,
-      "lng": -83.99391587864397
+      "lat": 9.890773329730889,
+      "lng": -84.07169580459596
     },
     {
       "id": "1774658940019",
@@ -359,8 +359,8 @@
       "zona": "Desamparados",
       "horario": "10:00 - 15:00",
       "estado": "Activa",
-      "lat": 9.903766835629575,
-      "lng": -84.0754508972168
+      "lat": 9.892850145974272,
+      "lng": -84.07207667827608
     },
     {
       "id": "1774806495777",
@@ -419,10 +419,10 @@
       "nombre_oficiales": "ANDEL FRANCISCO CALVO RANGEL",
       "unidad": "4545S",
       "estado": "Activa",
-      "zona": "San Rafael Arriba",
+      "zona": "San Cristóbal",
       "tipo_unidad": "Motocicleta",
-      "lat": 9.87439044258393,
-      "lng": -84.07433509826662,
+      "lat": 9.756361191915971,
+      "lng": -83.99185180664064,
       "horario": "06:00 - 14:00"
     },
     {
@@ -456,10 +456,10 @@
       "nombre_oficiales": "ALONSO FRANCISCO CALVO MATA",
       "unidad": "7867D",
       "estado": "En Incidente",
-      "zona": "Damas",
+      "zona": "San Miguel",
       "tipo_unidad": "Patrulla",
-      "lat": 9.886587831224212,
-      "lng": -84.04506683349611,
+      "lat": 9.836920680531092,
+      "lng": -84.05296325683595,
       "horario": "06:00 - 14:00"
     },
     {
@@ -467,12 +467,12 @@
       "nombre_oficiales": "ALLAN FRANCISCO CALVO MUÑOZ",
       "unidad": "9809S",
       "estado": "Activa",
-      "zona": "San Antonio",
+      "zona": "Desamparados",
       "tipo_unidad": "Patrulla",
       "horaInicio": "06:00",
       "horaFin": "14:00",
-      "lat": 9.899419013112333,
-      "lng": -84.04686927795412,
+      "lat": 9.898678777745282,
+      "lng": -84.07115936279298,
       "horario": "06:00 - 14:00"
     },
     {
@@ -484,8 +484,8 @@
       "tipo_unidad": "Patrulla",
       "horaInicio": "06:00",
       "horaFin": "14:00",
-      "lat": 9.895022240087153,
-      "lng": -84.0684986114502,
+      "lat": 9.893055199847433,
+      "lng": -84.07080531120302,
       "horario": "06:00 - 14:00"
     },
     {
@@ -493,12 +493,12 @@
       "nombre_oficiales": "ALEX FRANCISCO CALVO VARGAS",
       "unidad": "7694S",
       "estado": "Activa",
-      "zona": "San Rafael Abajo",
+      "zona": "Desamparados",
       "tipo_unidad": "Patrulla",
       "horaInicio": "06:00",
       "horaFin": "14:00",
-      "lat": 9.893204351215696,
-      "lng": -84.08111572265626,
+      "lat": 9.893643097900805,
+      "lng": -84.07488226890565,
       "horario": "06:00 - 14:00"
     },
     {
@@ -523,8 +523,8 @@
       "tipo_unidad": "Patrulla",
       "horaInicio": "06:00",
       "horaFin": "14:00",
-      "lat": 9.892369350968865,
-      "lng": -84.07206058502199,
+      "lat": 9.890730983848773,
+      "lng": -84.07209277153017,
       "horario": "06:00 - 14:00"
     }
   ],

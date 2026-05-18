@@ -23,8 +23,9 @@ const PasswordInput = ({ label, value, onChange, placeholder, showPassword, togg
           className="btn-eye"
           onClick={onToggle}
           tabIndex="-1"
+          aria-label={isVisible ? "Ocultar contraseña" : "Mostrar contraseña"}
         >
-          {isVisible ? '🙈' : '👁️'}
+          {isVisible ? <i className="fa-solid fa-eye"></i> : <i className="fa-solid fa-eye-slash"></i>}
         </button>
       </div>
       {error && <span className="error-message">{error}</span>}

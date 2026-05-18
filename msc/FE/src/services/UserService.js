@@ -59,10 +59,10 @@ async function checkStatus() {
 }
 
 /**
- * Obtiene la lista completa de usuarios (Solo Admin).
+ * Obtiene la lista completa de usuarios (Solo Admin), soporta filtros avanzados.
  */
-async function getUsers() {
-  const response = await fetch(`${BASE_URL}/users`, {
+async function getUsers(queryParams = '') {
+  const response = await fetch(`${BASE_URL}/users${queryParams}`, {
     credentials: 'include'
   });
   const result = await response.json();

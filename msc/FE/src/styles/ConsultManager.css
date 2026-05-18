@@ -23,7 +23,7 @@
 }
 
 .header-badge {
-    background: rgba(242, 92, 5, 0.1);
+    background: rgba(0, 163, 255, 0.1);
     color: var(--primary-color);
     padding: 6px 16px;
     border-radius: 20px;
@@ -89,7 +89,7 @@
 }
 
 .status-pending { background: rgba(234, 179, 8, 0.1); color: #eab308; }
-.status-resolved { background: rgba(242, 92, 5, 0.1); color: var(--primary-color); }
+.status-resolved { background: rgba(0, 163, 255, 0.1); color: var(--primary-color); }
 
 .status-badge {
     padding: 4px 12px;
@@ -141,8 +141,8 @@
 }
 
 .response-box {
-    background: rgba(242, 92, 5, 0.03);
-    border: 1px solid rgba(242, 92, 5, 0.15);
+    background: rgba(0, 163, 255, 0.03);
+    border: 1px solid rgba(0, 163, 255, 0.15);
     padding: 1.25rem;
     border-radius: 12px;
     margin-top: 1rem;
@@ -186,9 +186,9 @@
 }
 
 .btn-premium-disabled {
-    background: rgba(242, 92, 5, 0.05);
+    background: rgba(0, 163, 255, 0.05);
     color: var(--primary-color);
-    border: 1px solid rgba(242, 92, 5, 0.2);
+    border: 1px solid rgba(0, 163, 255, 0.2);
     padding: 8px 24px;
     border-radius: 10px;
     font-weight: 700;

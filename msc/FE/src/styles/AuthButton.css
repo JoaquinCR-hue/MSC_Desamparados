@@ -1,6 +1,6 @@
 .btn-auth {
   width: 100%;
-  background-color: #f25c05;
+  background-color: var(--primary-color);
   color: #ffffff;
   border: none;
   padding: 14px;
@@ -11,12 +11,12 @@
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  box-shadow: 0 0 10px rgba(242, 92, 5, 0.3);
+  box-shadow: 0 0 10px rgba(0, 163, 255, 0.3);
   margin-top: 15px;
 }
 
 .btn-auth:hover {
-  background-color: #d94e04;
+  background-color: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(242, 92, 5, 0.5);
+  box-shadow: 0 0 20px rgba(0, 163, 255, 0.5);
 }

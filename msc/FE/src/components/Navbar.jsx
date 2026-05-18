@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import NotificationBell from './NotificationBell';
 import EmergencyButton from './EmergencyButton';
 import UserService from '../services/UserService';
@@ -19,6 +19,10 @@ const Navbar = () => {
   const warningTimerRef = useRef(null);
   const logoutTimerRef = useRef(null);
 
+  /**
+   * Obtiene el usuario autenticado desde sessionStorage.
+   * @returns {Object|null} Datos del usuario o null si no hay sesión
+   */
   const getUser = () => {
     const userStr = sessionStorage.getItem('user');
     if (!userStr) return null;
@@ -99,7 +103,7 @@ const Navbar = () => {
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
     
     const handleUserActivity = () => {
-      // Solo reiniciamos si no hay una alerta de Swal abierta (opcional, pero recomendado)
+      // Solo reiniciamos si no hay una alerta de Swal abierta
       if (!Swal.isVisible()) {
         resetInactivityTimers();
       }
@@ -114,7 +118,7 @@ const Navbar = () => {
     };
   }, [user]);
 
-  // Verificación de validez de la sesión mediante cookies
+  // Verificación de validez de la sesión
   useEffect(() => {
     if (!user) return;
 
@@ -133,6 +137,7 @@ const Navbar = () => {
   }, [user]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
@@ -168,36 +173,42 @@ const Navbar = () => {
     <>
       <div className="navbar-container">
         <nav className="custom-navbar">
-          <a href="/" className="navbar-brand-custom">
+          {/* Brand Logo and Name */}
+          <Link to="/" className="navbar-brand-custom">
             <div className="logo-container">
               <i className="fa-solid fa-user-shield logo-icon"></i>
             </div>
             <div className="logo-text">
               <span className="logo-main-text">MSC Desamparados</span>
             </div>
-          </a>
+          </Link>
 
-          <div className="nav-links-custom">
+          {/* Desktop Navigation Links (Hidden on Mobile) */}
+          <div className="nav-links-custom desktop-only">
             {(isPublic || isAdmin) && (
-              <a href="/emergencies" className="nav-link-custom">
-                <i className="fa-solid fa-phone"></i> Emergencias
-              </a>
+              <Link to="/emergencies" className="nav-link-custom">
+                <i className="fa-solid fa-phone"></i>
+                Emergencias
+              </Link>
             )}
 
-            <a href="/risk-map" className="nav-link-custom">
-              <i className="fa-solid fa-map-location-dot"></i> Mapa de Riesgo
-            </a>
+            <Link to="/risk-map" className="nav-link-custom">
+              <i className="fa-solid fa-map-location-dot"></i>
+              Mapa de Riesgo
+            </Link>
 
             {(isCitizen || isOfficer || isAdmin) && (
-              <a href="/safe-routes" className="nav-link-custom nav-link-safe">
-                <i className="fa-solid fa-route"></i> Rutas Seguras
-              </a>
+              <Link to="/safe-routes" className="nav-link-custom nav-link-safe">
+                <i className="fa-solid fa-route"></i>
+                Rutas Seguras
+              </Link>
             )}
 
             {(isOfficer || isAdmin) && (
-              <a href="/patrol-map" className="nav-link-custom">
-                <i className="fa-solid fa-shield-halved"></i> Mapa Patrullaje
-              </a>
+              <Link to="/patrol-map" className="nav-link-custom">
+                <i className="fa-solid fa-shield-halved"></i>
+                Mapa Patrullaje
+              </Link>
             )}
           </div>
 
@@ -208,31 +219,60 @@ const Navbar = () => {
 
             {(isOfficer || isAdmin) && <NotificationBell />}
 
+            {/* Dropdown Menu */}
             <div className="menu-dropdown-container" ref={menuRef}>
               <button className="menu-button" onClick={toggleMenu}>
-                <i className="fa-solid fa-bars menu-icon"></i> Menú
+                <i className="fa-solid fa-bars menu-icon"></i>
+                <span className="menu-text">Menú</span>
               </button>
 
               <div className={`dropdown-menu-custom ${isMenuOpen ? 'show' : ''}`}>
+                {/* Mobile-only links (Moved from main nav) */}
+                <div className="mobile-only-links">
+                  {(isPublic || isAdmin) && (
+                    <Link to="/emergencies" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                      <i className="fa-solid fa-phone"></i>Emergencias
+                    </Link>
+                  )}
+                  <Link to="/risk-map" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                    <i className="fa-solid fa-map-location-dot"></i>Mapa de Riesgo
+                  </Link>
+                  {(isCitizen || isOfficer || isAdmin) && (
+                    <Link to="/safe-routes" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                      <i className="fa-solid fa-route"></i>Rutas Seguras
+                    </Link>
+                  )}
+                  {(isOfficer || isAdmin) && (
+                    <Link to="/patrol-map" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                      <i className="fa-solid fa-shield-halved"></i>Mapa Patrullaje
+                    </Link>
+                  )}
+                  <Link to="/report-incident" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                    <i className="fa-solid fa-circle-exclamation"></i>Reportar Incidente
+                  </Link>
+                  <div className="dropdown-divider"></div>
+                </div>
+
+                {/* Management and System Links */}
                 {isAdmin && (
                   <>
-                    <a href="/manage-users" className="dropdown-item">
-                      <i className="fa-solid fa-users-gear"></i> G.Usuarios
-                    </a>
-                    <a href="/manage-consults" className="dropdown-item">
-                      <i className="fa-solid fa-headset"></i> G.Consultas
-                    </a>
+                    <Link to="/manage-users" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                      <i className="fa-solid fa-users-gear"></i>G.Usuarios
+                    </Link>
+                    <Link to="/manage-consults" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                      <i className="fa-solid fa-headset"></i>G.Consultas
+                    </Link>
                   </>
                 )}
 
                 {(isOfficer || isAdmin) && (
                   <>
-                    <a href="/statistics" className="dropdown-item">
-                      <i className="fa-solid fa-chart-line"></i> Estadísticas
-                    </a>
-                    <a href="/manage-reports" className="dropdown-item">
-                      <i className="fa-solid fa-file-shield"></i> G.Reportes
-                    </a>
+                    <Link to="/statistics" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                      <i className="fa-solid fa-chart-line"></i>Estadísticas
+                    </Link>
+                    <Link to="/manage-reports" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                      <i className="fa-solid fa-file-shield"></i>G.Reportes
+                    </Link>
                   </>
                 )}
 
@@ -240,30 +280,40 @@ const Navbar = () => {
 
                 {!user ? (
                   <>
-                    <a href="/login" className="dropdown-item">
-                      <i className="fa-solid fa-arrow-right-to-bracket"></i> Iniciar sesión
-                    </a>
-                    <a href="/register" className="dropdown-item">
-                      <i className="fa-solid fa-user-plus"></i> Registrarse
-                    </a>
+                    <Link to="/login" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                      <i className="fa-solid fa-arrow-right-to-bracket"></i>
+                      Iniciar Sesión
+                    </Link>
+                    <Link to="/register" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                      <i className="fa-solid fa-user-plus"></i>
+                      Registrarse
+                    </Link>
                   </>
                 ) : (
-                  <a href="#" className="dropdown-item" onClick={handleLogout}>
-                    <i className="fa-solid fa-power-off"></i> Cerrar Sesión
-                  </a>
+                  <button className="dropdown-item logout-btn" onClick={handleLogout}>
+                    <i className="fa-solid fa-power-off"></i>
+                    Cerrar Sesión
+                  </button>
                 )}
               </div>
             </div>
 
             {(isCitizen || isOfficer || isAdmin) && (
               <div style={{ display: 'flex', alignItems: 'center' }}>
-                <button className="report-button" onClick={() => navigate('/report-incident')}>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M11 5L6 9H2v6h4l5 4V5z" className="btn-icon-white" />
-                    <path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07" />
+                <Link to="/report-incident" className="report-button" title="Reportar Incidente">
+                  <svg 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2.5" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                    className="siren-svg-icon"
+                  >
+                    <path d="M12 7V3M5 12H2M22 12h-3M16.24 7.76l1.42-1.42M6.34 17.66l1.42-1.42M17.66 17.66l-1.42-1.42M7.76 7.76L6.34 6.34M12 12a4 4 0 100 8 4 4 0 000-8z" />
                   </svg>
-                  Reportar
-                </button>
+                  <span className="report-text">Reportar Incidente</span>
+                </Link>
                 <EmergencyButton user={user} />
               </div>
             )}

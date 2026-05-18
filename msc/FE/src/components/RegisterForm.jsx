@@ -103,8 +103,15 @@ const RegisterForm = () => {
 
         <div className="terminos-checkbox-container mt-3">
           <label className="terminos-label">
-            <input type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} />
-            Acepto términos y condiciones
+            <input 
+              type="checkbox" 
+              className="terminos-checkbox"
+              checked={acceptedTerms} 
+              onChange={(e) => setAcceptedTerms(e.target.checked)} 
+            />
+            <span>
+              Acepto <Link to="/terms" className="terminos-link">términos y condiciones</Link>
+            </span>
           </label>
         </div>
 

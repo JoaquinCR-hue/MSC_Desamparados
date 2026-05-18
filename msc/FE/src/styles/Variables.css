@@ -21,8 +21,8 @@
     --title-gradient: linear-gradient(135deg, var(--primary-color), var(--text-main));
     
     /* Constants */
-    --primary-color: #f25c05;
-    --primary-hover: #d94e04;
+    --primary-color: #00A3FF;
+    --primary-hover: #0084cc;
     --success-color: #00C853;
     --warning-color: #eab308;
 }
@@ -40,7 +40,7 @@
     --text-secondary: #334155;
     --text-muted: #475569;
     --text-dim: #64748b;
-    --text-hover: #f25c05;
+    --text-hover: var(--primary-color);
     
     --border-main: rgba(0, 0, 0, 0.08);
     --border-strong: #e2e8f0;

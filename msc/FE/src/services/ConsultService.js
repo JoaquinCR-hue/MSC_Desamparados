@@ -9,13 +9,14 @@ axios.defaults.withCredentials = true;
 
 const ConsultService = {
   /**
-   * Obtiene todas las consultas registradas en el sistema.
+   * Obtiene todas las consultas registradas en el sistema, con soporte para filtros.
+   * @param {string} queryParams - Parámetros de búsqueda opcionales
    * @returns {Promise<Array>} Lista de consultas
    */
-  getConsults: async () => {
+  getConsults: async (queryParams = '') => {
     try {
-      const response = await axios.get(CONSULTS_URL);
-      return response.data.data || [];
+      const response = await axios.get(`${CONSULTS_URL}${queryParams}`);
+      return response.data.data || response.data || [];
     } catch (error) {
       console.error('Error al obtener las consultas:', error);
       throw error;

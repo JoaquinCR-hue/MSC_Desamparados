@@ -26,7 +26,7 @@
 }
 
 .search-box i {
-    color: #f25c05;
+    color: var(--primary-color);
     margin-right: 15px;
 }
 
@@ -62,11 +62,11 @@
 }
 
 .btn-filter span { color: #ffffff; }
-.btn-filter:hover, .btn-view:hover { border-color: #f25c05; }
-.btn-view.active { background-color: #f25c05; border-color: #f25c05; color: #fff;}
+.btn-filter:hover, .btn-view:hover { border-color: var(--primary-color); }
+.btn-view.active { background-color: var(--primary-color); border-color: var(--primary-color); color: #fff;}
 
 .btn-new {
-    background-color: #f25c05;
+    background-color: var(--primary-color);
     color: #ffffff;
     border: none;
     padding: 10px 20px;
@@ -82,7 +82,7 @@
 }
 
 .btn-new:hover {
-    background-color: #d94e04;
+    background-color: var(--primary-hover);
 }
 
 .table-responsive {
@@ -97,7 +97,7 @@
 }
 
 .custom-table th {
-    color: #f25c05;
+    color: var(--primary-color);
     font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
@@ -157,7 +157,7 @@
     display: inline-block;
 }
 
-.role-admin { color: #f25c05; border-color: #f25c05; background: rgba(242,92,5,0.05); }
+.role-admin { color: var(--primary-color); border-color: var(--primary-color); background: rgba(0,163,255,0.05); }
 .role-funcionario { color: #60a5fa; border-color: #3b82f6; background: rgba(59,130,246,0.05);  }
 
 .status {
@@ -203,8 +203,8 @@
 
 .btn-action:hover {
     color: #ffffff;
-    border-color: #f25c05;
-    background-color: rgba(242, 92, 5, 0.1);
+    border-color: var(--primary-color);
+    background-color: rgba(0, 163, 255, 0.1);
 }
 
 .btn-delete {
@@ -239,7 +239,7 @@
 }
 
 .add-form h4 {
-    color: #f25c05;
+    color: var(--primary-color);
     margin-top: 0;
     margin-bottom: 15px;
     font-size: 1.1rem;
@@ -267,11 +267,11 @@
 }
 
 .form-grid input:focus, .form-grid select:focus {
-    border-color: #f25c05;
+    border-color: var(--primary-color);
 }
 
 .btn-submit {
-    background-color: #f25c05;
+    background-color: var(--primary-color);
     color: #ffffff;
     border: none;
     padding: 10px 15px;
@@ -283,7 +283,7 @@
 }
 
 .btn-submit:hover {
-    background-color: #d94e04;
+    background-color: var(--primary-hover);
 }
 
 .inline-input {
@@ -298,7 +298,7 @@
 }
 
 .inline-input:focus {
-    border-color: #f25c05;
+    border-color: var(--primary-color);
 }
 
 .btn-save {

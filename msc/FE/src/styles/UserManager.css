@@ -21,7 +21,7 @@
 }
 
 .management-subtitle {
-    color: #f25c05;
+    color: var(--primary-color);
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.1em;
@@ -36,7 +36,7 @@
     display: inline-block;
     width: 30px;
     height: 2px;
-    background-color: #f25c05;
+    background-color: var(--primary-color);
     margin-right: 10px;
 }
 
@@ -65,8 +65,8 @@
 
 .btn-export {
     background-color: transparent;
-    border: 1px solid #f25c05;
-    color: #f25c05;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
     padding: 10px 20px;
     border-radius: 8px;
     font-weight: 700;
@@ -80,7 +80,7 @@
 }
 
 .btn-export:hover {
-    background-color: rgba(242, 92, 5, 0.1);
+    background-color: rgba(0, 163, 255, 0.1);
 }
 
 .stats-grid {
@@ -121,7 +121,7 @@
     height: 3px;
 }
 
-.stat-card.total::before { background-color: #f25c05; }
+.stat-card.total::before { background-color: var(--primary-color); }
 .stat-card.active::before { background-color: #10b981; }
 .stat-card.pending::before { background-color: #eab308; }
 
@@ -145,7 +145,7 @@
     line-height: 1;
 }
 
-.stat-card.total .stat-value, .stat-card.total .stat-title { color: #f25c05; }
+.stat-card.total .stat-value, .stat-card.total .stat-title { color: var(--primary-color); }
 .stat-card.active .stat-value, .stat-card.active .stat-title { color: #10b981; }
 .stat-card.pending .stat-value, .stat-card.pending .stat-title { color: #eab308; }
 
@@ -169,7 +169,7 @@
     transition: all 0.3s ease;
 }
 
-.stat-card.total .stat-icon { color: #f25c05; }
+.stat-card.total .stat-icon { color: var(--primary-color); }
 .stat-card.active .stat-icon { color: #10b981; }
 .stat-card.pending .stat-icon { color: #eab308; }
 
@@ -205,7 +205,7 @@
 }
 
 .view-tab.active {
-    color: #f25c05;
+    color: var(--primary-color);
 }
 
 .view-tab.active::after {
@@ -215,6 +215,6 @@
     left: 0;
     width: 100%;
     height: 3px;
-    background-color: #f25c05;
+    background-color: var(--primary-color);
     border-radius: 3px 3px 0 0;
 }

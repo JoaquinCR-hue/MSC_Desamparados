@@ -23,19 +23,19 @@
 }
 
 .logo-container {
-  background-color: #f25c05;
+  background-color: var(--primary-color);
   width: 50px;
   height: 50px;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 12px rgba(242, 92, 5, 0.4), 0 3px 5px -1px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 12px rgba(0, 163, 255, 0.4), 0 3px 5px -1px rgba(0, 0, 0, 0.2);
   transition: box-shadow 0.3s ease;
 }
 
 .logo-container:hover {
-  box-shadow: 0 0 18px rgba(242, 92, 5, 0.6);
+  box-shadow: 0 0 18px rgba(0, 163, 255, 0.6);
 }
 
 .logo-text {
@@ -52,7 +52,7 @@
 }
 
 .logo-sub-text {
-  color: #f25c05;
+  color: var(--primary-color);
   font-weight: 600;
   font-size: 0.55rem;
   letter-spacing: 0.1em;
@@ -85,7 +85,7 @@
 
 .nav-link-custom:hover {
   color: var(--text-hover);
-  text-shadow: 0 0 6px rgba(242, 92, 5, 0.2);
+  text-shadow: 0 0 6px rgba(0, 163, 255, 0.2);
   background-color: var(--bg-secondary);
   border-color: var(--primary-color);
 }
@@ -104,7 +104,7 @@
 }
 
 .report-button {
-  background-color: #f25c05;
+  background-color: var(--primary-color);
   color: #ffffff;
   border: none;
   padding: 7px 14px;
@@ -117,13 +117,14 @@
   cursor: pointer;
   transition: all 0.3s ease;
   text-transform: uppercase;
-  box-shadow: 0 0 8px rgba(242, 92, 5, 0.3);
+  box-shadow: 0 0 8px rgba(0, 163, 255, 0.3);
+  text-decoration: none;
 }
 
 .report-button:hover {
-  background-color: #d94e04;
+  background-color: var(--primary-hover);
   transform: translateY(-1px);
-  box-shadow: 0 0 14px rgba(242, 92, 5, 0.5);
+  box-shadow: 0 0 14px rgba(0, 163, 255, 0.5);
 }
 
 .report-button svg {
@@ -131,8 +132,69 @@
   height: 15px;
 }
 
+/* Responsive Classes */
+.mobile-only-links {
+  display: none;
+}
+
+@media (max-width: 1100px) {
+  .nav-link-custom {
+    padding: 6px 8px;
+    font-size: 0.65rem;
+  }
+}
+
 @media (max-width: 992px) {
-  .nav-links-custom {
+  .desktop-only {
+    display: none !important;
+  }
+  
+  .mobile-only-links {
+    display: block;
+  }
+
+  .logo-main-text {
+    font-size: 0.8rem;
+    max-width: 100px;
+  }
+
+  .nav-actions {
+    gap: 6px;
+  }
+
+  .report-text, .menu-text {
+    display: none;
+  }
+
+  .report-button, .menu-button {
+    padding: 8px;
+    min-width: 40px;
+    justify-content: center;
+  }
+
+  .report-button svg {
+    margin: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  .menu-icon {
+    margin: 0;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .custom-navbar {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .logo-container {
+    width: 40px;
+    height: 40px;
+  }
+
+  .logo-main-text {
     display: none;
   }
 }
@@ -147,9 +209,9 @@
   fill: #ffffff;
 }
 
-.icon-orange {
-  fill: #f25c05;
-  stroke: #f25c05;
+.icon-primary {
+  fill: var(--primary-color);
+  stroke: var(--primary-color);
 }
 
 .btn-icon-white {
@@ -187,7 +249,7 @@
   color: var(--text-hover);
   background-color: var(--bg-secondary);
   border-color: var(--primary-color);
-  text-shadow: 0 0 6px rgba(242, 92, 5, 0.2);
+  text-shadow: 0 0 6px rgba(0, 163, 255, 0.2);
 }
 
 .menu-icon {
@@ -201,7 +263,7 @@
   background-color: var(--bg-main);
   border: 1px solid var(--border-strong);
   border-radius: 6px;
-  width: 200px;
+  width: 220px;
   display: none;
   flex-direction: column;
   overflow: hidden;
@@ -217,12 +279,12 @@
 .dropdown-item {
   color: var(--text-secondary);
   text-decoration: none;
-  padding: 10px 14px;
+  padding: 12px 16px;
   font-size: 0.85rem;
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   transition: all 0.2s ease;
   border-bottom: 1px solid var(--border-main);
 }
@@ -233,13 +295,13 @@
 
 .dropdown-divider {
   height: 1px;
-  background-color: #334155;
-  margin: 1px 0;
+  background-color: var(--border-strong);
+  margin: 4px 0;
 }
 
 .dropdown-item i {
   font-size: 1rem;
-  color: #f25c05;
+  color: var(--primary-color);
   width: 18px;
   text-align: center;
 }
@@ -279,6 +341,23 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.theme-toggle-btn i,
+.menu-button i,
+.report-button svg,
+.dropdown-item i {
+  pointer-events: none;
+}
+
+.logout-btn {
+  background: transparent;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  outline: none;
 }
 
 .navbar-container {

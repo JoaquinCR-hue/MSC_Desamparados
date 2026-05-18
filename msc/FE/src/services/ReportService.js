@@ -8,20 +8,23 @@ const getHeaders = () => {
 };
 
 /**
- * Obtiene todos los reportes (Requiere Auth).
+ * Obtiene todos los reportes (Requiere Auth), soporta filtros avanzados.
  */
-async function getReports() {
+async function getReports(queryParams = '') {
   try {
-    // Añadimos un timestamp para evitar CUALQUIER tipo de cache del navegador
-    const response = await fetch(`${BASE_URL}?t=${Date.now()}`, { 
+    const separator = queryParams.includes('?') ? '&' : '?';
+    const url = queryParams ? `${BASE_URL}${queryParams}${separator}t=${Date.now()}` : `${BASE_URL}?t=${Date.now()}`;
+    const response = await fetch(url, { 
       headers: getHeaders(),
       credentials: 'include' 
     });
+    
     if (!response.ok) {
       throw new Error(`Error ${response.status}: No se pudieron obtener los reportes`);
     }
+
     const result = await response.json();
-    const reportData = result.data || [];
+    const reportData = Array.isArray(result) ? result : (result.data || []);
 
     return reportData.map((report) => {
       if (report.lat && report.lng) {

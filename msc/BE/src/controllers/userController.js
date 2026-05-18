@@ -1,4 +1,5 @@
 const { User, Role } = require('../models');
+const { Op } = require('sequelize');
 
 // Helper to map DB user to FE user format
 const mapUserToFE = (user) => {
@@ -19,9 +20,62 @@ const mapUserToFE = (user) => {
     };
 };
 
+/**
+ * Obtiene todos los usuarios, con soporte para filtros, búsqueda por texto y ordenamiento.
+ * 
+ * Funcionalidades Avanzadas Soportadas:
+ * - Filtro por rol: ?role=admin (o funcionario, ciudadano)
+ * - Búsqueda por texto (nombre, email o cédula): ?search=juan
+ * - Ordenamiento dinámico: ?sortBy=fullName&order=ASC
+ * 
+ * @param {Object} req - Petición HTTP Express
+ * @param {Object} res - Respuesta HTTP Express
+ */
 exports.getAll = async (req, res) => {
     try {
-        const users = await User.findAll({ include: [{ model: Role, as: 'role' }] });
+        const { role, search, sortBy, order } = req.query;
+
+        // Construir condiciones de búsqueda para el Usuario (Búsqueda por texto)
+        const userWhere = {};
+
+        if (search) {
+            userWhere[Op.or] = [
+                { fullName: { [Op.like]: `%${search}%` } },
+                { email: { [Op.like]: `%${search}%` } },
+                { nationalId: { [Op.like]: `%${search}%` } }
+            ];
+        }
+
+        // Construir condiciones para el Rol (Filtro por campo)
+        const roleWhere = {};
+        if (role) {
+            roleWhere.name = role;
+        }
+
+        // Construir configuración de ordenamiento dinámico
+        let orderArray = [['createdAt', 'DESC']]; // Orden por defecto
+        if (sortBy) {
+            const validSortFields = ['fullName', 'email', 'nationalId', 'createdAt'];
+            if (validSortFields.includes(sortBy)) {
+                const sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
+                orderArray = [[sortBy, sortOrder]];
+            }
+        }
+
+        // Ejecutar la consulta con Sequelize usando las condiciones construidas
+        const users = await User.findAll({
+            where: userWhere,
+            order: orderArray,
+            include: [
+                { 
+                    model: Role, 
+                    as: 'role',
+                    where: Object.keys(roleWhere).length > 0 ? roleWhere : undefined
+                }
+            ]
+        });
+
+        // Mapeo al formato esperado por el Frontend
         const mappedUsers = users.map(mapUserToFE);
         res.status(200).json({ status: 'success', data: mappedUsers });
     } catch (error) {

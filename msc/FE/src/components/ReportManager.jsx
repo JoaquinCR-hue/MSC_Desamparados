@@ -37,10 +37,11 @@ const ReportManager = () => {
   const locationState = useLocation().state;
 
   // Carga los reportes desde el servicio y realiza limpieza automática
-  const loadReports = async () => {
+  const loadReports = async (searchQuery = '') => {
     setLoading(true);
     try {
-      const data = await ReportService.getReports();
+      const queryStr = searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : '';
+      const data = await ReportService.getReports(queryStr);
       const now = Date.now();
       
       const validReports = [];
@@ -77,8 +78,11 @@ const ReportManager = () => {
   };
 
   useEffect(() => {
-    loadReports();
-  }, [locationState]);
+    const timeoutId = setTimeout(() => {
+      loadReports(searchTerm);
+    }, 500); // 500ms debounce
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, locationState]);
 
   // Maneja la eliminación manual de un reporte
   const handleDelete = (id) => {
@@ -138,13 +142,11 @@ const ReportManager = () => {
     return 'time-ok';
   };
 
-  // Lógica de filtrado de reportes
+  // Lógica de filtrado de reportes (solo locales por tipo y distrito)
   const filteredReports = reports.filter(rep => {
-    const matchesSearch = (rep.tipo || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         (rep.barrio || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === 'all' || rep.tipo === filterType;
     const matchesDistrict = filterDistrict === 'all' || rep.distrito === filterDistrict;
-    return matchesSearch && matchesType && matchesDistrict;
+    return matchesType && matchesDistrict;
   });
 
   const uniqueTypes = [...new Set(reports.map(r => r.tipo))];
@@ -162,7 +164,7 @@ const ReportManager = () => {
           <label>Búsqueda</label>
           <input 
             type="text" 
-            placeholder="Buscar por tipo o barrio..." 
+            placeholder="Buscar palabra clave en descripción..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />

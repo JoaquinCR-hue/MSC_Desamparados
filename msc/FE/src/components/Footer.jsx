@@ -27,7 +27,7 @@ function Footer() {
               </p>
             </div>
 
-            {/* Columna: Enlaces rápidos (rutas en inglés) */}
+            {/* Column: Enlaces rápidos */}
             <div className="col-lg-2 col-md-6 mb-4 mb-md-0 text-start">
               <h5 className="text-uppercase footer-title">Enlaces Rápidos</h5>
               <ul className="list-unstyled mb-0 footer-links">
@@ -38,9 +38,9 @@ function Footer() {
               </ul>
             </div>
 
-            {/* Columna: Información de contacto */}
+            {/* Column: Información de contacto */}
             <div className="col-lg-3 col-md-6 mb-4 mb-md-0 text-start">
-              <a href="/contact" className="btn btn-contact-orange text-uppercase fw-bold mb-3">
+              <a href="/contact" className="btn btn-contact-primary text-uppercase fw-bold mb-3">
                 <i className="fa-solid fa-envelope-open-text me-2"></i> Contáctenos
               </a>
               <ul className="list-unstyled footer-links">
@@ -50,7 +50,7 @@ function Footer() {
               </ul>
             </div>
 
-            {/* Columna: Redes sociales oficiales */}
+            {/* Column: Redes sociales */}
             <div className="col-lg-3 col-md-6 mb-4 mb-md-0 text-start">
               <div className="social-card">
                 <h5 className="text-uppercase footer-title">Nuestras Redes Oficiales</h5>

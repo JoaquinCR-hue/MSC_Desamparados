@@ -1,5 +1,18 @@
 const { Report, Location, IncidentType, User, sequelize } = require('../models');
+const { Op } = require('sequelize');
 
+/**
+ * Obtiene todos los reportes, con soporte opcional para filtros, búsqueda por texto y ordenamiento.
+ * 
+ * Funcionalidades Avanzadas Soportadas:
+ * - Filtro por estado: ?status=Pendiente
+ * - Filtro por tipo: ?tipo=Robo
+ * - Búsqueda por texto (en descripción): ?search=auto
+ * - Ordenamiento dinámico: ?sortBy=date&order=DESC
+ * 
+ * @param {Object} req - Petición HTTP Express
+ * @param {Object} res - Respuesta HTTP Express
+ */
 exports.getAll = async (req, res) => {
     try {
         // Limpieza automática: Borrar reportes de más de 3 días (72 horas)
@@ -7,18 +20,54 @@ exports.getAll = async (req, res) => {
         await Report.destroy({
             where: {
                 date: {
-                    [require('sequelize').Op.lt]: tresDiasAtras
+                    [Op.lt]: tresDiasAtras
                 }
             }
         });
 
+        const { status, tipo, search, sortBy, order } = req.query;
+
+        // Construir condiciones de búsqueda para el Reporte (Filtros y Búsqueda por texto)
+        const reportWhere = {};
+        
+        if (status) {
+            reportWhere.status = status;
+        }
+
+        if (search) {
+            reportWhere.description = {
+                [Op.like]: `%${search}%`
+            };
+        }
+
+        // Construir condiciones para el Tipo de Incidente
+        const typeWhere = {};
+        if (tipo) {
+            typeWhere.name = tipo;
+        }
+
+        // Construir configuración de ordenamiento dinámico
+        let orderArray = [['date', 'DESC']]; // Orden por defecto
+        if (sortBy) {
+            const validSortFields = ['date', 'status', 'createdAt', 'updatedAt'];
+            if (validSortFields.includes(sortBy)) {
+                const sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
+                orderArray = [[sortBy, sortOrder]];
+            }
+        }
+
         const reports = await Report.findAll({
+            where: reportWhere,
+            order: orderArray,
             include: [
                 { model: Location, as: 'location' },
-                { model: IncidentType, as: 'incidentType' },
+                { 
+                    model: IncidentType, 
+                    as: 'incidentType',
+                    where: Object.keys(typeWhere).length > 0 ? typeWhere : undefined
+                },
                 { model: User, as: 'creator' }
-            ],
-            order: [['date', 'DESC']]
+            ]
         });
 
         // Mapeo al formato plano del FE
