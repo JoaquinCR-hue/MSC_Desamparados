@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import ReportService from '../services/ReportService';
 import '../styles/ReportManager.css';
@@ -23,45 +24,56 @@ const ReportManager = () => {
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState(null);
   
+  // Paginación
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+
   // Estados para el filtrado de datos
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('all');
-  const [filterDistrict, setFilterDistrict] = useState('all');
+  const [filterType, setFilterType] = useState('');
+  const [filterDistrict, setFilterDistrict] = useState('');
 
   const userStr = sessionStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
   const canDelete = user && (user.role === 'admin' || user.role === 'funcionario');
 
-  const EXPIRY_TIME = 7 * 24 * 60 * 60 * 1000; // Tiempo de expiración: 7 días
+  const EXPIRY_TIME = 3 * 24 * 60 * 60 * 1000; // Tiempo de expiración: 3 días
+  const locationState = useLocation().state;
 
-  // Carga los reportes desde el servicio y realiza limpieza automática
-  const loadReports = async (searchQuery = '') => {
+  // Carga los reportes desde el servicio
+  const loadReports = async (searchQuery = '', currentPage = 1) => {
     setLoading(true);
     try {
-      const queryStr = searchQuery ? `?search=${encodeURIComponent(searchQuery)}` : '';
-      const data = await ReportService.getReports(queryStr);
-      const now = Date.now();
-      
-      const validReports = [];
-      const toDelete = [];
+      const params = { page: currentPage, limit };
+      if (searchQuery) params.search = searchQuery;
+      if (filterType) params.tipo = filterType;
+      if (filterDistrict) params.distrito = filterDistrict;
 
-      for (const rep of (data || [])) {
-        const reportDate = new Date(rep.fecha).getTime();
-        if (now - reportDate > EXPIRY_TIME) {
-          toDelete.push(rep.id);
-        } else {
-          validReports.push(rep);
+      const response = await ReportService.getReports(params);
+      
+      let fetchedReports = [];
+      
+      if (response && response.meta) {
+        fetchedReports = response.data || [];
+        setTotalPages(response.meta.totalPages || 1);
+      } else {
+        fetchedReports = Array.isArray(response) ? response : (response?.data || []);
+        setTotalPages(1);
+      }
+      
+      setReports(fetchedReports);
+
+      // Si venimos de la campana de notificaciones con un ID específico
+      if (locationState?.openReportId && currentPage === 1) {
+        const reportToOpen = fetchedReports.find(r => r.id === locationState.openReportId);
+        if (reportToOpen) {
+          setSelectedReport(reportToOpen);
         }
       }
-      
-      // Limpieza automática de reportes expirados
-      for (const id of toDelete) {
-        await ReportService.deleteReport(id);
-      }
-      
-      setReports(validReports);
     } catch (error) {
       console.error("Error loading reports", error);
+      import('sweetalert2').then(Swal => Swal.default.fire('Error', 'No se pudieron cargar los reportes', 'error'));
     } finally {
       setLoading(false);
     }
@@ -69,10 +81,17 @@ const ReportManager = () => {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      loadReports(searchTerm);
+      setPage(1); // Reset page on new search/filter
+      loadReports(searchTerm, 1);
     }, 500); // 500ms debounce
     return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+  }, [searchTerm, filterType, filterDistrict, locationState]);
+
+  useEffect(() => {
+    if (page > 1 || (!searchTerm && !filterType && !filterDistrict)) {
+      loadReports(searchTerm, page);
+    }
+  }, [page]);
 
   // Maneja la eliminación manual de un reporte
   const handleDelete = (id) => {
@@ -90,9 +109,11 @@ const ReportManager = () => {
       }
     }).then(async (result) => {
       if (result.isConfirmed) {
+        const previousReports = [...reports];
+        setReports(reports.filter(r => r.id !== id));
+        
         try {
           await ReportService.deleteReport(id);
-          loadReports();
           Swal.fire({
             title: 'Eliminado',
             text: 'El reporte ha sido borrado.',
@@ -100,6 +121,7 @@ const ReportManager = () => {
             customClass: { popup: 'premium-swal-popup' }
           });
         } catch (error) {
+          setReports(previousReports);
           Swal.fire({
             title: 'Error',
             text: 'No se pudo eliminar el reporte',
@@ -128,19 +150,20 @@ const ReportManager = () => {
     const timeLeft = expiresAt - Date.now();
     const oneDay = 24 * 60 * 60 * 1000;
     if (timeLeft < oneDay) return 'time-critical';
-    if (timeLeft < oneDay * 2) return 'time-warning';
+    if (timeLeft < oneDay * 1.5) return 'time-warning';
     return 'time-ok';
   };
 
-  // Lógica de filtrado de reportes (solo locales por tipo y distrito)
-  const filteredReports = reports.filter(rep => {
-    const matchesType = filterType === 'all' || rep.tipo === filterType;
-    const matchesDistrict = filterDistrict === 'all' || rep.distrito === filterDistrict;
-    return matchesType && matchesDistrict;
-  });
+  const distritosDesamparados = [
+    'Desamparados', 'San Miguel', 'San Juan de Dios', 'San Rafael Arriba', 
+    'San Antonio', 'Frailes', 'Patarrá', 'San Cristóbal', 'Rosario', 
+    'Damas', 'San Rafael Abajo', 'Gravilias', 'Los Guido'
+  ];
 
-  const uniqueTypes = [...new Set(reports.map(r => r.tipo))];
-  const uniqueDistricts = [...new Set(reports.map(r => r.distrito))];
+  const tiposComunes = [
+    'Robo', 'Asalto', 'Vandalismo', 'Persona Sospechosa', 'Disturbio',
+    'Accidente de Tránsito', 'Emergencia Médica', 'Incendio', 'Otro'
+  ];
 
   return (
     <div className="management-container">
@@ -154,7 +177,7 @@ const ReportManager = () => {
           <label>Búsqueda</label>
           <input 
             type="text" 
-            placeholder="Buscar palabra clave en descripción..." 
+            placeholder="Buscar palabra clave..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -162,23 +185,23 @@ const ReportManager = () => {
         <div className="filter-group">
           <label>Categoría</label>
           <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-            <option value="all">Todas las categorías</option>
-            {uniqueTypes.map(t => <option key={t} value={t}>{t}</option>)}
+            <option value="">Todas las categorías</option>
+            {tiposComunes.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
         </div>
         <div className="filter-group">
           <label>Distrito</label>
           <select value={filterDistrict} onChange={(e) => setFilterDistrict(e.target.value)}>
-            <option value="all">Todos los distritos</option>
-            {uniqueDistricts.map(d => <option key={d} value={d}>{d}</option>)}
+            <option value="">Todos los distritos</option>
+            {distritosDesamparados.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
         </div>
       </section>
 
-      {loading ? (
+      {loading && reports.length === 0 ? (
         <div className="text-center py-5">
           <div className="spinner-border text-primary mb-3" role="status"></div>
-          <p className="text-secondary">Sincronizando base de datos central...</p>
+          <p className="text-secondary">Cargando reportes...</p>
         </div>
       ) : (
         <div className="table-container-premium">
@@ -194,20 +217,31 @@ const ReportManager = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredReports.length === 0 ? (
+                {reports.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="text-center py-5 text-muted">No se encontraron reportes con los criterios seleccionados.</td>
+                    <td colSpan="5" className="text-center py-5 text-muted">No se encontraron reportes.</td>
                   </tr>
                 ) : (
-                  filteredReports.map((rep) => (
-                    <tr key={rep.id}>
-                      <td><span className="fw-bold">{rep.tipo}</span></td>
-                      <td>
-                        <div className="loc-info">
-                          <strong>{rep.distrito}</strong>
-                          <small>{rep.barrio}</small>
-                        </div>
-                      </td>
+                  reports.map((rep) => {
+                    const isEmerg = Boolean(rep.isEmergency);
+                    const rowColor = isEmerg ? '#ff0000' : '#ff8800';
+                    return (
+                      <tr key={rep.id}>
+                        <td>
+                          <span 
+                            className="fw-bold" 
+                            style={{ color: rowColor }}
+                          >
+                            <i className={`fa-solid ${isEmerg ? 'fa-circle-exclamation fa-beat' : 'fa-triangle-exclamation'} me-2`}></i>
+                            {rep.tipo}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="loc-info">
+                            <strong>{rep.distrito}</strong>
+                            <small>{rep.barrio}</small>
+                          </div>
+                        </td>
                       <td>{new Date(rep.fecha).toLocaleDateString()}</td>
                       <td>
                         <span className={`time-badge ${getTimeLeftClass(rep.fecha)}`}>
@@ -234,12 +268,34 @@ const ReportManager = () => {
                           )}
                         </div>
                       </td>
-                    </tr>
-                  ))
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>
           </div>
+          
+          {/* Controles de Paginación */}
+          {!loading && totalPages > 1 && (
+            <div className="pagination-controls" style={{ display: 'flex', justifyContent: 'center', gap: '10px', padding: '1rem' }}>
+              <button 
+                className="btn-action" 
+                disabled={page === 1} 
+                onClick={() => setPage(page - 1)}
+              >
+                Anterior
+              </button>
+              <span style={{ alignSelf: 'center' }}>Página {page} de {totalPages}</span>
+              <button 
+                className="btn-action" 
+                disabled={page === totalPages} 
+                onClick={() => setPage(page + 1)}
+              >
+                Siguiente
+              </button>
+            </div>
+          )}
         </div>
       )}
 
@@ -270,7 +326,12 @@ const ReportManager = () => {
                 </MapContainer>
               </div>
               <div className="modal-info-side">
-                <span className="modal-badge">{selectedReport.tipo}</span>
+                <span 
+                  className="modal-badge"
+                  style={{ backgroundColor: Boolean(selectedReport.isEmergency) ? '#ff0000' : '#ff8800', color: 'white' }}
+                >
+                  {selectedReport.tipo}
+                </span>
                 <h2 className="modal-title">{selectedReport.distrito}</h2>
                 <div className="modal-description">
                   {selectedReport.descripcion || "Sin descripción adicional proporcionada por el usuario."}

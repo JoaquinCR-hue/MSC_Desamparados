@@ -15,7 +15,7 @@ exports.getAll = async (req, res) => {
             lat: p.lat,
             lng: p.lng
         }));
-        res.status(200).json(mapped);
+        res.status(200).json({ status: 'success', data: mapped });
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
     }

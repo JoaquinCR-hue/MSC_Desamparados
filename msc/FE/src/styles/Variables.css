@@ -21,8 +21,8 @@
     --title-gradient: linear-gradient(135deg, var(--primary-color), var(--text-main));
     
     /* Constants */
-    --primary-color: #00A3FF;
-    --primary-hover: #0084cc;
+    --primary-color: #ff8800;
+    --primary-hover: #e07b00;
     --success-color: #00C853;
     --warning-color: #eab308;
 }

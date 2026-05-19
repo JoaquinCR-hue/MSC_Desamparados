@@ -1,112 +1,111 @@
+import api from './api';
+
 // Servicio de gestión de usuarios y autenticación — operaciones contra el backend Node.js
-const BASE_URL = 'http://127.0.0.1:3000/api/v1';
 
 /**
- * Inicia sesión de un usuario y obtiene el token JWT.
+ * Inicia sesión de un usuario y obtiene el token JWT en cookie.
  */
 async function login(credentials) {
-  const response = await fetch(`${BASE_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(credentials),
-  });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.message || 'Error al iniciar sesión');
-  return result.data;
+  try {
+    const response = await api.post('/auth/login', credentials);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error al iniciar sesión');
+  }
 }
 
 /**
- * Registra un nuevo usuario en el sistema.
+ * Registra un nuevo usuario en el sistema y obtiene cookie.
  */
 async function register(userData) {
-  const response = await fetch(`${BASE_URL}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(userData),
-  });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.message || 'Error al registrarse');
-  return result.data;
+  try {
+    const response = await api.post('/auth/register', userData);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error al registrarse');
+  }
 }
 
 /**
- * Verifica si el token sigue siendo válido.
+ * Cierra la sesión (Limpia la cookie en el backend)
  */
-async function checkStatus(token) {
-  const response = await fetch(`${BASE_URL}/auth/check-status`, {
-    method: 'GET',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-  });
-  const result = await response.json();
-  if (!response.ok) throw new Error(result.message || 'Sesión expirada');
-  return result;
+async function logout() {
+  try {
+    const response = await api.post('/auth/logout');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error al cerrar sesión');
+  }
 }
 
 /**
- * Obtiene la lista completa de usuarios (Solo Admin), soporta filtros avanzados.
+ * Verifica si el token (cookie) sigue siendo válido.
  */
-async function getUsers(queryParams = '') {
-  const user = JSON.parse(sessionStorage.getItem('user'));
-  const response = await fetch(`${BASE_URL}/users${queryParams}`, {
-    headers: { 'Authorization': `Bearer ${user?.token}` }
-  });
-  const result = await response.json();
-  return result.data;
+async function checkStatus() {
+  try {
+    const response = await api.get('/auth/check-status');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Sesión expirada');
+  }
+}
+
+/**
+ * Obtiene la lista completa de usuarios (Solo Admin), soporta filtros avanzados y paginación.
+ * @param {Object} params - Objeto con parámetros (ej: { search, role, page, limit })
+ */
+async function getUsers(params = {}) {
+  try {
+    // Si params es un string (código legado), lo pasamos tal cual, de lo contrario usamos objeto
+    const config = typeof params === 'string' ? { url: `/users${params}` } : { url: '/users', params };
+    const response = await api.get(config.url, { params: config.params });
+    // Retornamos todo el payload para tener acceso a .meta (paginación)
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error al obtener usuarios');
+  }
 }
 
 /**
  * Crea un nuevo usuario (Solo Admin).
  */
 async function createUser(userData) {
-  const user = JSON.parse(sessionStorage.getItem('user'));
-  const response = await fetch(`${BASE_URL}/users`, {
-    method: 'POST',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${user?.token}`
-    },
-    body: JSON.stringify(userData),
-  });
-  const result = await response.json();
-  return result.data;
+  try {
+    const response = await api.post('/users', userData);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error al crear usuario');
+  }
 }
 
 /**
  * Actualiza un usuario (Solo Admin).
  */
 async function updateUser(userData, id) {
-  const user = JSON.parse(sessionStorage.getItem('user'));
-  const response = await fetch(`${BASE_URL}/users/${id}`, {
-    method: 'PUT',
-    headers: { 
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${user?.token}`
-    },
-    body: JSON.stringify(userData),
-  });
-  const result = await response.json();
-  return result.data;
+  try {
+    const response = await api.put(`/users/${id}`, userData);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error al actualizar usuario');
+  }
 }
 
 /**
  * Elimina un usuario (Solo Admin).
  */
 async function deleteUser(id) {
-  const user = JSON.parse(sessionStorage.getItem('user'));
-  const response = await fetch(`${BASE_URL}/users/${id}`, {
-    method: 'DELETE',
-    headers: { 'Authorization': `Bearer ${user?.token}` }
-  });
-  const result = await response.json();
-  return result.data;
+  try {
+    const response = await api.delete(`/users/${id}`);
+    return response.data.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error al eliminar usuario');
+  }
 }
 
 export default { 
   login, 
   register, 
+  logout,
   checkStatus, 
   getUsers, 
   createUser, 

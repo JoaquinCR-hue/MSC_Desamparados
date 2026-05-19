@@ -15,7 +15,17 @@ const { Op } = require('sequelize');
  */
 exports.getAll = async (req, res) => {
     try {
-        const { status, tipo, search, sortBy, order } = req.query;
+        // Limpieza automática: Borrar reportes de más de 3 días (72 horas)
+        const tresDiasAtras = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+        await Report.destroy({
+            where: {
+                date: {
+                    [Op.lt]: tresDiasAtras
+                }
+            }
+        });
+
+        const { status, tipo, distrito, search, sortBy, order } = req.query;
 
         // Construir condiciones de búsqueda para el Reporte (Filtros y Búsqueda por texto)
         const reportWhere = {};
@@ -37,7 +47,7 @@ exports.getAll = async (req, res) => {
         }
 
         // Construir configuración de ordenamiento dinámico
-        let orderArray = [['createdAt', 'DESC']]; // Orden por defecto
+        let orderArray = [['date', 'DESC']]; // Orden por defecto
         if (sortBy) {
             const validSortFields = ['date', 'status', 'createdAt', 'updatedAt'];
             if (validSortFields.includes(sortBy)) {
@@ -46,12 +56,20 @@ exports.getAll = async (req, res) => {
             }
         }
 
-        // Ejecutar la consulta con Sequelize usando las condiciones construidas
-        const reports = await Report.findAll({
+        // Paginación
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        const { count, rows } = await Report.findAndCountAll({
             where: reportWhere,
             order: orderArray,
             include: [
-                { model: Location, as: 'location' },
+                { 
+                    model: Location, 
+                    as: 'location',
+                    where: distrito ? { district: distrito } : undefined
+                },
                 { 
                     model: IncidentType, 
                     as: 'incidentType',
@@ -59,25 +77,41 @@ exports.getAll = async (req, res) => {
                 },
                 { model: User, as: 'creator' }
             ]
+        // Mapeo al formato plano del FE
+        const mappedReports = rows.map(r => {
+            const tipo = r.incidentType ? r.incidentType.name : 'Desconocido';
+            const desc = r.description || '';
+            const isEmergency = tipo.toUpperCase().includes('EMERG') || 
+                               tipo.toUpperCase().includes('SOS') || 
+                               desc.toUpperCase().includes('SOS');
+            
+            return {
+                id: r.id,
+                tipo: tipo,
+                descripcion: desc,
+                distrito: r.location ? r.location.district : '',
+                barrio: r.location ? r.location.neighborhood : '',
+                direccion_exacta: r.location ? r.location.exactAddress : '',
+                fecha: r.date,
+                id_creador: r.userId,
+                nombre_creador: r.creator ? r.creator.fullName : 'Anónimo',
+                estado: r.status,
+                lat: r.location ? r.location.lat : null,
+                lng: r.location ? r.location.lng : null,
+                isEmergency: isEmergency
+            };
         });
 
-        // Mapeo al formato plano que espera el Frontend
-        const mappedReports = reports.map(r => ({
-            id: r.id,
-            tipo: r.incidentType ? r.incidentType.name : 'Desconocido',
-            descripcion: r.description,
-            distrito: r.location ? r.location.district : '',
-            barrio: r.location ? r.location.neighborhood : '',
-            direccion_exacta: r.location ? r.location.exactAddress : '',
-            fecha: r.date,
-            id_creador: r.userId,
-            nombre_creador: r.creator ? r.creator.fullName : 'Anónimo',
-            estado: r.status,
-            lat: r.location ? r.location.lat : null,
-            lng: r.location ? r.location.lng : null
-        }));
-
-        res.status(200).json(mappedReports); 
+        res.status(200).json({ 
+            status: 'success', 
+            data: mappedReports,
+            meta: {
+                total: count,
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(count / limit)
+            }
+        });
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
     }
@@ -115,7 +149,16 @@ exports.create = async (req, res) => {
         }, { transaction: t });
 
         await t.commit();
-        res.status(201).json({ status: 'success', data: report });
+        
+        // Preparar respuesta con bandera de emergencia
+        const responseData = {
+            ...report.toJSON(),
+            tipo: tipo,
+            descripcion: descripcion,
+            isEmergency: tipo.toUpperCase().includes('SOS') || tipo.toUpperCase().includes('EMERG') || descripcion.toUpperCase().includes('SOS')
+        };
+
+        res.status(201).json({ status: 'success', data: responseData });
     } catch (error) {
         await t.rollback();
         res.status(500).json({ status: 'error', message: error.message });

@@ -8,7 +8,7 @@ const generateToken = (user) => {
   return jwt.sign(
     { id: user.id, email: user.email, role: user.role ? user.role.name : 'ciudadano' },
     process.env.JWT_SECRET,
-    { expiresIn: process.env.JWT_EXPIRES_IN || '3m' }
+    { expiresIn: process.env.JWT_EXPIRES_IN || '2h' }
   );
 };
 
@@ -43,13 +43,20 @@ const register = async (req, res) => {
 
     const token = generateToken(newUser);
 
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 2 * 60 * 60 * 1000 // 2 hours
+    });
+
     res.status(201).json({
       message: 'Usuario registrado exitosamente',
       data: {
         id: newUser.id,
         fullName: newUser.fullName,
         email: newUser.email,
-        token
+        role: newUser.roleId === 1 ? 'admin' : (newUser.roleId === 2 ? 'funcionario' : 'ciudadano')
       }
     });
   } catch (error) {
@@ -79,14 +86,20 @@ const login = async (req, res) => {
 
     const token = generateToken(user);
 
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'lax',
+      maxAge: 2 * 60 * 60 * 1000 // 2 hours
+    });
+
     res.json({
       message: 'Inicio de sesión exitoso',
       data: {
         id: user.id,
         fullName: user.fullName,
         email: user.email,
-        role: user.role ? user.role.name : 'ciudadano',
-        token
+        role: user.role ? user.role.name : 'ciudadano'
       }
     });
   } catch (error) {
@@ -100,7 +113,12 @@ const login = async (req, res) => {
  * En el backend, para invalidar realmente el token se necesitaría una lista negra en Redis.
  */
 const logout = (req, res) => {
-  res.json({ message: 'Sesión cerrada exitosamente. Invalide el token en el cliente.' });
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax'
+  });
+  res.json({ message: 'Sesión cerrada exitosamente.' });
 };
 
 module.exports = {

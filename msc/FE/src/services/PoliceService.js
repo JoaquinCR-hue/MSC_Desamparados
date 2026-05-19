@@ -1,11 +1,9 @@
-// Servicio de gestión de unidades de patrullaje policial con JWT
-const BASE_URL = 'http://127.0.0.1:3000/api/v1/patrols';
+// Servicio de gestión de unidades de patrullaje policial con JWT mediante cookies
+const BASE_URL = '/api/v1/patrols';
 
-const getAuthHeaders = () => {
-  const user = JSON.parse(sessionStorage.getItem('user'));
+const getHeaders = () => {
   return {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${user?.token}`
+    'Content-Type': 'application/json'
   };
 };
 
@@ -14,7 +12,10 @@ const getAuthHeaders = () => {
  */
 async function getPatrols() {
   try {
-    const response = await fetch(BASE_URL, { headers: getAuthHeaders() });
+    const response = await fetch(BASE_URL, { 
+      headers: getHeaders(),
+      credentials: 'include'
+    });
     const result = await response.json();
     return result.data || [];
   } catch (error) {
@@ -30,8 +31,9 @@ async function createPatrol(patrol) {
   try {
     const response = await fetch(BASE_URL, {
       method: 'POST',
-      headers: getAuthHeaders(),
+      headers: getHeaders(),
       body: JSON.stringify(patrol),
+      credentials: 'include'
     });
     const result = await response.json();
     return result.data;
@@ -47,8 +49,9 @@ async function updatePatrol(patrol, id) {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: 'PUT',
-      headers: getAuthHeaders(),
+      headers: getHeaders(),
       body: JSON.stringify(patrol),
+      credentials: 'include'
     });
     const result = await response.json();
     return result.data;
@@ -64,7 +67,8 @@ async function deletePatrol(id) {
   try {
     const response = await fetch(`${BASE_URL}/${id}`, {
       method: 'DELETE',
-      headers: getAuthHeaders(),
+      headers: getHeaders(),
+      credentials: 'include'
     });
     const result = await response.json();
     return result.data;
