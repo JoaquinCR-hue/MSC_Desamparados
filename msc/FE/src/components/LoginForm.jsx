@@ -76,6 +76,7 @@ function LoginForm() {
       <form onSubmit={handleLogin}>
         <InputGroup
           label="Cédula"
+          type="number"
           value={nationalId}
           placeholder="Ingrese su cédula"
           onChange={(e) => setNationalId(e.target.value)}
