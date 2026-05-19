@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import NavigationSpinner from '../components/NavigationSpinner';
 
 // ── Páginas en inglés ──────────────────────────────────────────────
 import Home from '../pages/Home';
@@ -52,6 +53,7 @@ const RoleRoute = ({ element, allowedRoles }) => {
 const Routing = () => {
   return (
     <BrowserRouter>
+      <NavigationSpinner />
       <Routes>
         {/* ── Rutas Públicas ─────────────────────────────── */}
         <Route path="/" element={<Home />} />

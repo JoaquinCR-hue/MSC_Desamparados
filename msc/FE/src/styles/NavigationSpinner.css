@@ -1,0 +1,171 @@
+/* src/styles/NavigationSpinner.css */
+
+.page-loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999999; /* Ensure it overlays everything, including popups and headers */
+  pointer-events: all;
+  transition: opacity 300ms ease-in-out;
+}
+
+/* Animations for mounting and unmounting */
+.page-loader-overlay.fade-in {
+  opacity: 1;
+  animation: fadeInOverlay 300ms ease-out forwards;
+}
+
+.page-loader-overlay.fade-out {
+  opacity: 0;
+  animation: fadeOutOverlay 300ms ease-in forwards;
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOutOverlay {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Spinner Wrapper and Structure */
+.spinner-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Outer Ring - Clockwise Rotation with Gradient Border */
+.spinner-ring-outer {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border: 4px solid transparent;
+  border-top-color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+  border-radius: 50%;
+  animation: spinClockwise 1.5s cubic-bezier(0.53, 0.21, 0.29, 0.87) infinite;
+  box-shadow: 0 0 15px rgba(224, 123, 0, 0.2);
+}
+
+/* Inner Ring - Counter-Clockwise Rotation */
+.spinner-ring-inner {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  border: 4px solid transparent;
+  border-left-color: var(--text-muted);
+  border-right-color: var(--text-muted);
+  border-radius: 50%;
+  animation: spinCounterClockwise 1s linear infinite;
+  opacity: 0.8;
+}
+
+/* Central Icon (Shield) with Pulse Animation */
+.spinner-logo {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.logo-pulse-icon {
+  font-size: 2.2rem;
+  color: var(--primary-color);
+  text-shadow: 0 0 10px rgba(224, 123, 0, 0.5);
+  animation: pulseLogo 2s ease-in-out infinite;
+}
+
+@keyframes pulseLogo {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.15);
+    color: var(--text-main);
+    opacity: 1;
+    text-shadow: 0 0 20px var(--primary-color);
+  }
+}
+
+/* Text Container under the Spinner */
+.spinner-text-container {
+  position: absolute;
+  bottom: -45px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.spinner-text {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: var(--text-main);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Loading Dots Animation */
+.loading-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  height: 10px;
+}
+
+.loading-dots span {
+  width: 4px;
+  height: 4px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulseDots 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+/* Animation Keyframes */
+@keyframes spinClockwise {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spinCounterClockwise {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+@keyframes pulseDots {
+  0%, 80%, 100% { 
+    transform: scale(0);
+    opacity: 0.3;
+  } 
+  40% { 
+    transform: scale(1);
+    opacity: 1;
+  }
+}
