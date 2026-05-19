@@ -81,18 +81,18 @@ const Routing = () => {
 
         {/* ── Rutas Ciudadano ────────────────────────────── */}
         <Route path="/citizen-view" element={<RoleRoute element={<CitizenView />} allowedRoles={['ciudadano']} />} />
-        <Route path="/report-incident" element={<RoleRoute element={<ReportIncident />} allowedRoles={['ciudadano', 'funcionario', 'admin']} />} />
-        <Route path="/safe-routes" element={<RoleRoute element={<SafeRoutesPage />} allowedRoles={['ciudadano', 'funcionario', 'admin']} />} />
+        <Route path="/report-incident" element={<RoleRoute element={<ReportIncident />} allowedRoles={['ciudadano', 'funcionario', 'admin', 'administrador']} />} />
+        <Route path="/safe-routes" element={<RoleRoute element={<SafeRoutesPage />} allowedRoles={['ciudadano', 'funcionario', 'admin', 'administrador']} />} />
 
         {/* ── Rutas Funcionario ──────────────────────────── */}
-        <Route path="/officer-view" element={<RoleRoute element={<OfficerDashboardPage />} allowedRoles={['funcionario', 'admin']} />} />
-        <Route path="/manage-reports" element={<RoleRoute element={<ManageReports />} allowedRoles={['funcionario', 'admin']} />} />
-        <Route path="/statistics" element={<RoleRoute element={<Statistics />} allowedRoles={['funcionario', 'admin']} />} />
-        <Route path="/patrol-map" element={<RoleRoute element={<PatrolMapPage />} allowedRoles={['funcionario', 'admin']} />} />
+        <Route path="/officer-view" element={<RoleRoute element={<OfficerDashboardPage />} allowedRoles={['funcionario', 'admin', 'administrador']} />} />
+        <Route path="/manage-reports" element={<RoleRoute element={<ManageReports />} allowedRoles={['funcionario', 'admin', 'administrador']} />} />
+        <Route path="/statistics" element={<RoleRoute element={<Statistics />} allowedRoles={['funcionario', 'admin', 'administrador']} />} />
+        <Route path="/patrol-map" element={<RoleRoute element={<PatrolMapPage />} allowedRoles={['funcionario', 'admin', 'administrador']} />} />
 
         {/* ── Rutas Admin ────────────────────────────────── */}
-        <Route path="/manage-users" element={<RoleRoute element={<ManageUsers />} allowedRoles={['admin']} />} />
-        <Route path="/manage-consults" element={<RoleRoute element={<ManageConsults />} allowedRoles={['admin']} />} />
+        <Route path="/manage-users" element={<RoleRoute element={<ManageUsers />} allowedRoles={['admin', 'administrador']} />} />
+        <Route path="/manage-consults" element={<RoleRoute element={<ManageConsults />} allowedRoles={['admin', 'administrador']} />} />
 
         {/* ── Ruta no encontrada → redirige al inicio ────── */}
         <Route path="*" element={<Navigate to="/" replace />} />

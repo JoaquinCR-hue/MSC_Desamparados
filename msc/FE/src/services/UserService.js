@@ -102,6 +102,18 @@ async function deleteUser(id) {
   }
 }
 
+/**
+ * Solicita la recuperación de contraseña.
+ */
+async function recoverPassword(email) {
+  try {
+    const response = await api.post('/auth/recover-password', { email });
+    return response.data.newPassword;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error al recuperar contraseña');
+  }
+}
+
 export default { 
   login, 
   register, 
@@ -110,5 +122,6 @@ export default {
   getUsers, 
   createUser, 
   updateUser, 
-  deleteUser 
+  deleteUser,
+  recoverPassword
 };

@@ -1,6 +1,6 @@
 const { User, Role } = require('../models');
 const jwt = require('jsonwebtoken');
-
+const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
 /**
  * Genera un token JWT para el usuario.
  */
@@ -30,7 +30,11 @@ const register = async (req, res) => {
       const field = existingUser.email === email ? 'El correo' : 'La cédula';
       return res.status(400).json({ message: `${field} ya está registrado en el sistema.` });
     }
-
+    if (!regex.test(password)) {
+      return res.status(400).json({ 
+        message: 'La contraseña debe tener al menos 6 caracteres, incluyendo una mayúscula, una minúscula y un número.' 
+      });
+    }
     // Crear el usuario (el password se hashea en el hook del modelo)
     const newUser = await User.create({
       fullName,
@@ -121,8 +125,29 @@ const logout = (req, res) => {
   res.json({ message: 'Sesión cerrada exitosamente.' });
 };
 
+/**
+ * Recuperación de contraseña
+ * Genera una nueva y la guarda, devolviéndola para que el frontend la envíe.
+ */
+const recoverPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({ message: 'Ese correo no está registrado' });
+    }
+    const newPassword = Math.random().toString(36).slice(-8);
+    await user.update({ password: newPassword });
+    res.json({ message: 'Contraseña recuperada exitosamente', newPassword });
+  } catch (error) {
+    console.error('Error al recuperar contraseña:', error);
+    res.status(500).json({ message: 'Error al recuperar contraseña' });
+  }
+};
+
 module.exports = {
   register,
   login,
-  logout
+  logout,
+  recoverPassword
 };

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import UserService from '../services/UserService';
+import emailjs from '@emailjs/browser';
 import Swal from 'sweetalert2';
 import AuthLayout from './shared/AuthLayout';
 import AuthHeader from './shared/AuthHeader';
@@ -27,13 +28,13 @@ function LoginForm() {
     const nationalIdRegex = /^[1-9]\d{8}$/;
     const cleanedId = nationalId.replace(/\D/g, '');
 
-    if (!cleanedId || !password) {
+    if (!nationalId || !password) {
       Swal.fire({ title: 'Error', text: 'Todos los campos son obligatorios 💜', icon: 'warning' });
       return;
     }
 
-    if (!nationalIdRegex.test(cleanedId)) {
-      Swal.fire({ title: 'Formato Inválido', text: 'La cédula debe tener exactamente 9 dígitos.', icon: 'warning' });
+    if (!cleanedId || !nationalIdRegex.test(cleanedId)) {
+      Swal.fire({ title: 'Formato Inválido', text: 'Debes colocar la cédula correcta.', icon: 'warning' });
       return;
     }
 
@@ -41,11 +42,14 @@ function LoginForm() {
       // Llamada al servicio de autenticación JWT
       const userData = await UserService.login({ nationalId: cleanedId, password });
 
+      // Normalizar el rol a minúsculas
+      userData.role = userData.role ? userData.role.toLowerCase() : 'ciudadano';
+
       // Guardar datos del usuario y token en sessionStorage
       sessionStorage.setItem('user', JSON.stringify(userData));
 
       let welcomeMessage = '';
-      if (userData.role === 'admin') {
+      if (userData.role === 'admin' || userData.role === 'administrador') {
         welcomeMessage = `Bienvenido Administrador(a) ${userData.fullName}.`;
       } else if (userData.role === 'funcionario') {
         welcomeMessage = `Bienvenido Oficial ${userData.fullName}.`;
@@ -60,12 +64,54 @@ function LoginForm() {
         timer: 1500,
         showConfirmButton: false,
       }).then(() => {
-        if (userData.role === 'admin') navigate('/manage-users');
+        if (userData.role === 'admin' || userData.role === 'administrador') navigate('/manage-users');
         else if (userData.role === 'funcionario') navigate('/officer-view');
+        else if (userData.role === 'ciudadano') navigate('/citizen-view');
         else navigate('/');
       });
     } catch (error) {
       Swal.fire({ title: 'Error de Acceso', text: error.message, icon: 'error' });
+    }
+  };
+
+  /**
+   * Flujo de recuperación de contraseña:
+   * Solicita una nueva clave al backend y la envía por correo usando EmailJS.
+   */
+  const handleRecoverPassword = async () => {
+    const { value: enteredEmail } = await Swal.fire({
+      title: 'Recuperar Contraseña',
+      input: 'email',
+      inputLabel: 'Ingresa el correo asociado a tu cuenta',
+      showCancelButton: true,
+      confirmButtonText: 'Enviar nueva clave',
+      cancelButtonText: 'Cancelar',
+      inputValidator: (value) => {
+        if (!value) {
+          return '¡Necesitas ingresar un correo!';
+        }
+      }
+    });
+
+    if (enteredEmail) {
+      try {
+        Swal.fire({ title: 'Procesando...', text: 'Por favor espera', allowOutsideClick: false });
+        Swal.showLoading();
+
+        // Obtener nueva contraseña del backend
+        const newPassword = await UserService.recoverPassword(enteredEmail);
+
+        // Parámetros para el template de EmailJS
+        const templateParams = { email: enteredEmail, password: newPassword };
+
+        // Enviar correo con la nueva contraseña temporal
+        await emailjs.send('service_rn1linm', 'template_hn9zqj4', templateParams, 'gYn0FdHihGBZzj5vp');
+
+        Swal.fire('¡Éxito!', 'Revisa tu correo con tu nueva contraseña temporal.', 'success');
+      } catch (error) {
+        console.error(error);
+        Swal.fire('Error', error.message || 'No se pudo procesar la solicitud', 'error');
+      }
     }
   };
 
@@ -94,6 +140,7 @@ function LoginForm() {
         text="¿No eres miembro?"
         linkText="Registrate"
         linkTo="/register"
+        onClickExtra={handleRecoverPassword}
         extraLinkText="¿Olvidaste tu contraseña?"
       />
     </AuthLayout>
