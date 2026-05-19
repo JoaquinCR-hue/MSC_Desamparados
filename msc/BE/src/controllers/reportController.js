@@ -25,7 +25,7 @@ exports.getAll = async (req, res) => {
             }
         });
 
-        const { status, tipo, search, sortBy, order } = req.query;
+        const { status, tipo, distrito, search, sortBy, order } = req.query;
 
         // Construir condiciones de búsqueda para el Reporte (Filtros y Búsqueda por texto)
         const reportWhere = {};
@@ -56,11 +56,20 @@ exports.getAll = async (req, res) => {
             }
         }
 
-        const reports = await Report.findAll({
+        // Paginación
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        const { count, rows } = await Report.findAndCountAll({
             where: reportWhere,
             order: orderArray,
             include: [
-                { model: Location, as: 'location' },
+                { 
+                    model: Location, 
+                    as: 'location',
+                    where: distrito ? { district: distrito } : undefined
+                },
                 { 
                     model: IncidentType, 
                     as: 'incidentType',
@@ -69,9 +78,8 @@ exports.getAll = async (req, res) => {
                 { model: User, as: 'creator' }
             ]
         });
-
         // Mapeo al formato plano del FE
-        const mappedReports = reports.map(r => {
+        const mappedReports = rows.map(r => {
             const tipo = r.incidentType ? r.incidentType.name : 'Desconocido';
             const desc = r.description || '';
             const isEmergency = tipo.toUpperCase().includes('EMERG') || 
@@ -95,7 +103,16 @@ exports.getAll = async (req, res) => {
             };
         });
 
-        res.status(200).json({ status: 'success', data: mappedReports });
+        res.status(200).json({ 
+            status: 'success', 
+            data: mappedReports,
+            meta: {
+                total: count,
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(count / limit)
+            }
+        });
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
     }
