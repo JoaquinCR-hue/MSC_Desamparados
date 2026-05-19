@@ -20,7 +20,7 @@
     font-size: 3rem;
     font-weight: 800;
     margin-bottom: 1rem;
-    background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+    background: linear-gradient(135deg, #ffaa00 0%, #e07b00 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -72,12 +72,12 @@
 .info-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-    border-color: rgba(0, 198, 255, 0.3);
+    border-color: rgba(255, 170, 0, 0.3);
 }
 
 .info-icon {
     font-size: 2.5rem;
-    color: #00c6ff;
+    color: #ffaa00;
     margin-bottom: 1.5rem;
 }
 
@@ -107,7 +107,7 @@
 }
 
 .info-list li i {
-    color: #0072ff;
+    color: #e07b00;
     width: 20px;
     text-align: center;
 }
@@ -222,8 +222,8 @@
 
 .premium-input:focus {
     outline: none;
-    border-color: #00c6ff !important;
-    box-shadow: 0 0 0 4px rgba(0, 198, 255, 0.1) !important;
+    border-color: #ffaa00 !important;
+    box-shadow: 0 0 0 4px rgba(255, 170, 0, 0.1) !important;
     background: rgba(0, 0, 0, 0.4) !important;
 }
 
@@ -248,7 +248,7 @@ select.premium-input option {
 }
 
 .btn-submit-contacto {
-    background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+    background: linear-gradient(135deg, #ffaa00 0%, #e07b00 100%);
     color: #fff;
     border: none;
     padding: 1rem 2rem;
@@ -267,7 +267,7 @@ select.premium-input option {
 
 .btn-submit-contacto:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0, 114, 255, 0.4);
+    box-shadow: 0 10px 25px rgba(224, 123, 0, 0.4);
 }
 
 .btn-submit-contacto:active {
