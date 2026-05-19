@@ -78,6 +78,7 @@ exports.getAll = async (req, res) => {
                     where: Object.keys(roleWhere).length > 0 ? roleWhere : undefined
                 }
             ]
+        });
         // Mapeo al formato esperado por el Frontend
         const mappedUsers = rows.map(mapUserToFE);
         

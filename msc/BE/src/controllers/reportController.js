@@ -77,6 +77,7 @@ exports.getAll = async (req, res) => {
                 },
                 { model: User, as: 'creator' }
             ]
+        });
         // Mapeo al formato plano del FE
         const mappedReports = rows.map(r => {
             const tipo = r.incidentType ? r.incidentType.name : 'Desconocido';
