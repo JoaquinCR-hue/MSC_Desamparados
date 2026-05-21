@@ -13,12 +13,13 @@ const UserManager = () => {
         const fetchStats = async () => {
             try {
                 // Obtener todos los usuarios del servicio
-                const data = await UserService.getUsers();
-                if (data) {
+                const response = await UserService.getUsers();
+                if (response) {
+                    const users = Array.isArray(response) ? response : (response.data || []);
                     setStats({
-                        total: data.length,
-                        officers: data.filter(u => u.role !== 'ciudadano').length,
-                        citizens: data.filter(u => u.role === 'ciudadano').length
+                        total: users.length,
+                        officers: users.filter(u => u.role !== 'ciudadano').length,
+                        citizens: users.filter(u => u.role === 'ciudadano').length
                     });
                 }
             } catch (error) {

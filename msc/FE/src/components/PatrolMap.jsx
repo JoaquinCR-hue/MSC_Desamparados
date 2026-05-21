@@ -160,7 +160,6 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
     try {
       const dataRep = await ReportService.getReports();
       const dataPol = await PoliceService.getPatrols();
-      const dataUsu = await UserService.getUsers();
 
       const now = new Date();
       const oneWeekAgo = new Date();
@@ -177,10 +176,6 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       
       setReports(filteredReports);
       setPatrols(validPatrols);
-
-      if (dataUsu) {
-        setAvailableOfficers(dataUsu.filter(u => u.role === 'admin' || u.role === 'funcionario'));
-      }
       
       // Limpiar rutas huérfanas si la patrulla o el incidente han sido eliminados
       setActiveRoutes(prev => prev.filter(route => 
@@ -195,8 +190,21 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
     }
   };
 
+  // Función separada para cargar funcionarios disponibles (no bloquea el mapa si falla)
+  const fetchOfficers = async () => {
+    try {
+      const dataUsu = await UserService.getUsers();
+      const lista = Array.isArray(dataUsu) ? dataUsu : (dataUsu?.data || []);
+      setAvailableOfficers(lista.filter(u => u.role === 'admin' || u.role === 'funcionario'));
+    } catch (error) {
+      console.warn('No se pudo cargar la lista de funcionarios:', error.message);
+      setAvailableOfficers([]);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchOfficers();
   }, [refreshTrigger]);
 
   const handleMapClick = (latlng) => {
@@ -253,7 +261,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
   };
 
   const handleOfficialToggle = (name) => {
-    let currentOfficers = formData.nombre_oficiales.split(',').map(n => n.trim()).filter(n => n);
+    let currentOfficers = (formData.nombre_oficiales || '').split(',').map(n => n.trim()).filter(n => n);
     if (currentOfficers.includes(name)) {
       currentOfficers = currentOfficers.filter(n => n !== name);
     } else {
@@ -329,13 +337,17 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       );
       
       const newRoute = {
-        ...route,
         id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
         patrolId: routingSource.id,
         incidentId: report.id,
         unidad: routingSource.unidad,
         destinoTipo: report.tipo,
-        color: ROUTE_COLORS[activeRoutes.length % ROUTE_COLORS.length]
+        color: ROUTE_COLORS[activeRoutes.length % ROUTE_COLORS.length],
+        // Mapear propiedades del RouteService (inglés) → nombres esperados (español)
+        coordenadas: route.coordinates,
+        distanciaKm: route.distanceKm,
+        duracionMin: route.durationMin,
+        simulada: route.simulated
       };
       
       setActiveRoutes(prev => [...prev, newRoute]);
@@ -656,7 +668,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
                           type="checkbox"
                           id={`func-${func.id}`}
                           label={func.nombre}
-                          checked={formData.nombre_oficiales.split(',').map(n => n.trim()).includes(func.nombre)}
+                          checked={(formData.nombre_oficiales || '').split(',').map(n => n.trim()).includes(func.nombre)}
                           onChange={() => handleOfficialToggle(func.nombre)}
                           className="text-main premium-check"
                         />

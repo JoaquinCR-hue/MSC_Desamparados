@@ -44,12 +44,18 @@ function LoginForm() {
 
       // Normalizar el rol a minúsculas
       userData.role = userData.role ? userData.role.toLowerCase() : 'ciudadano';
+      if (userData.role === 'administrador') {
+        userData.role = 'admin';
+      }
+      if (userData.role === 'usuario') {
+        userData.role = 'ciudadano';
+      }
 
       // Guardar datos del usuario y token en sessionStorage
       sessionStorage.setItem('user', JSON.stringify(userData));
 
       let welcomeMessage = '';
-      if (userData.role === 'admin' || userData.role === 'administrador') {
+      if (userData.role === 'admin') {
         welcomeMessage = `Bienvenido Administrador(a) ${userData.fullName}.`;
       } else if (userData.role === 'funcionario') {
         welcomeMessage = `Bienvenido Oficial ${userData.fullName}.`;
@@ -64,7 +70,7 @@ function LoginForm() {
         timer: 1500,
         showConfirmButton: false,
       }).then(() => {
-        if (userData.role === 'admin' || userData.role === 'administrador') navigate('/manage-users');
+        if (userData.role === 'admin') navigate('/manage-users');
         else if (userData.role === 'funcionario') navigate('/officer-view');
         else if (userData.role === 'ciudadano') navigate('/citizen-view');
         else navigate('/');
@@ -122,6 +128,7 @@ function LoginForm() {
       <form onSubmit={handleLogin}>
         <InputGroup
           label="Cédula"
+          type="number"
           value={nationalId}
           placeholder="Ingrese su cédula"
           onChange={(e) => setNationalId(e.target.value)}

@@ -53,9 +53,9 @@ exports.getAll = async (req, res) => {
         }
 
         // Construir configuración de ordenamiento dinámico
-        let orderArray = [['createdAt', 'DESC']]; // Orden por defecto
+        let orderArray = [['id', 'DESC']]; // Orden por defecto
         if (sortBy) {
-            const validSortFields = ['fullName', 'email', 'nationalId', 'createdAt'];
+            const validSortFields = ['fullName', 'email', 'nationalId', 'id'];
             if (validSortFields.includes(sortBy)) {
                 const sortOrder = (order && order.toUpperCase() === 'ASC') ? 'ASC' : 'DESC';
                 orderArray = [[sortBy, sortOrder]];
@@ -68,14 +68,18 @@ exports.getAll = async (req, res) => {
         const offset = (page - 1) * limit;
 
         // Ejecutar la consulta con Sequelize usando las condiciones construidas y paginación
+        const hasRoleFilter = Object.keys(roleWhere).length > 0;
         const { count, rows } = await User.findAndCountAll({
             where: userWhere,
             order: orderArray,
+            limit,
+            offset,
             include: [
                 { 
                     model: Role, 
                     as: 'role',
-                    where: Object.keys(roleWhere).length > 0 ? roleWhere : undefined
+                    where: hasRoleFilter ? roleWhere : undefined,
+                    required: hasRoleFilter  // LEFT JOIN cuando no hay filtro de rol
                 }
             ]
         });

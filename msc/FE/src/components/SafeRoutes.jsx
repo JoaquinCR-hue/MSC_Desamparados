@@ -154,7 +154,7 @@ const SafeRoutes = () => {
       // 1. Calcular ruta mediante el servicio
       const route = await RouteService.calculateRoute(origin, destination, false, travelMode);
       setRouteCoordinates(route.coordinates);
-      setRouteInfo({ distanceKm: route.distanceKm, durationMin: route.durationMin, simulated: route.simulated });
+      setRouteInfo({ distanciaKm: route.distanceKm, duracionMin: route.durationMin, simulada: route.simulated });
 
       // 2. Analizar riesgos en la ruta calculada
       const analysis = RouteService.analyzeRouteRisk(route.coordinates, reports, 350);

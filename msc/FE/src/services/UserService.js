@@ -59,8 +59,11 @@ async function getUsers(params = {}) {
     // Si params es un string (código legado), lo pasamos tal cual, de lo contrario usamos objeto
     const config = typeof params === 'string' ? { url: `/users${params}` } : { url: '/users', params };
     const response = await api.get(config.url, { params: config.params });
-    // Retornamos todo el payload para tener acceso a .meta (paginación)
-    return response.data;
+    const result = response.data;
+    const userData = Array.isArray(result) ? result : (result.data || []);
+
+    const hasPagination = typeof params === 'object' && params !== null && (params.page !== undefined || params.limit !== undefined);
+    return hasPagination ? result : userData;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Error al obtener usuarios');
   }

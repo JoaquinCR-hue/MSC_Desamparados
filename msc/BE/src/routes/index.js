@@ -12,7 +12,7 @@ const patrolsRoutes = require('./patrols');
 router.use('/auth', authRoutes);
 
 // Rutas protegidas (requieren autenticación)
-router.use('/users', verifyToken, authorize(['admin', 'administrador']), usersRoutes);
+router.use('/users', verifyToken, usersRoutes);
 router.use('/reports', verifyToken, reportsRoutes);
 router.use('/consults', verifyToken, consultsRoutes);
 router.use('/patrols', verifyToken, authorize(['admin', 'administrador', 'funcionario']), patrolsRoutes);
