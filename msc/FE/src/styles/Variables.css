@@ -44,6 +44,13 @@
     
     --border-main: rgba(0, 0, 0, 0.08);
     --border-strong: #e2e8f0;
+
+    /* Anular variables de Bootstrap para hover del dropdown en modo día */
+    --bs-dropdown-link-hover-bg: #1a1c22;
+    --bs-dropdown-link-hover-color: #ffffff;
+    --bs-dropdown-link-active-bg: #1a1c22;
+    --bs-dropdown-link-active-color: #ffffff;
+    --bs-dropdown-link-color: #334155;
 }
 
 /* Base Utility Theme Classes */

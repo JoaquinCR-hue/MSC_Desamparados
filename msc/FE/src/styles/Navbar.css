@@ -306,9 +306,10 @@
   text-align: center;
 }
 
-.dropdown-item:hover {
-  background-color: var(--bg-secondary);
-  color: var(--text-main);
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--bs-dropdown-link-hover-bg, var(--bg-secondary)) !important;
+  color: var(--bs-dropdown-link-hover-color, var(--text-main)) !important;
 }
 
 .theme-toggle-btn {
@@ -365,4 +366,31 @@
   grid-template-columns: 1fr;
   justify-items: center;
   align-items: center;
+}
+
+/* ── Modo Día: hover con fondo azul oscuro (color del fondo de la noche) ── */
+html[data-theme='light'] .dropdown-item:hover,
+html[data-theme='light'] .dropdown-item:focus,
+html[data-theme='light'] .dropdown-item:active {
+  background-color: #1a1c22 !important;
+  color: #ffffff !important;
+  --bs-dropdown-link-hover-bg: #1a1c22;
+  --bs-dropdown-link-active-bg: #1a1c22;
+}
+
+html[data-theme='light'] .dropdown-item:hover i,
+html[data-theme='light'] .dropdown-item:focus i {
+  color: var(--primary-color) !important;
+}
+
+html[data-theme='light'] .nav-link-custom:hover {
+  background-color: #1a1c22 !important;
+  color: #ffffff !important;
+  border-color: var(--primary-color) !important;
+}
+
+html[data-theme='light'] .menu-button:hover {
+  background-color: #1a1c22 !important;
+  color: #ffffff !important;
+  border-color: var(--primary-color) !important;
 }

@@ -101,7 +101,7 @@ const Navbar = () => {
     if (!user) return;
 
     const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-    
+
     const handleUserActivity = () => {
       // Solo reiniciamos si no hay una alerta de Swal abierta
       if (!Swal.isVisible()) {
@@ -137,7 +137,7 @@ const Navbar = () => {
   }, [user]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-  
+
   const toggleTheme = () => {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
@@ -301,12 +301,12 @@ const Navbar = () => {
             {(isCitizen || isOfficer || isAdmin) && (
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Link to="/report-incident" className="report-button" title="Reportar Incidente">
-                  <svg 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2.5" 
-                    strokeLinecap="round" 
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
                     strokeLinejoin="round"
                     className="siren-svg-icon"
                   >

@@ -17,7 +17,8 @@ const OfficerList = () => {
     const data = await UserService.getUsers(query);
     if (data) {
       // Filtrar para mostrar solo aquellos que no son ciudadanos
-      setOfficers(data.filter(u => u.role !== 'ciudadano'));
+      const filtered = Array.isArray(data) ? data : (data.data || []);
+      setOfficers(filtered.filter(u => u.role !== 'ciudadano'));
     }
   };
 
@@ -40,23 +41,41 @@ const OfficerList = () => {
         confirmButtonText: 'Sí, eliminar'
       }).then(async (result) => {
         if (result.isConfirmed) {
-          await UserService.deleteUser(id);
-          loadData(searchTerm);
-          Swal.default.fire('¡Eliminado!', 'El funcionario ha sido borrado.', 'success');
+          try {
+            await UserService.deleteUser(id);
+            loadData(searchTerm);
+            Swal.default.fire('¡Eliminado!', 'El funcionario ha sido borrado.', 'success');
+          } catch (error) {
+            Swal.default.fire('Error', 'No se pudo eliminar el funcionario.', 'error');
+          }
         }
       });
     });
   };
 
+  const validateOfficer = (officer, isNew = false) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\d{8}$/;
+    const cedulaRegex = /^\d{9}$/;
+
+    if (!officer.nombre.trim()) return "El nombre es obligatorio.";
+    if (!cedulaRegex.test(officer.cedula)) return "La cédula debe tener exactamente 9 dígitos numéricos.";
+    if (!emailRegex.test(officer.email)) return "El formato de correo electrónico no es válido.";
+    if (!phoneRegex.test(officer.telefono)) return "El teléfono debe tener exactamente 8 dígitos numéricos.";
+    if (isNew && officer.pass.length < 6) return "La contraseña debe tener al menos 6 caracteres.";
+    
+    return null;
+  };
+
   const handleAddSubmit = async (e) => {
     e.preventDefault();
 
-    // Validaciones de campos
-    if (!newOfficer.nombre || !newOfficer.cedula || !newOfficer.email || !newOfficer.telefono || !newOfficer.pass) {
+    const validationError = validateOfficer(newOfficer, true);
+    if (validationError) {
       import('sweetalert2').then(Swal => {
         Swal.default.fire({
-          title: 'Campos Incompletos',
-          text: 'Por favor, rellene todos los campos del funcionario.',
+          title: 'Error de Validación',
+          text: validationError,
           icon: 'warning',
           confirmButtonColor: '#3b82f6'
         });
@@ -64,18 +83,18 @@ const OfficerList = () => {
       return;
     }
 
-    const officerData = {
-      ...newOfficer,
-      id: Math.random().toString(16).slice(2, 6)
-    };
-    await UserService.createUser(officerData);
-    setShowAddForm(false);
-    setNewOfficer({ nombre: '', cedula: '', email: '', telefono: '', role: 'admin', pass: '' });
-    loadData(searchTerm);
+    try {
+      await UserService.createUser(newOfficer);
+      setShowAddForm(false);
+      setNewOfficer({ nombre: '', cedula: '', email: '', telefono: '', role: 'admin', pass: '' });
+      loadData(searchTerm);
 
-    import('sweetalert2').then(Swal => {
-      Swal.default.fire('¡Agregado!', 'El funcionario ha sido registrado con éxito.', 'success');
-    });
+      import('sweetalert2').then(Swal => {
+        Swal.default.fire('¡Agregado!', 'El funcionario ha sido registrado con éxito.', 'success');
+      });
+    } catch (error) {
+      import('sweetalert2').then(Swal => Swal.default.fire('Error', 'No se pudo registrar el funcionario.', 'error'));
+    }
   };
 
   const handleEditClick = (officer) => {
@@ -84,12 +103,12 @@ const OfficerList = () => {
   };
 
   const handleSaveEdit = async (id) => {
-    // Validaciones de edición
-    if (!editOfficer.nombre || !editOfficer.cedula || !editOfficer.email || !editOfficer.telefono) {
+    const validationError = validateOfficer(editOfficer, false);
+    if (validationError) {
       import('sweetalert2').then(Swal => {
         Swal.default.fire({
-          title: 'Campos Incompletos',
-          text: 'No puede dejar campos vacíos al editar el funcionario.',
+          title: 'Error de Validación',
+          text: validationError,
           icon: 'warning',
           confirmButtonColor: '#3b82f6'
         });
@@ -97,13 +116,17 @@ const OfficerList = () => {
       return;
     }
 
-    await UserService.updateUser(editOfficer, id);
-    setEditingId(null);
-    setEditOfficer(null);
-    loadData(searchTerm);
-    import('sweetalert2').then(Swal => {
-      Swal.default.fire('¡Actualizado!', 'Los datos se modificaron correctamente.', 'success');
-    });
+    try {
+      await UserService.updateUser(editOfficer, id);
+      setEditingId(null);
+      setEditOfficer(null);
+      loadData(searchTerm);
+      import('sweetalert2').then(Swal => {
+        Swal.default.fire('¡Actualizado!', 'Los datos se modificaron correctamente.', 'success');
+      });
+    } catch (error) {
+      import('sweetalert2').then(Swal => Swal.default.fire('Error', 'No se pudieron actualizar los datos.', 'error'));
+    }
   };
 
   return (
@@ -130,10 +153,10 @@ const OfficerList = () => {
           <h4>Agregar Nuevo Funcionario</h4>
           <div className="form-grid">
             <input type="text" placeholder="Nombre completo" value={newOfficer.nombre} onChange={e => setNewOfficer({ ...newOfficer, nombre: e.target.value })} />
-            <input type="text" placeholder="Cédula" value={newOfficer.cedula} onChange={e => setNewOfficer({ ...newOfficer, cedula: e.target.value })} />
+            <input type="text" placeholder="Cédula (9 dígitos)" maxLength="9" value={newOfficer.cedula} onChange={e => setNewOfficer({ ...newOfficer, cedula: e.target.value.replace(/\D/g, '') })} />
             <input type="email" placeholder="Correo electrónico" value={newOfficer.email} onChange={e => setNewOfficer({ ...newOfficer, email: e.target.value })} />
-            <input type="text" placeholder="Teléfono" value={newOfficer.telefono} onChange={e => setNewOfficer({ ...newOfficer, telefono: e.target.value })} />
-            <input type="password" placeholder="Contraseña" value={newOfficer.pass} onChange={e => setNewOfficer({ ...newOfficer, pass: e.target.value })} />
+            <input type="text" placeholder="Teléfono (8 dígitos)" maxLength="8" value={newOfficer.telefono} onChange={e => setNewOfficer({ ...newOfficer, telefono: e.target.value.replace(/\D/g, '') })} />
+            <input type="password" placeholder="Contraseña (mín 6 car.)" value={newOfficer.pass} onChange={e => setNewOfficer({ ...newOfficer, pass: e.target.value })} />
             <select value={newOfficer.role} onChange={e => setNewOfficer({ ...newOfficer, role: e.target.value })}>
               <option value="admin">Administrador</option>
               <option value="funcionario">Funcionario</option>
@@ -160,9 +183,9 @@ const OfficerList = () => {
               editingId === officer.id ? (
                 <tr key={officer.id} className="edit-row">
                   <td><input type="text" className="inline-input" value={editOfficer.nombre} onChange={e => setEditOfficer({ ...editOfficer, nombre: e.target.value })} /></td>
-                  <td><input type="text" className="inline-input" value={editOfficer.cedula} onChange={e => setEditOfficer({ ...editOfficer, cedula: e.target.value })} /></td>
+                  <td><input type="text" className="inline-input" maxLength="9" value={editOfficer.cedula} onChange={e => setEditOfficer({ ...editOfficer, cedula: e.target.value.replace(/\D/g, '') })} /></td>
                   <td><input type="email" className="inline-input" value={editOfficer.email} onChange={e => setEditOfficer({ ...editOfficer, email: e.target.value })} /></td>
-                  <td><input type="text" className="inline-input" value={editOfficer.telefono} onChange={e => setEditOfficer({ ...editOfficer, telefono: e.target.value })} /></td>
+                  <td><input type="text" className="inline-input" maxLength="8" value={editOfficer.telefono} onChange={e => setEditOfficer({ ...editOfficer, telefono: e.target.value.replace(/\D/g, '') })} /></td>
                   <td>
                     <select className="inline-input" value={editOfficer.role} onChange={e => setEditOfficer({ ...editOfficer, role: e.target.value })}>
                       <option value="admin">Admin</option>

@@ -20,6 +20,8 @@ import EmergenciesPage from '../pages/EmergenciesPage';
 import ContactPage from '../pages/ContactPage';
 import OfficerDashboardPage from '../pages/OfficerDashboardPage';
 
+import UserService from '../services/UserService';
+
 /**
  * Componente de guardia de ruta basado en rol.
  * Redirige al login si no hay sesión activa.
@@ -28,6 +30,16 @@ import OfficerDashboardPage from '../pages/OfficerDashboardPage';
  */
 const RoleRoute = ({ element, allowedRoles }) => {
   const userStr = sessionStorage.getItem('user');
+  
+  React.useEffect(() => {
+    // Validar token/sesión activo con el backend
+    if (userStr) {
+      UserService.checkStatus().catch(() => {
+        // El interceptor en api.js se encargará de redirigir si falla con 401
+      });
+    }
+  }, [userStr]);
+
   if (!userStr) return <Navigate to="/login" replace />;
   const user = JSON.parse(userStr);
   if (!allowedRoles.includes(user.role)) return <Navigate to="/" replace />;

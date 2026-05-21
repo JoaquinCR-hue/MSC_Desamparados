@@ -62,8 +62,13 @@ exports.getAll = async (req, res) => {
             }
         }
 
-        // Ejecutar la consulta con Sequelize usando las condiciones construidas
-        const users = await User.findAll({
+        // Paginación
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        // Ejecutar la consulta con Sequelize usando las condiciones construidas y paginación
+        const { count, rows } = await User.findAndCountAll({
             where: userWhere,
             order: orderArray,
             include: [
@@ -74,10 +79,20 @@ exports.getAll = async (req, res) => {
                 }
             ]
         });
-
+        
         // Mapeo al formato esperado por el Frontend
-        const mappedUsers = users.map(mapUserToFE);
-        res.status(200).json({ status: 'success', data: mappedUsers });
+        const mappedUsers = rows.map(mapUserToFE);
+        
+        res.status(200).json({ 
+            status: 'success', 
+            data: mappedUsers,
+            meta: {
+                total: count,
+                page: page,
+                limit: limit,
+                totalPages: Math.ceil(count / limit)
+            }
+        });
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
     }

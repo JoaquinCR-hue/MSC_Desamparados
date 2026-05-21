@@ -1,32 +1,26 @@
-// Servicio de gestión de reportes de incidentes con autenticación JWT mediante cookies
-const BASE_URL = '/api/v1/reports';
+import api from './api';
 
-const getHeaders = () => {
-  return {
-    'Content-Type': 'application/json'
-  };
-};
+// Servicio de gestión de reportes de incidentes con autenticación JWT mediante cookies
 
 /**
- * Obtiene todos los reportes (Requiere Auth), soporta filtros avanzados.
+ * Obtiene todos los reportes (Requiere Auth), soporta filtros avanzados y paginación.
  */
-async function getReports(queryParams = '') {
+async function getReports(params = {}) {
   try {
-    const separator = queryParams.includes('?') ? '&' : '?';
-    const url = queryParams ? `${BASE_URL}${queryParams}${separator}t=${Date.now()}` : `${BASE_URL}?t=${Date.now()}`;
-    const response = await fetch(url, { 
-      headers: getHeaders(),
-      credentials: 'include' 
-    });
+    const config = typeof params === 'string' ? { url: `/reports${params}` } : { url: '/reports', params: { ...params, t: Date.now() } };
     
-    if (!response.ok) {
-      throw new Error(`Error ${response.status}: No se pudieron obtener los reportes`);
+    // Si params era un string, añadimos el timestamp manualmente
+    if (typeof params === 'string') {
+        const separator = config.url.includes('?') ? '&' : '?';
+        config.url = `${config.url}${separator}t=${Date.now()}`;
     }
 
-    const result = await response.json();
+    const response = await api.get(config.url, { params: config.params });
+    
+    const result = response.data;
     const reportData = Array.isArray(result) ? result : (result.data || []);
 
-    return reportData.map((report) => {
+    const mappedData = reportData.map((report) => {
       if (report.lat && report.lng) {
         const idStr = String(report.id);
         let hash = 0;
@@ -37,9 +31,13 @@ async function getReports(queryParams = '') {
       }
       return report;
     });
+
+    return typeof params === 'string' ? mappedData : { data: mappedData, meta: result.meta };
   } catch (error) {
     console.error('Error al obtener los reportes:', error);
-    return [];
+    // Para no romper compatibilidad, retornamos array vacío si fallan y usaban string params
+    if (typeof params === 'string') return [];
+    throw new Error(error.response?.data?.message || 'Error al obtener reportes');
   }
 }
 
@@ -48,20 +46,11 @@ async function getReports(queryParams = '') {
  */
 async function createReport(report) {
   try {
-    const response = await fetch(BASE_URL, {
-      method: 'POST',
-      headers: getHeaders(),
-      body: JSON.stringify(report),
-      credentials: 'include'
-    });
-    const result = await response.json();
-    if (!response.ok) {
-      throw new Error(result.message || 'Error del servidor al crear reporte');
-    }
-    return result.data;
+    const response = await api.post('/reports', report);
+    return response.data.data;
   } catch (error) {
     console.error('Error al crear el reporte:', error);
-    throw error;
+    throw new Error(error.response?.data?.message || 'Error del servidor al crear reporte');
   }
 }
 
@@ -70,16 +59,11 @@ async function createReport(report) {
  */
 async function updateReport(report, id) {
   try {
-    const response = await fetch(`${BASE_URL}/${id}`, {
-      method: 'PUT',
-      headers: getHeaders(),
-      body: JSON.stringify(report),
-      credentials: 'include'
-    });
-    const result = await response.json();
-    return result.data;
+    const response = await api.put(`/reports/${id}`, report);
+    return response.data.data;
   } catch (error) {
     console.error('Error al actualizar el reporte:', error);
+    throw new Error(error.response?.data?.message || 'Error al actualizar reporte');
   }
 }
 
@@ -88,15 +72,11 @@ async function updateReport(report, id) {
  */
 async function deleteReport(id) {
   try {
-    const response = await fetch(`${BASE_URL}/${id}`, {
-      method: 'DELETE',
-      headers: getHeaders(),
-      credentials: 'include'
-    });
-    const result = await response.json();
-    return result.data;
+    const response = await api.delete(`/reports/${id}`);
+    return response.data.data;
   } catch (error) {
     console.error('Error al eliminar el reporte:', error);
+    throw new Error(error.response?.data?.message || 'Error al eliminar reporte');
   }
 }
 

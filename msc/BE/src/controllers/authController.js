@@ -47,6 +47,7 @@ const register = async (req, res) => {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
+      path: '/',
       maxAge: 2 * 60 * 60 * 1000 // 2 hours
     });
 
@@ -90,6 +91,7 @@ const login = async (req, res) => {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
+      path: '/',
       maxAge: 2 * 60 * 60 * 1000 // 2 hours
     });
 
@@ -116,7 +118,8 @@ const logout = (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax'
+    sameSite: 'lax',
+    path: '/'
   });
   res.json({ message: 'Sesión cerrada exitosamente.' });
 };

@@ -30,7 +30,7 @@ const EmergencyButton = ({ user }) => {
 
   const sendSOS = () => {
     setIsSending(true);
-    
+
     if (!navigator.geolocation) {
       setIsSending(false);
       Swal.fire('Error', 'Tu navegador no soporta geolocalización.', 'error');
@@ -41,7 +41,7 @@ const EmergencyButton = ({ user }) => {
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          
+
           const emergencyData = {
             tipo: 'EMERGENCIA',
             descripcion: 'Alerta SOS enviada por el usuario.',
@@ -56,7 +56,7 @@ const EmergencyButton = ({ user }) => {
           };
 
           await ReportService.createReport(emergencyData);
-          
+
           Swal.fire({
             title: '¡SOS Enviado!',
             text: 'Las autoridades han recibido tu alerta y ubicación.',
@@ -80,8 +80,8 @@ const EmergencyButton = ({ user }) => {
   };
 
   return (
-    <button 
-      className={`report-button emergency-btn ${isSending ? 'sending' : ''}`} 
+    <button
+      className={`report-button emergency-btn ${isSending ? 'sending' : ''}`}
       onClick={handleEmergency}
       disabled={isSending}
       style={{ backgroundColor: '#e53935', marginLeft: '10px' }}
