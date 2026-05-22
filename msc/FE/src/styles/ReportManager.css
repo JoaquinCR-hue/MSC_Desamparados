@@ -163,6 +163,34 @@
     font-size: 1.1rem;
 }
 
+.pagination-controls .pagination-button {
+    min-width: 120px;
+    padding: 0 1.2rem;
+    height: 42px;
+    border-radius: 10px;
+    border: 1px solid var(--border-main);
+    background: var(--bg-secondary);
+    color: var(--text-main);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-controls .pagination-button:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    color: var(--text-main);
+    transform: translateY(-1px);
+}
+
+.pagination-controls .pagination-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-controls span {
+    color: var(--text-main);
+}
+
 .btn-view:hover { 
     background: var(--primary-color); 
     border-color: var(--primary-color); 
@@ -324,4 +352,63 @@
     .filters-section {
         flex-direction: column;
     }
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid transparent;
+}
+
+.status-pendiente {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+.status-en-proceso {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.status-resuelto {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+/* Status Select Control */
+.status-select-premium {
+    background: var(--bg-main);
+    color: var(--text-main);
+    border: 1px solid var(--border-main);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.status-select-premium:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(0, 163, 255, 0.1);
+}
+
+.status-select-premium:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: var(--bg-secondary);
 }

@@ -64,6 +64,10 @@ exports.getAll = async (req, res) => {
         const { count, rows } = await Report.findAndCountAll({
             where: reportWhere,
             order: orderArray,
+            limit,
+            offset,
+            distinct: true,
+            subQuery: false,
             include: [
                 { 
                     model: Location, 
@@ -168,13 +172,60 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
     try {
-        const report = await Report.findByPk(req.params.id);
+        const report = await Report.findByPk(req.params.id, {
+            include: [
+                { model: Location, as: 'location' },
+                { model: IncidentType, as: 'incidentType' },
+                { model: User, as: 'creator' }
+            ]
+        });
         if (!report) return res.status(404).json({ status: 'error', message: 'Not found' });
+        
         // Permite actualizar solo el estado por ahora
         if (req.body.estado) {
-            await report.update({ status: req.body.estado });
+            const currentStatus = report.status || 'Pendiente';
+            const newStatus = req.body.estado;
+            
+            // Validar transiciones de estado
+            const validTransitions = {
+                'Pendiente': ['En Proceso'],
+                'En Proceso': ['Resuelto'],
+                'Resuelto': [] // No se puede cambiar de Resuelto
+            };
+
+            const allowed = validTransitions[currentStatus] || [];
+            
+            if (allowed.includes(newStatus)) {
+                await report.update({ status: newStatus });
+            } else if (currentStatus !== newStatus) {
+                return res.status(400).json({ status: 'error', message: `Transición de estado no válida: de ${currentStatus} a ${newStatus}` });
+            }
         }
-        res.status(200).json({ status: 'success', data: report });
+        
+        // Mapear al formato del frontend
+        const tipo = report.incidentType ? report.incidentType.name : 'Desconocido';
+        const desc = report.description || '';
+        const isEmergency = tipo.toUpperCase().includes('EMERG') || 
+                           tipo.toUpperCase().includes('SOS') || 
+                           desc.toUpperCase().includes('SOS');
+
+        const mappedReport = {
+            id: report.id,
+            tipo: tipo,
+            descripcion: desc,
+            distrito: report.location ? report.location.district : '',
+            barrio: report.location ? report.location.neighborhood : '',
+            direccion_exacta: report.location ? report.location.exactAddress : '',
+            fecha: report.date,
+            id_creador: report.userId,
+            nombre_creador: report.creator ? report.creator.fullName : 'Anónimo',
+            estado: report.status,
+            lat: report.location ? report.location.lat : null,
+            lng: report.location ? report.location.lng : null,
+            isEmergency: isEmergency
+        };
+
+        res.status(200).json({ status: 'success', data: mappedReport });
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
     }

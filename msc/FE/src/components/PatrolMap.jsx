@@ -336,6 +336,12 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
         routingSource.tipo_unidad
       );
       
+      // Cambiar estado del reporte a "En Proceso"
+      if (report.estado === 'Pendiente' || !report.estado) {
+        await ReportService.updateReport({ estado: 'En Proceso' }, report.id);
+        setReports(prev => prev.map(r => r.id === report.id ? { ...r, estado: 'En Proceso' } : r));
+      }
+
       const newRoute = {
         id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
         patrolId: routingSource.id,

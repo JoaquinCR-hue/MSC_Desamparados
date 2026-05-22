@@ -19,6 +19,7 @@ import TermsConditionsPage from '../pages/TermsConditionsPage';
 import EmergenciesPage from '../pages/EmergenciesPage';
 import ContactPage from '../pages/ContactPage';
 import OfficerDashboardPage from '../pages/OfficerDashboardPage';
+import ProfilePage from '../pages/ProfilePage';
 
 
 
@@ -109,6 +110,9 @@ const Routing = () => {
         {/* ── Rutas Admin ────────────────────────────────── */}
         <Route path="/manage-users" element={<RoleRoute element={<ManageUsers />} allowedRoles={['admin', 'administrador']} />} />
         <Route path="/manage-consults" element={<RoleRoute element={<ManageConsults />} allowedRoles={['admin', 'administrador']} />} />
+
+        {/* ── Rutas Comunes Protegidas ───────────────────── */}
+        <Route path="/profile" element={<RoleRoute element={<ProfilePage />} allowedRoles={['ciudadano', 'funcionario', 'admin', 'administrador']} />} />
 
         {/* ── Ruta no encontrada → redirige al inicio ────── */}
         <Route path="*" element={<Navigate to="/" replace />} />
