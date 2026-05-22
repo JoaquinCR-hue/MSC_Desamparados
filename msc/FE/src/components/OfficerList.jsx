@@ -5,7 +5,7 @@ import '../styles/OfficerList.css';
 const OfficerList = () => {
   const [officers, setOfficers] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newOfficer, setNewOfficer] = useState({ nombre: '', cedula: '', email: '', telefono: '', role: 'admin', pass: '' });
+  const [newOfficer, setNewOfficer] = useState({ nombre: '', cedula: '', email: '', telefono: '', role: 'administrador', pass: '' });
   const [searchTerm, setSearchTerm] = useState('');
 
   // Estado para la edición
@@ -86,7 +86,7 @@ const OfficerList = () => {
     try {
       await UserService.createUser(newOfficer);
       setShowAddForm(false);
-      setNewOfficer({ nombre: '', cedula: '', email: '', telefono: '', role: 'admin', pass: '' });
+      setNewOfficer({ nombre: '', cedula: '', email: '', telefono: '', role: 'administrador', pass: '' });
       loadData(searchTerm);
 
       import('sweetalert2').then(Swal => {

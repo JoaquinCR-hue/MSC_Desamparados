@@ -36,7 +36,7 @@ const ReportManager = () => {
 
   const userStr = sessionStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
-  const canDelete = user && (user.role === 'admin' || user.role === 'funcionario');
+  const canDelete = user && (user.role === 'administrador' || user.role === 'funcionario');
 
   const EXPIRY_TIME = 3 * 24 * 60 * 60 * 1000; // Tiempo de expiración: 3 días
   const locationState = useLocation().state;

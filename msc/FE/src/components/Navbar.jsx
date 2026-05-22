@@ -33,7 +33,7 @@ const Navbar = () => {
   const isPublic = !user;
   const isCitizen = user && user.role === 'ciudadano';
   const isOfficer = user && user.role === 'funcionario';
-  const isAdmin = user && user.role === 'admin';
+  const isAdmin = user && user.role === 'administrador';
 
   /**
    * Lógica de Cierre de Sesión por Inactividad

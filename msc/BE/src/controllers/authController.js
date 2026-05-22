@@ -56,7 +56,7 @@ const register = async (req, res) => {
         id: newUser.id,
         fullName: newUser.fullName,
         email: newUser.email,
-        role: newUser.roleId === 1 ? 'admin' : (newUser.roleId === 2 ? 'funcionario' : 'ciudadano')
+        role: newUser.roleId === 1 ? 'administrador' : (newUser.roleId === 2 ? 'funcionario' : 'ciudadano')
       }
     });
   } catch (error) {

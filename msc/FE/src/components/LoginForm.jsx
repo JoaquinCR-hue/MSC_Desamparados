@@ -45,7 +45,7 @@ function LoginForm() {
       sessionStorage.setItem('user', JSON.stringify(userData));
 
       let welcomeMessage = '';
-      if (userData.role === 'admin') {
+      if (userData.role === 'administrador') {
         welcomeMessage = `Bienvenido Administrador(a) ${userData.fullName}.`;
       } else if (userData.role === 'funcionario') {
         welcomeMessage = `Bienvenido Oficial ${userData.fullName}.`;
@@ -60,7 +60,7 @@ function LoginForm() {
         timer: 1500,
         showConfirmButton: false,
       }).then(() => {
-        if (userData.role === 'admin') navigate('/manage-users');
+        if (userData.role === 'administrador') navigate('/manage-users');
         else if (userData.role === 'funcionario') navigate('/officer-view');
         else navigate('/');
       });
@@ -76,10 +76,11 @@ function LoginForm() {
       <form onSubmit={handleLogin}>
         <InputGroup
           label="Cédula"
-          type="number"
+          type="text"
           value={nationalId}
           placeholder="Ingrese su cédula"
-          onChange={(e) => setNationalId(e.target.value)}
+          maxLength={9}
+          onChange={(e) => setNationalId(e.target.value.replace(/\D/g, ''))}
         />
 
         <PasswordInput

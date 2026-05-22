@@ -179,7 +179,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       setPatrols(validPatrols);
 
       if (dataUsu) {
-        setAvailableOfficers(dataUsu.filter(u => u.role === 'admin' || u.role === 'funcionario'));
+        setAvailableOfficers(dataUsu.filter(u => u.role === 'administrador' || u.role === 'funcionario'));
       }
       
       // Limpiar rutas huérfanas si la patrulla o el incidente han sido eliminados
