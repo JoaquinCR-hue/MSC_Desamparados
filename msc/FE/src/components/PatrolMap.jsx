@@ -160,6 +160,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
     try {
       const dataRep = await ReportService.getReports();
       const dataPol = await PoliceService.getPatrols();
+<<<<<<< HEAD
 
       // Solo los administradores pueden ver la lista de usuarios.
       // Si el usuario es funcionario, esta llamada devolverá 403 y se ignora silenciosamente.
@@ -170,6 +171,8 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
         // Funcionarios no tienen permiso para listar usuarios — es normal, no es un error de sesión.
         console.info('Lista de usuarios no disponible para este rol.');
       }
+=======
+>>>>>>> 2f6f554ef7440a1317bc6048266f4d116c4000c9
 
       const now = new Date();
       const oneWeekAgo = new Date();
@@ -186,10 +189,13 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       
       setReports(filteredReports);
       setPatrols(validPatrols);
+<<<<<<< HEAD
 
       if (dataUsu && dataUsu.length > 0) {
         setAvailableOfficers(dataUsu.filter(u => u.role === 'admin' || u.role === 'funcionario'));
       }
+=======
+>>>>>>> 2f6f554ef7440a1317bc6048266f4d116c4000c9
       
       // Limpiar rutas huérfanas si la patrulla o el incidente han sido eliminados
       setActiveRoutes(prev => prev.filter(route => 
@@ -204,8 +210,21 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
     }
   };
 
+  // Función separada para cargar funcionarios disponibles (no bloquea el mapa si falla)
+  const fetchOfficers = async () => {
+    try {
+      const dataUsu = await UserService.getUsers();
+      const lista = Array.isArray(dataUsu) ? dataUsu : (dataUsu?.data || []);
+      setAvailableOfficers(lista.filter(u => u.role === 'admin' || u.role === 'funcionario'));
+    } catch (error) {
+      console.warn('No se pudo cargar la lista de funcionarios:', error.message);
+      setAvailableOfficers([]);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchOfficers();
   }, [refreshTrigger]);
 
   const handleMapClick = (latlng) => {
@@ -262,7 +281,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
   };
 
   const handleOfficialToggle = (name) => {
-    let currentOfficers = formData.nombre_oficiales.split(',').map(n => n.trim()).filter(n => n);
+    let currentOfficers = (formData.nombre_oficiales || '').split(',').map(n => n.trim()).filter(n => n);
     if (currentOfficers.includes(name)) {
       currentOfficers = currentOfficers.filter(n => n !== name);
     } else {
@@ -337,14 +356,24 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
         routingSource.tipo_unidad
       );
       
+      // Cambiar estado del reporte a "En Proceso"
+      if (report.estado === 'Pendiente' || !report.estado) {
+        await ReportService.updateReport({ estado: 'En Proceso' }, report.id);
+        setReports(prev => prev.map(r => r.id === report.id ? { ...r, estado: 'En Proceso' } : r));
+      }
+
       const newRoute = {
-        ...route,
         id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
         patrolId: routingSource.id,
         incidentId: report.id,
         unidad: routingSource.unidad,
         destinoTipo: report.tipo,
-        color: ROUTE_COLORS[activeRoutes.length % ROUTE_COLORS.length]
+        color: ROUTE_COLORS[activeRoutes.length % ROUTE_COLORS.length],
+        // Mapear propiedades del RouteService (inglés) → nombres esperados (español)
+        coordenadas: route.coordinates,
+        distanciaKm: route.distanceKm,
+        duracionMin: route.durationMin,
+        simulada: route.simulated
       };
       
       setActiveRoutes(prev => [...prev, newRoute]);
@@ -665,7 +694,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
                           type="checkbox"
                           id={`func-${func.id}`}
                           label={func.nombre}
-                          checked={formData.nombre_oficiales.split(',').map(n => n.trim()).includes(func.nombre)}
+                          checked={(formData.nombre_oficiales || '').split(',').map(n => n.trim()).includes(func.nombre)}
                           onChange={() => handleOfficialToggle(func.nombre)}
                           className="text-main premium-check"
                         />

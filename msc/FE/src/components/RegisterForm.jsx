@@ -56,12 +56,21 @@ const RegisterForm = () => {
     const newErrors = {};
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phoneRegex = /^\d{8}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
     
     if (!fullName.trim()) newErrors.fullName = 'El nombre completo es obligatorio';
     if (!emailRegex.test(email)) newErrors.email = 'Ingrese un correo electrónico válido';
     if (!phoneRegex.test(phone)) newErrors.phone = 'El teléfono debe tener 8 dígitos';
-    if (password.length < 6) newErrors.password = 'Mínimo 6 caracteres';
-    if (password !== confirmPassword) newErrors.confirmPassword = 'No coinciden';
+    
+    if (!passwordRegex.test(password)) {
+      newErrors.password = 'Mínimo 6 caracteres, 1 mayúscula, 1 minúscula y 1 número';
+    }
+    
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = 'No coinciden';
+      Swal.fire({ title: 'Error', text: 'Las contraseñas no coinciden', icon: 'error' });
+    }
+    
     if (!acceptedTerms) newErrors.terms = 'Acepte los términos';
 
     setErrors(newErrors);

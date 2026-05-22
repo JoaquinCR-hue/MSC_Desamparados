@@ -29,7 +29,7 @@ exports.getAll = async (req, res) => {
 
         // Construir condiciones de búsqueda para el Reporte (Filtros y Búsqueda por texto)
         const reportWhere = {};
-        
+
         if (status) {
             reportWhere.status = status;
         }
@@ -64,29 +64,32 @@ exports.getAll = async (req, res) => {
         const { count, rows } = await Report.findAndCountAll({
             where: reportWhere,
             order: orderArray,
+            limit,
+            offset,
+            distinct: true,
+            subQuery: false,
             include: [
-                { 
-                    model: Location, 
+                {
+                    model: Location,
                     as: 'location',
                     where: distrito ? { district: distrito } : undefined
                 },
-                { 
-                    model: IncidentType, 
+                {
+                    model: IncidentType,
                     as: 'incidentType',
                     where: Object.keys(typeWhere).length > 0 ? typeWhere : undefined
                 },
                 { model: User, as: 'creator' }
             ]
         });
-
         // Mapeo al formato plano del FE
         const mappedReports = rows.map(r => {
             const tipo = r.incidentType ? r.incidentType.name : 'Desconocido';
             const desc = r.description || '';
-            const isEmergency = tipo.toUpperCase().includes('EMERG') || 
-                               tipo.toUpperCase().includes('SOS') || 
-                               desc.toUpperCase().includes('SOS');
-            
+            const isEmergency = tipo.toUpperCase().includes('EMERG') ||
+                tipo.toUpperCase().includes('SOS') ||
+                desc.toUpperCase().includes('SOS');
+
             return {
                 id: r.id,
                 tipo: tipo,
@@ -104,8 +107,8 @@ exports.getAll = async (req, res) => {
             };
         });
 
-        res.status(200).json({ 
-            status: 'success', 
+        res.status(200).json({
+            status: 'success',
             data: mappedReports,
             meta: {
                 total: count,
@@ -151,7 +154,7 @@ exports.create = async (req, res) => {
         }, { transaction: t });
 
         await t.commit();
-        
+
         // Preparar respuesta con bandera de emergencia
         const responseData = {
             ...report.toJSON(),
@@ -169,13 +172,60 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
     try {
-        const report = await Report.findByPk(req.params.id);
+        const report = await Report.findByPk(req.params.id, {
+            include: [
+                { model: Location, as: 'location' },
+                { model: IncidentType, as: 'incidentType' },
+                { model: User, as: 'creator' }
+            ]
+        });
         if (!report) return res.status(404).json({ status: 'error', message: 'Not found' });
+
         // Permite actualizar solo el estado por ahora
         if (req.body.estado) {
-            await report.update({ status: req.body.estado });
+            const currentStatus = report.status || 'Pendiente';
+            const newStatus = req.body.estado;
+
+            // Validar transiciones de estado
+            const validTransitions = {
+                'Pendiente': ['En Proceso'],
+                'En Proceso': ['Resuelto'],
+                'Resuelto': [] // No se puede cambiar de Resuelto
+            };
+
+            const allowed = validTransitions[currentStatus] || [];
+
+            if (allowed.includes(newStatus)) {
+                await report.update({ status: newStatus });
+            } else if (currentStatus !== newStatus) {
+                return res.status(400).json({ status: 'error', message: `Transición de estado no válida: de ${currentStatus} a ${newStatus}` });
+            }
         }
-        res.status(200).json({ status: 'success', data: report });
+
+        // Mapear al formato del frontend
+        const tipo = report.incidentType ? report.incidentType.name : 'Desconocido';
+        const desc = report.description || '';
+        const isEmergency = tipo.toUpperCase().includes('EMERG') ||
+            tipo.toUpperCase().includes('SOS') ||
+            desc.toUpperCase().includes('SOS');
+
+        const mappedReport = {
+            id: report.id,
+            tipo: tipo,
+            descripcion: desc,
+            distrito: report.location ? report.location.district : '',
+            barrio: report.location ? report.location.neighborhood : '',
+            direccion_exacta: report.location ? report.location.exactAddress : '',
+            fecha: report.date,
+            id_creador: report.userId,
+            nombre_creador: report.creator ? report.creator.fullName : 'Anónimo',
+            estado: report.status,
+            lat: report.location ? report.location.lat : null,
+            lng: report.location ? report.location.lng : null,
+            isEmergency: isEmergency
+        };
+
+        res.status(200).json({ status: 'success', data: mappedReport });
     } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
     }

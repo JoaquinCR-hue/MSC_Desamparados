@@ -290,10 +290,16 @@ const Navbar = () => {
                     </Link>
                   </>
                 ) : (
-                  <button className="dropdown-item logout-btn" onClick={handleLogout}>
-                    <i className="fa-solid fa-power-off"></i>
-                    Cerrar Sesión
-                  </button>
+                  <>
+                    <Link to="/profile" className="dropdown-item" onClick={() => setIsMenuOpen(false)}>
+                      <i className="fa-solid fa-user"></i>
+                      Mi Perfil
+                    </Link>
+                    <button className="dropdown-item logout-btn" onClick={handleLogout}>
+                      <i className="fa-solid fa-power-off"></i>
+                      Cerrar Sesión
+                    </button>
+                  </>
                 )}
               </div>
             </div>

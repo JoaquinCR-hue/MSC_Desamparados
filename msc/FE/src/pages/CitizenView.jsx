@@ -1,18 +1,26 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import CitizenDashboard from '../components/CitizenDashboard';
+import HomeCarousel from '../components/HomeCarousel';
+import HomeVideo from '../components/HomeVideo';
+import HomeWelcome from '../components/HomeWelcome';
+import '../styles/HomeWelcome.css';
 
 /**
  * Vista principal del ciudadano registrado.
- * Muestra el panel de bienvenida y acceso a reportes.
+ * Muestra el carrusel, video informativo y contenido de bienvenida,
+ * igual que la Home pública pero con acceso autenticado.
  */
 function CitizenView() {
   return (
-    <div>
+    <div className="home-container">
       <Navbar />
-      <div className="container mt-5 pt-5">
-        <CitizenDashboard />
+      <div className="carousel-container">
+        <HomeCarousel />
+      </div>
+      <HomeVideo />
+      <div className="content-wrapper">
+        <HomeWelcome />
       </div>
       <Footer />
     </div>
