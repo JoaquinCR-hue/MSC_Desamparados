@@ -14,7 +14,8 @@ module.exports = (sequelize) => {
     status: { type: DataTypes.STRING(25) },
     userId: { type: DataTypes.INTEGER },
     incidentTypeId: { type: DataTypes.INTEGER },
-    locationId: { type: DataTypes.INTEGER }
+    locationId: { type: DataTypes.INTEGER },
+    imageUrl: { type: DataTypes.STRING(255) }
   }, { sequelize, modelName: 'Report', tableName: 'Reports', timestamps: false });
   return Report;
 };

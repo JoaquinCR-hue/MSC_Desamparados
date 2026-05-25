@@ -441,6 +441,19 @@ const ReportManager = () => {
                     <span className="detail-value">#{selectedReport.id.toString().slice(0, 8)}</span>
                   </div>
                 </div>
+                
+                {selectedReport.imageUrl && (
+                  <div className="modal-evidence-container mt-3">
+                    <span className="detail-label d-block mb-2">Evidencia Fotográfica</span>
+                    <img 
+                      src={selectedReport.imageUrl} 
+                      alt="Evidencia" 
+                      style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', borderRadius: '8px', cursor: 'pointer' }}
+                      onClick={() => window.open(selectedReport.imageUrl, '_blank')}
+                      title="Clic para ver tamaño completo"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>

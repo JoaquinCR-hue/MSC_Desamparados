@@ -81,4 +81,23 @@ async function deleteReport(id) {
   }
 }
 
-export default { getReports, createReport, updateReport, deleteReport };
+/**
+ * Sube una imagen de evidencia para un reporte.
+ */
+async function uploadEvidence(file) {
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+    const response = await api.post('/reports/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data.imageUrl;
+  } catch (error) {
+    console.error('Error al subir evidencia:', error);
+    throw new Error(error.response?.data?.message || 'Error al subir evidencia');
+  }
+}
+
+export default { getReports, createReport, updateReport, deleteReport, uploadEvidence };
