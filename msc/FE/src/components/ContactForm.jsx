@@ -7,6 +7,7 @@ import axios from 'axios';
 // Componente para el formulario de contacto y atención ciudadana
 function ContactForm() {
     const [formData, setFormData] = useState({
+        idType: 'nacional',
         cedula: '',
         nombreCompleto: '',
         correo: '',
@@ -19,7 +20,10 @@ function ContactForm() {
 
     // Busca automáticamente el nombre asociado a la cédula mediante un API externo (Hacienda CR)
     const handleIdBlur = async () => {
-        if (!formData.cedula || formData.cedula.length < 9) return;
+        const isNacional = formData.idType === 'nacional';
+        const minLength = isNacional ? 9 : 11;
+        
+        if (!formData.cedula || formData.cedula.length < minLength) return;
         
         setIsLoadingName(true);
         try {
@@ -75,6 +79,7 @@ function ContactForm() {
             });
             // Reiniciar formulario tras éxito
             setFormData({
+                idType: 'nacional',
                 cedula: '',
                 nombreCompleto: '',
                 correo: '',
@@ -134,19 +139,35 @@ function ContactForm() {
                         <h2>Formulario de Consultas</h2>
                         <p className="form-help">Ingrese su consulta, sugerencia o queja. El administrador le dará seguimiento a la brevedad posible.</p>
 
-                        <div className="form-row">
+                        <div className="form-row split-row">
                             <div className="form-group">
-                                <label>Cédula de Identidad <span className="req">*</span></label>
+                                <label>Tipo ID <span className="req">*</span></label>
+                                <select 
+                                    name="idType" 
+                                    value={formData.idType} 
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        setFormData(prev => ({ ...prev, cedula: '', idType: e.target.value }));
+                                    }}
+                                    className="form-control premium-input form-select"
+                                >
+                                    <option value="nacional">Nacional</option>
+                                    <option value="dimex">DIMEX</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>{formData.idType === 'nacional' ? 'Cédula de Identidad' : 'DIMEX'} <span className="req">*</span></label>
                                 <input 
                                     type="text" 
                                     name="cedula" 
                                     value={formData.cedula} 
-                                    onChange={handleChange}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, cedula: e.target.value.replace(/\D/g, '') }))}
                                     onBlur={handleIdBlur}
-                                    placeholder="Ej. 101230456"
+                                    maxLength={formData.idType === 'nacional' ? 9 : 12}
+                                    placeholder={formData.idType === 'nacional' ? "Ej. 101230456" : "Ej. 12345678901"}
                                     className="form-control premium-input"
                                 />
-                                <small className="text-secondary">Al salir del campo buscaremos su nombre.</small>
+                                <small className="text-secondary">Al salir buscaremos su nombre.</small>
                             </div>
                         </div>
 

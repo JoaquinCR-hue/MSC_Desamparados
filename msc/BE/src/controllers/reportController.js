@@ -1,5 +1,6 @@
 const { Report, Location, IncidentType, User, sequelize } = require('../models');
 const { Op } = require('sequelize');
+const cloudinary = require('../config/cloudinary');
 
 /**
  * Obtiene todos los reportes, con soporte opcional para filtros, búsqueda por texto y ordenamiento.
@@ -103,6 +104,7 @@ exports.getAll = async (req, res) => {
                 estado: r.status,
                 lat: r.location ? r.location.lat : null,
                 lng: r.location ? r.location.lng : null,
+                imageUrl: r.imageUrl || null,
                 isEmergency: isEmergency
             };
         });
@@ -125,8 +127,8 @@ exports.getAll = async (req, res) => {
 exports.create = async (req, res) => {
     const t = await sequelize.transaction();
     try {
-        // Datos del FE: { tipo, descripcion, distrito, barrio, direccion_exacta, fecha, id_creador, estado, lat, lng }
-        const { tipo, descripcion, distrito, barrio, direccion_exacta, fecha, id_creador, estado, lat, lng } = req.body;
+        // Datos del FE: { tipo, descripcion, distrito, barrio, direccion_exacta, fecha, id_creador, estado, lat, lng, imageUrl }
+        const { tipo, descripcion, distrito, barrio, direccion_exacta, fecha, id_creador, estado, lat, lng, imageUrl } = req.body;
 
         // 1. Buscar o crear IncidentType
         let incidentType = await IncidentType.findOne({ where: { name: tipo } }, { transaction: t });
@@ -150,7 +152,8 @@ exports.create = async (req, res) => {
             status: estado || 'Pendiente',
             userId: id_creador,
             incidentTypeId: incidentType.id,
-            locationId: location.id
+            locationId: location.id,
+            imageUrl: imageUrl || null
         }, { transaction: t });
 
         await t.commit();
@@ -222,6 +225,7 @@ exports.update = async (req, res) => {
             estado: report.status,
             lat: report.location ? report.location.lat : null,
             lng: report.location ? report.location.lng : null,
+            imageUrl: report.imageUrl || null,
             isEmergency: isEmergency
         };
 
@@ -238,6 +242,27 @@ exports.delete = async (req, res) => {
         await report.destroy();
         res.status(200).json({ status: 'success', message: 'Deleted' });
     } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
+    }
+};
+
+exports.uploadImage = async (req, res) => {
+    try {
+        if (!req.file || !req.file.buffer) {
+            return res.status(400).json({ status: 'error', message: 'Archivo no recibido' });
+        }
+
+        const dataUri = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+        
+        const uploadResult = await cloudinary.uploader.upload(dataUri, {
+            folder: 'reports',
+            public_id: `report_${Date.now()}`,
+            resource_type: 'image'
+        });
+
+        res.status(200).json({ status: 'success', imageUrl: uploadResult.secure_url });
+    } catch (error) {
+        console.error('Error uploading report image:', error);
         res.status(500).json({ status: 'error', message: error.message });
     }
 };

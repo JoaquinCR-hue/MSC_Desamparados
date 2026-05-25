@@ -164,6 +164,8 @@ const ReportForm = () => {
   const [location, setLocation] = useState(null);
   const [mapCenter, setMapCenter] = useState([9.892, -84.05]); 
   const [mapZoom, setMapZoom] = useState(12);
+  const [evidenceImage, setEvidenceImage] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const navigate = useNavigate();
   const user = sessionStorage.getItem('user');
@@ -243,16 +245,24 @@ const ReportForm = () => {
       return;
     }
 
-    const newReport = {
-      ...formData,
-      id_creador: parsedUser.id,
-      nombre_creador: parsedUser.nombre,
-      estado: 'Pendiente',
-      lat: location[0],
-      lng: location[1]
-    };
-
     try {
+      let uploadedImageUrl = null;
+      if (evidenceImage) {
+        setIsUploading(true);
+        uploadedImageUrl = await ReportService.uploadEvidence(evidenceImage);
+        setIsUploading(false);
+      }
+
+      const newReport = {
+        ...formData,
+        id_creador: parsedUser.id,
+        nombre_creador: parsedUser.nombre,
+        estado: 'Pendiente',
+        lat: location[0],
+        lng: location[1],
+        imageUrl: uploadedImageUrl
+      };
+
       await ReportService.createReport(newReport);
       
       Swal.fire({
@@ -266,11 +276,13 @@ const ReportForm = () => {
 
       setFormData({ tipo: '', descripcion: '', distrito: '', barrio: '', direccion_exacta: '', fecha: '' });
       setLocation(null);
+      setEvidenceImage(null);
       setMapCenter([9.892, -84.05]);
       setMapZoom(12);
 
     } catch (error) {
       console.error(error);
+      setIsUploading(false);
       Swal.fire({
         title: 'Error',
         text: 'Hubo un problema al enviar tu reporte. Intenta nuevamente.',
@@ -391,8 +403,20 @@ const ReportForm = () => {
             </div>
           </div>
 
-          <button type="submit" className="submit-report-btn">
-            <i className="fa-solid fa-paper-plane"></i> Enviar Reporte
+          <div className="form-group-custom">
+            <label htmlFor="evidence" title="Evidencia (Opcional)">Evidencia Fotográfica (Opcional)</label>
+            <input 
+              type="file" 
+              id="evidence" 
+              accept="image/*" 
+              onChange={(e) => setEvidenceImage(e.target.files[0])} 
+              className="form-control"
+              style={{ backgroundColor: '#1a1d24', color: '#fff', border: '1px solid #334155' }}
+            />
+          </div>
+
+          <button type="submit" className="submit-report-btn" disabled={isUploading}>
+            {isUploading ? <><i className="fa-solid fa-spinner fa-spin"></i> Subiendo...</> : <><i className="fa-solid fa-paper-plane"></i> Enviar Reporte</>}
           </button>
         </form>
 
