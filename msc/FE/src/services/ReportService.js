@@ -32,11 +32,12 @@ async function getReports(params = {}) {
       return report;
     });
 
-    return typeof params === 'string' ? mappedData : { data: mappedData, meta: result.meta };
+    const hasPagination = typeof params === 'object' && params !== null && (params.page !== undefined || params.limit !== undefined);
+    return hasPagination ? { data: mappedData, meta: result.meta } : mappedData;
   } catch (error) {
     console.error('Error al obtener los reportes:', error);
-    // Para no romper compatibilidad, retornamos array vacío si fallan y usaban string params
-    if (typeof params === 'string') return [];
+    const hasPagination = typeof params === 'object' && params !== null && (params.page !== undefined || params.limit !== undefined);
+    if (!hasPagination) return [];
     throw new Error(error.response?.data?.message || 'Error al obtener reportes');
   }
 }

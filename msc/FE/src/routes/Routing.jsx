@@ -19,8 +19,9 @@ import TermsConditionsPage from '../pages/TermsConditionsPage';
 import EmergenciesPage from '../pages/EmergenciesPage';
 import ContactPage from '../pages/ContactPage';
 import OfficerDashboardPage from '../pages/OfficerDashboardPage';
+import ProfilePage from '../pages/ProfilePage';
 
-import UserService from '../services/UserService';
+
 
 /**
  * Componente de guardia de ruta basado en rol.
@@ -30,19 +31,35 @@ import UserService from '../services/UserService';
  */
 const RoleRoute = ({ element, allowedRoles }) => {
   const userStr = sessionStorage.getItem('user');
-  
-  React.useEffect(() => {
-    // Validar token/sesión activo con el backend
-    if (userStr) {
-      UserService.checkStatus().catch(() => {
-        // El interceptor en api.js se encargará de redirigir si falla con 401
-      });
-    }
-  }, [userStr]);
 
+  // Si no hay sesión activa, redirigir al login
   if (!userStr) return <Navigate to="/login" replace />;
-  const user = JSON.parse(userStr);
-  if (!allowedRoles.includes(user.role)) return <Navigate to="/" replace />;
+
+  let user;
+  try {
+    user = JSON.parse(userStr);
+  } catch {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Normalizar rol a minúsculas (ej: 'Funcionario' → 'funcionario')
+  const userRole = (user.role || '').toString().toLowerCase();
+  // Normalizar roles permitidos
+  const normalizedAllowed = allowedRoles.map(r => r.toString().toLowerCase());
+
+  // Mapa de alias para soportar variantes en español/inglés
+  const roleAliasMap = {
+    funcionario: ['funcionario', 'officer'],
+    ciudadano: ['ciudadano', 'citizen'],
+    admin: ['admin', 'administrador']
+  };
+
+  const isAllowed = normalizedAllowed.some(r => {
+    if (r === userRole) return true;
+    return Object.values(roleAliasMap).some(arr => arr.includes(userRole) && arr.includes(r));
+  });
+
+  if (!isAllowed) return <Navigate to="/" replace />;
   return element;
 };
 
@@ -93,6 +110,9 @@ const Routing = () => {
         {/* ── Rutas Admin ────────────────────────────────── */}
         <Route path="/manage-users" element={<RoleRoute element={<ManageUsers />} allowedRoles={['administrador']} />} />
         <Route path="/manage-consults" element={<RoleRoute element={<ManageConsults />} allowedRoles={['administrador']} />} />
+
+        {/* ── Rutas Comunes Protegidas ───────────────────── */}
+        <Route path="/profile" element={<RoleRoute element={<ProfilePage />} allowedRoles={['ciudadano', 'funcionario', 'administrador']} />} />
 
         {/* ── Ruta no encontrada → redirige al inicio ────── */}
         <Route path="*" element={<Navigate to="/" replace />} />

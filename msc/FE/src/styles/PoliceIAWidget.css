@@ -1,0 +1,482 @@
+/**
+ * Estilos para Police-IA Widget
+ * Chat flotante con tema adaptable (oscuro/claro)
+ */
+
+/* Botón flotante */
+.police-ia-button {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 9999;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.police-ia-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.5);
+}
+
+.police-ia-button:active {
+  transform: scale(0.95);
+}
+
+/* Panel de chat */
+.police-ia-widget {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  width: 380px;
+  height: 520px;
+  border-radius: 16px;
+  border: 1px solid;
+  display: flex;
+  flex-direction: column;
+  z-index: 9998;
+  box-shadow: 0 5px 40px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Header */
+.police-ia-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid;
+}
+
+.police-ia-header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.police-ia-header-content h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.police-ia-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.police-ia-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+}
+
+.police-ia-close:hover {
+  opacity: 0.7;
+}
+
+/* Área de mensajes */
+.police-ia-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.police-ia-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.police-ia-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.police-ia-messages::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.police-ia-messages::-webkit-scrollbar-thumb:hover {
+  background: #999;
+}
+
+/* Mensaje de bienvenida */
+.police-ia-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  gap: 8px;
+}
+
+.police-ia-welcome p {
+  margin: 0;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.police-ia-welcome small {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* Mensajes */
+.police-ia-message {
+  display: flex;
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.police-ia-user {
+  justify-content: flex-end;
+}
+
+.police-ia-assistant {
+  justify-content: flex-start;
+}
+
+/* Burbujas */
+.police-ia-bubble {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+.police-ia-assistant {
+  border-left: 3px solid;
+}
+
+.police-ia-user {
+  border-radius: 12px;
+}
+
+/* Animación de escritura */
+.police-ia-typing {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 10px 14px;
+}
+
+.police-ia-typing span {
+  animation: typing 1.4s infinite;
+  font-size: 12px;
+}
+
+.police-ia-typing span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.police-ia-typing span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.police-ia-typing span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    opacity: 0.3;
+  }
+  30% {
+    opacity: 1;
+  }
+}
+
+/* Alerta de error */
+.police-ia-error {
+  background-color: #fee2e2;
+  border-left: 3px solid;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  display: flex;
+  gap: 8px;
+}
+
+/* Acciones rápidas */
+.police-ia-quick-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+}
+
+.police-ia-quick-actions::-webkit-scrollbar {
+  height: 4px;
+}
+
+.police-ia-quick-actions::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 2px;
+}
+
+.police-ia-quick-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid;
+  background-color: #f3f4f6;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  color: #F97316;
+  font-weight: bold;
+}
+
+.police-ia-quick-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.2);
+}
+
+.police-ia-quick-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Área de input */
+.police-ia-input-area {
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  border-top: 1px solid;
+}
+
+.police-ia-input {
+  flex: 1;
+  border: 1px solid;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.police-ia-input:focus {
+  border-color: #F97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.1);
+}
+
+.police-ia-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.police-ia-send {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background-color: #F97316;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.police-ia-send:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.3);
+}
+
+.police-ia-send:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.police-ia-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Alerta SOS */
+.police-ia-sos-alert {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fee2e2;
+  border: 2px solid #dc2626;
+  border-radius: 12px;
+  padding: 16px;
+  z-index: 10000;
+  max-width: 500px;
+  width: calc(100% - 32px);
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.3);
+  animation: slideDown 0.4s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.police-ia-sos-content {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.police-ia-sos-content strong {
+  font-size: 14px;
+  display: block;
+}
+
+.police-ia-sos-content p {
+  margin: 0;
+}
+
+.police-ia-sos-close {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.police-ia-sos-close:hover {
+  opacity: 1;
+}
+
+/* Tema oscuro/claro */
+@media (prefers-color-scheme: dark) {
+  .police-ia-widget {
+    background-color: #111111;
+  }
+
+  .police-ia-input {
+    background-color: #1a1a1a;
+    color: #f3f4f6;
+  }
+
+  .police-ia-bubble.police-ia-assistant {
+    background-color: #2a2a2a;
+    color: #f3f4f6;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .police-ia-widget {
+    width: calc(100% - 32px);
+    height: 70vh;
+    bottom: 100px;
+    right: 16px;
+    left: 16px;
+    max-width: 380px;
+  }
+
+  .police-ia-bubble {
+    max-width: 90%;
+  }
+
+  .police-ia-quick-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 480px) {
+  .police-ia-button {
+    width: 48px;
+    height: 48px;
+    bottom: 16px;
+    right: 16px;
+    font-size: 18px;
+  }
+
+  .police-ia-widget {
+    width: calc(100% - 16px);
+    height: calc(100vh - 140px);
+    bottom: 70px;
+    right: 8px;
+    left: 8px;
+    border-radius: 12px;
+  }
+
+  .police-ia-sos-alert {
+    top: 60px;
+    width: calc(100% - 16px);
+  }
+}
+
+/* Print styles */
+@media print {
+  .police-ia-button,
+  .police-ia-widget,
+  .police-ia-sos-alert {
+    display: none !important;
+  }
+}

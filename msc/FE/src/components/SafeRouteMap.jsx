@@ -83,6 +83,39 @@ const makeIcon = (letter, color) => L.divIcon({
 const originIcon = makeIcon('A', '#00C853');
 const destinationIcon = makeIcon('B', '#FF1744');
 
+const liveIcon = L.divIcon({
+  className: 'waze-live-icon-wrapper',
+  html: `
+    <div style="position: relative; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+      <div class="gps-pulse" style="
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(0, 191, 255, 0.4);
+        box-shadow: 0 0 10px rgba(0, 191, 255, 0.3);
+      "></div>
+      <div style="
+        position: relative;
+        background: #00B0FF;
+        color: white;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 3px solid white;
+        box-shadow: 0 0 10px rgba(0, 176, 255, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      ">
+        <i class="fa-solid fa-location-arrow" style="transform: rotate(-45deg); font-size: 10px;"></i>
+      </div>
+    </div>
+  `,
+  iconSize: [40, 40],
+  iconAnchor: [20, 20]
+});
+
 /**
  * Sub-componente para capturar clics del usuario en el mapa.
  */
@@ -107,24 +140,26 @@ const MapRefresher = () => {
 
 /**
  * Componente del mapa de rutas seguras.
- * Visualiza el origen, destino, la ruta trazada y los incidentes cercanos.
+ * Visualiza el origen, destino, las rutas trazadas y la ubicación en vivo.
  */
 const SafeRouteMap = ({
   origin,
   destination,
   onOriginChange,
   onDestinationChange,
-  routeCoordinates,
-  routeColor,
-  reports,
-  selectionMode,
+  routes = [],
+  selectedRouteId = null,
+  onSelectRoute,
+  liveLocation = null,
+  reports = [],
+  selectionMode = null,
   onOutOfBounds,
 }) => {
   const [mapMode, setMapMode] = useState('night'); // 'night' | 'day'
   const [outOfBoundsAlert, setOutOfBoundsAlert] = useState(false);
 
   /**
-   * Determina el color del incidente según la gravedad (estático por ahora).
+   * Determina el color del incidente según la gravedad.
    */
   const getIncidentColor = (count) => {
     if (count <= 2) return '#4CAF50';
@@ -254,18 +289,45 @@ const SafeRouteMap = ({
             );
           })}
 
-          {/* Dibujo de la ruta calculada con polilínea */}
-          {routeCoordinates && routeCoordinates.length > 1 && (
-            <>
-              <Polyline
-                positions={routeCoordinates}
-                pathOptions={{ color: 'rgba(0,0,0,0.4)', weight: 10, opacity: 1 }}
-              />
-              <Polyline
-                positions={routeCoordinates}
-                pathOptions={{ color: routeColor, weight: 5, opacity: 0.95 }}
-              />
-            </>
+          {/* Dibujo de las múltiples rutas calculadas */}
+          {routes.map(route => {
+            const isSelected = route.id === selectedRouteId;
+            return (
+              <React.Fragment key={route.id}>
+                {/* Contorno interactivo */}
+                <Polyline
+                  positions={route.coordinates}
+                  pathOptions={{
+                    color: isSelected ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.15)',
+                    weight: isSelected ? 12 : 8,
+                    opacity: isSelected ? 0.95 : 0.4
+                  }}
+                  eventHandlers={{
+                    click: () => onSelectRoute && onSelectRoute(route.id)
+                  }}
+                />
+                {/* Línea principal */}
+                <Polyline
+                  positions={route.coordinates}
+                  pathOptions={{
+                    color: isSelected ? route.riskColor : '#78909c',
+                    weight: isSelected ? 6 : 4,
+                    opacity: isSelected ? 0.95 : 0.6,
+                    dashArray: isSelected ? null : '6, 12'
+                  }}
+                  eventHandlers={{
+                    click: () => onSelectRoute && onSelectRoute(route.id)
+                  }}
+                />
+              </React.Fragment>
+            );
+          })}
+
+          {/* Marcador de Ubicación en Vivo (GPS Waze-style) */}
+          {liveLocation && (
+            <Marker position={liveLocation} icon={liveIcon}>
+              <Popup><strong>📍 Mi ubicación actual</strong><br />Navegación GPS Waze activa</Popup>
+            </Marker>
           )}
 
           {/* Marcador del Punto A (Origen) */}

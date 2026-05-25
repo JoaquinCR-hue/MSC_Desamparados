@@ -527,6 +527,5 @@
       "lng": -84.07209277153017,
       "horario": "06:00 - 14:00"
     }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  ]
 }

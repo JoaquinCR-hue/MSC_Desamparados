@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import ReportService from '../services/ReportService';
 import '../styles/ReportManager.css';
@@ -23,10 +23,13 @@ const ReportManager = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
   
   // Paginación
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const initialPage = parseInt(searchParams.get('page')) || 1;
+  const initialLimit = parseInt(searchParams.get('limit')) || 10;
+  const [page, setPage] = useState(initialPage);
+  const [limit] = useState(initialLimit);
   const [totalPages, setTotalPages] = useState(1);
 
   // Estados para el filtrado de datos
@@ -81,16 +84,28 @@ const ReportManager = () => {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      setPage(1); // Reset page on new search/filter
-      loadReports(searchTerm, 1);
+      if (page !== 1) {
+        setPage(1);
+      } else {
+        loadReports(searchTerm, 1);
+      }
     }, 500); // 500ms debounce
     return () => clearTimeout(timeoutId);
-  }, [searchTerm, filterType, filterDistrict, locationState]);
+  }, [searchTerm, filterType, filterDistrict]);
 
   useEffect(() => {
-    if (page > 1 || (!searchTerm && !filterType && !filterDistrict)) {
-      loadReports(searchTerm, page);
-    }
+    const queryParams = {
+      page,
+      limit,
+    };
+    if (searchTerm) queryParams.search = searchTerm;
+    if (filterType) queryParams.tipo = filterType;
+    if (filterDistrict) queryParams.distrito = filterDistrict;
+    setSearchParams(queryParams, { replace: true });
+  }, [page, limit, searchTerm, filterType, filterDistrict]);
+
+  useEffect(() => {
+    loadReports(searchTerm, page);
   }, [page]);
 
   // Maneja la eliminación manual de un reporte
@@ -154,6 +169,49 @@ const ReportManager = () => {
     return 'time-ok';
   };
 
+  const handleStatusChange = async (reportId, newStatus) => {
+    try {
+      await ReportService.updateReport({ estado: newStatus }, reportId);
+      // Update local state
+      setReports(reports.map(r => r.id === reportId ? { ...r, estado: newStatus } : r));
+      if (selectedReport && selectedReport.id === reportId) {
+        setSelectedReport({ ...selectedReport, estado: newStatus });
+      }
+      Swal.fire({
+        title: 'Estado Actualizado',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false,
+        customClass: { popup: 'premium-swal-popup' }
+      });
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: error.message || 'No se pudo actualizar el estado',
+        icon: 'error',
+        customClass: { popup: 'premium-swal-popup' }
+      });
+    }
+  };
+
+  const getStatusBadgeClass = (status) => {
+    switch (status) {
+      case 'Pendiente': return 'status-pendiente';
+      case 'En Proceso': return 'status-en-proceso';
+      case 'Resuelto': return 'status-resuelto';
+      default: return 'status-pendiente';
+    }
+  };
+  
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'Pendiente': return 'fa-clock';
+      case 'En Proceso': return 'fa-spinner fa-spin';
+      case 'Resuelto': return 'fa-check-circle';
+      default: return 'fa-clock';
+    }
+  };
+
   const distritosDesamparados = [
     'Desamparados', 'San Miguel', 'San Juan de Dios', 'San Rafael Arriba', 
     'San Antonio', 'Frailes', 'Patarrá', 'San Cristóbal', 'Rosario', 
@@ -212,6 +270,7 @@ const ReportManager = () => {
                   <th>Incidente</th>
                   <th>Ubicación</th>
                   <th>Fecha</th>
+                  <th>Estado</th>
                   <th>Vigencia</th>
                   <th className="text-end">Acciones</th>
                 </tr>
@@ -243,6 +302,11 @@ const ReportManager = () => {
                           </div>
                         </td>
                       <td>{new Date(rep.fecha).toLocaleDateString()}</td>
+                      <td>
+                        <span className={`status-badge ${getStatusBadgeClass(rep.estado)}`}>
+                          <i className={`fa-solid ${getStatusIcon(rep.estado)}`}></i> {rep.estado || 'Pendiente'}
+                        </span>
+                      </td>
                       <td>
                         <span className={`time-badge ${getTimeLeftClass(rep.fecha)}`}>
                           <i className="fa-regular fa-clock"></i> {calculateTimeLeft(rep.fecha)}
@@ -280,7 +344,7 @@ const ReportManager = () => {
           {!loading && totalPages > 1 && (
             <div className="pagination-controls" style={{ display: 'flex', justifyContent: 'center', gap: '10px', padding: '1rem' }}>
               <button 
-                className="btn-action" 
+                className="pagination-button" 
                 disabled={page === 1} 
                 onClick={() => setPage(page - 1)}
               >
@@ -288,7 +352,7 @@ const ReportManager = () => {
               </button>
               <span style={{ alignSelf: 'center' }}>Página {page} de {totalPages}</span>
               <button 
-                className="btn-action" 
+                className="pagination-button" 
                 disabled={page === totalPages} 
                 onClick={() => setPage(page + 1)}
               >
@@ -352,6 +416,25 @@ const ReportManager = () => {
                   <div className="detail-item">
                     <span className="detail-label">Reportado por</span>
                     <span className="detail-value">{selectedReport.nombre_creador || "Anónimo"}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Estado</span>
+                    {canDelete ? (
+                      <select 
+                        className="status-select-premium"
+                        value={selectedReport.estado || 'Pendiente'}
+                        onChange={(e) => handleStatusChange(selectedReport.id, e.target.value)}
+                        disabled={selectedReport.estado === 'Resuelto'}
+                      >
+                        <option value="Pendiente" disabled>Pendiente</option>
+                        <option value="En Proceso" disabled={selectedReport.estado !== 'Pendiente' && selectedReport.estado !== 'En Proceso'}>En Proceso</option>
+                        <option value="Resuelto" disabled={selectedReport.estado !== 'En Proceso' && selectedReport.estado !== 'Resuelto'}>Resuelto</option>
+                      </select>
+                    ) : (
+                      <span className={`status-badge ${getStatusBadgeClass(selectedReport.estado)}`}>
+                        <i className={`fa-solid ${getStatusIcon(selectedReport.estado)}`}></i> {selectedReport.estado || 'Pendiente'}
+                      </span>
+                    )}
                   </div>
                   <div className="detail-item">
                     <span className="detail-label">ID de Reporte</span>

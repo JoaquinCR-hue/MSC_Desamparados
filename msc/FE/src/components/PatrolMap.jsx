@@ -7,6 +7,7 @@ import ReportService from '../services/ReportService';
 import PoliceService from '../services/PoliceService';
 import RouteService from '../services/RouteService';
 import UserService from '../services/UserService';
+import { getUserLocation } from '../services/gpsService';
 import Swal from 'sweetalert2';
 import '../styles/PatrolMap.css';
 import desamparadosGeo from '../data/desamparados.json';
@@ -138,6 +139,119 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
   const [routingSource, setRoutingSource] = useState(null);
   const [activeRoutes, setActiveRoutes] = useState([]);
   const [isCalculatingRoute, setIsCalculatingRoute] = useState(false);
+  const [emergencyActive, setEmergencyActive] = useState(false);
+
+  // Desplegar patrulla en ubicación GPS real
+  const handleDeployMyGPS = async () => {
+    try {
+      const location = await getUserLocation();
+      const point = { lat: location.lat, lng: location.lng };
+      handleMapClick(point);
+      Swal.fire({
+        icon: 'success',
+        title: 'GPS Sincronizado',
+        text: 'Despliegue operativo configurado en tus coordenadas actuales.',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        background: '#1f2937', color: '#fff'
+      });
+    } catch (e) {
+      console.error(e);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de GPS',
+        text: 'No se pudo obtener la ubicación GPS de tu dispositivo.',
+        background: '#1f2937', color: '#fff'
+      });
+    }
+  };
+
+  // Simular recorrido de emergencia en ruta más corta (Waze-style)
+  const handleSimulateEmergency = (route) => {
+    const patrol = patrols.find(p => p.id === route.patrolId);
+    if (!patrol) return;
+
+    Swal.fire({
+      icon: 'success',
+      title: '🚨 Código Rojo Activado',
+      text: `Unidad ${patrol.unidad} en ruta de emergencia hacia ${route.destinoTipo}. Navegación Waze activa por ruta más corta.`,
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3500,
+      background: '#7f1d1d',
+      color: '#fff'
+    });
+
+    setEmergencyActive(true);
+
+    let step = 0;
+    const coords = route.coordenadas;
+    const totalSteps = coords.length;
+
+    const animInterval = setInterval(async () => {
+      if (step >= totalSteps - 1) {
+        clearInterval(animInterval);
+        setEmergencyActive(false);
+
+        const finalLat = coords[totalSteps - 1][0];
+        const finalLng = coords[totalSteps - 1][1];
+        
+        const updatedPatrol = {
+          ...patrol,
+          lat: finalLat,
+          lng: finalLng,
+          estado: 'En Incidente',
+          zona: getDistrictByLatLng(finalLat, finalLng)
+        };
+
+        await PoliceService.updatePatrol(updatedPatrol, patrol.id);
+        await ReportService.updateReport({ estado: 'En Proceso' }, route.incidentId);
+
+        Swal.fire({
+          icon: 'success',
+          title: '🚨 ¡Llegada a Escena!',
+          text: `La unidad ${patrol.unidad} ha arribado al incidente de tipo ${route.destinoTipo}. El sector se encuentra bajo resguardo operativo.`,
+          background: '#1f2937',
+          color: '#fff',
+          confirmButtonColor: '#00C853'
+        });
+
+        handleClearRoute(route.id);
+        fetchData();
+        if (onPatrolUpdate) onPatrolUpdate();
+        return;
+      }
+
+      step++;
+      const currentLat = coords[step][0];
+      const currentLng = coords[step][1];
+
+      // Mover patrulla localmente
+      setPatrols(prevPatrols => prevPatrols.map(p => {
+        if (p.id === patrol.id) {
+          return { ...p, lat: currentLat, lng: currentLng, estado: 'En Incidente' };
+        }
+        return p;
+      }));
+
+      // Actualizar stats de ruta activa en la barra lateral
+      setActiveRoutes(prevRoutes => prevRoutes.map(r => {
+        if (r.id === route.id) {
+          const pctRemaining = 1 - (step / (totalSteps - 1));
+          return {
+            ...r,
+            distanciaKm: (route.distanciaKm * pctRemaining).toFixed(2),
+            duracionMin: Math.ceil(route.duracionMin * pctRemaining)
+          };
+        }
+        return r;
+      }));
+
+    }, 450); // Avanzar rápido
+  };
 
   // Estados para el control de modales
   const [showModal, setShowModal] = useState(false);
@@ -160,7 +274,6 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
     try {
       const dataRep = await ReportService.getReports();
       const dataPol = await PoliceService.getPatrols();
-      const dataUsu = await UserService.getUsers();
 
       const now = new Date();
       const oneWeekAgo = new Date();
@@ -179,7 +292,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       setPatrols(validPatrols);
 
       if (dataUsu) {
-        setAvailableOfficers(dataUsu.filter(u => u.role === 'administrador' || u.role === 'funcionario'));
+        setAvailableOfficers(dataUsu.filter(u => u.role === 'administrador' || u.role === 'funcionario' || u.role === 'admin'));
       }
       
       // Limpiar rutas huérfanas si la patrulla o el incidente han sido eliminados
@@ -195,8 +308,21 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
     }
   };
 
+  // Función separada para cargar funcionarios disponibles (no bloquea el mapa si falla)
+  const fetchOfficers = async () => {
+    try {
+      const dataUsu = await UserService.getUsers();
+      const lista = Array.isArray(dataUsu) ? dataUsu : (dataUsu?.data || []);
+      setAvailableOfficers(lista.filter(u => u.role === 'admin' || u.role === 'funcionario'));
+    } catch (error) {
+      console.warn('No se pudo cargar la lista de funcionarios:', error.message);
+      setAvailableOfficers([]);
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchOfficers();
   }, [refreshTrigger]);
 
   const handleMapClick = (latlng) => {
@@ -253,7 +379,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
   };
 
   const handleOfficialToggle = (name) => {
-    let currentOfficers = formData.nombre_oficiales.split(',').map(n => n.trim()).filter(n => n);
+    let currentOfficers = (formData.nombre_oficiales || '').split(',').map(n => n.trim()).filter(n => n);
     if (currentOfficers.includes(name)) {
       currentOfficers = currentOfficers.filter(n => n !== name);
     } else {
@@ -328,14 +454,24 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
         routingSource.tipo_unidad
       );
       
+      // Cambiar estado del reporte a "En Proceso"
+      if (report.estado === 'Pendiente' || !report.estado) {
+        await ReportService.updateReport({ estado: 'En Proceso' }, report.id);
+        setReports(prev => prev.map(r => r.id === report.id ? { ...r, estado: 'En Proceso' } : r));
+      }
+
       const newRoute = {
-        ...route,
         id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
         patrolId: routingSource.id,
         incidentId: report.id,
         unidad: routingSource.unidad,
         destinoTipo: report.tipo,
-        color: ROUTE_COLORS[activeRoutes.length % ROUTE_COLORS.length]
+        color: ROUTE_COLORS[activeRoutes.length % ROUTE_COLORS.length],
+        // Mapear propiedades del RouteService (inglés) → nombres esperados (español)
+        coordenadas: route.coordinates,
+        distanciaKm: route.distanceKm,
+        duracionMin: route.durationMin,
+        simulada: route.simulated
       };
       
       setActiveRoutes(prev => [...prev, newRoute]);
@@ -377,9 +513,29 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
   }
 
   return (
-    <div className="patrol-map-wrapper">
-      <div className="alert-banner-info mb-3">
-        <i className="fa-solid fa-circle-info"></i> <strong>Instrucciones:</strong> Haz clic en el mapa para asignar una nueva patrulla, o en las existentes para editar/retirar.
+    <div className={`patrol-map-wrapper ${emergencyActive ? 'emergency-siren-flashing' : ''}`}>
+      {emergencyActive && (
+        <div className="visual-siren-alert-bar" style={{
+          background: 'linear-gradient(90deg, #dc2626, #2563eb)',
+          color: 'white',
+          textAlign: 'center',
+          padding: '8px',
+          fontWeight: 'bold',
+          borderRadius: '8px',
+          marginBottom: '15px',
+          fontSize: '14px',
+          boxShadow: '0 4px 15px rgba(220, 38, 38, 0.4)'
+        }}>
+          <i className="fa-solid fa-lightbulb fa-beat me-2"></i> 🚨 MISIÓN DE EMERGENCIA EN CURSO - CÓDIGO ROJO WAZE 🚨
+        </div>
+      )}
+      <div className="alert-banner-info mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+          <i className="fa-solid fa-circle-info"></i> <strong>Instrucciones:</strong> Haz clic en el mapa para asignar una patrulla, o usa tu ubicación actual para desplegarte.
+        </div>
+        <Button variant="primary" size="sm" onClick={handleDeployMyGPS} className="d-flex align-items-center gap-2" style={{ background: '#F97316', borderColor: '#F97316', fontWeight: 'bold' }}>
+          <i className="fa-solid fa-location-arrow"></i> Desplegar en mi GPS
+        </Button>
       </div>
 
       <div className="patrol-main-layout">
@@ -597,9 +753,9 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
                 <>
                   <div className="route-list flex-grow-1">
                     {activeRoutes.map(route => (
-                      <div key={route.id} className="route-item" style={{ borderLeftColor: route.color }}>
+                      <div key={route.id} className="route-item" style={{ borderLeftColor: route.color, paddingBottom: '12px' }}>
                         <div className="d-flex justify-content-between align-items-start">
-                          <div className="route-panel-details mb-0">
+                          <div className="route-panel-details mb-0 w-100">
                             <p className="mb-1 text-wrap" style={{ wordBreak: 'break-word' }}>
                               <strong><i className="fa-solid fa-shield-halved"></i> U-{route.unidad}</strong> 
                               <i className="fa-solid fa-arrow-right mx-1 text-muted"></i> 
@@ -609,6 +765,15 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
                               <span className="badge bg-success opacity-75 fw-normal"><i className="fa-solid fa-clock"></i> {route.duracionMin} m</span>
                               <span className="badge bg-info text-dark opacity-100 fw-normal"><i className="fa-solid fa-ruler-horizontal"></i> {route.distanciaKm} km</span>
                             </div>
+                            <Button 
+                              variant="danger" 
+                              size="sm" 
+                              className="mt-2 py-1 w-100 fw-bold d-flex align-items-center justify-content-center gap-1 btn-emergencia-sim"
+                              onClick={() => handleSimulateEmergency(route)}
+                              style={{ fontSize: '11px', background: '#dc2626', border: 'none', borderRadius: '4px' }}
+                            >
+                              <i className="fa-solid fa-truck-medical"></i> Código Rojo (Waze Emergency)
+                            </Button>
                           </div>
                           <button className="btn btn-sm btn-link text-danger p-0 ms-2" onClick={() => handleClearRoute(route.id)} title="Cancelar Misión">
                             <i className="fa-solid fa-xmark fs-5"></i>
@@ -617,7 +782,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
                       </div>
                     ))}
                   </div>
-                  <button className="btn btn-sm btn-outline-danger mt-3 w-100 mt-auto" onClick={handleClearAllRoutes}>
+                  <button className="btn btn-sm btn-outline-danger mt-3 w-100" onClick={handleClearAllRoutes}>
                     <i className="fa-solid fa-trash-can"></i> Abortar Todas
                   </button>
                 </>
@@ -656,7 +821,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
                           type="checkbox"
                           id={`func-${func.id}`}
                           label={func.nombre}
-                          checked={formData.nombre_oficiales.split(',').map(n => n.trim()).includes(func.nombre)}
+                          checked={(formData.nombre_oficiales || '').split(',').map(n => n.trim()).includes(func.nombre)}
                           onChange={() => handleOfficialToggle(func.nombre)}
                           className="text-main premium-check"
                         />

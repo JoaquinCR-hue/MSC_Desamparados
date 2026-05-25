@@ -3,7 +3,6 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
-require('dotenv').config();
 
 const app = express();
 const apiRoutes = require('./routes');
