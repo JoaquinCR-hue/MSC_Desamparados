@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:3000/api/v1';
+// Utiliza rutas relativas para permitir que el proxy de Vite funcione correctamente en local y con túneles
+const BASE_URL = '/api/v1';
 
 const api = axios.create({
   baseURL: BASE_URL,
