@@ -13,6 +13,23 @@ module.exports = (sequelize) => {
     status: { type: DataTypes.STRING(25), defaultValue: 'Pendiente' },
     response: { type: DataTypes.TEXT },
     responseDate: { type: DataTypes.DATE }
-  }, { sequelize, modelName: 'Consult', tableName: 'Consults', timestamps: false });
+  }, { 
+    sequelize, 
+    modelName: 'Consult', 
+    tableName: 'Consults', 
+    timestamps: false,
+    hooks: {
+      beforeCreate: (consult) => {
+        if (consult.fullName) {
+          consult.fullName = consult.fullName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+        }
+      },
+      beforeUpdate: (consult) => {
+        if (consult.changed('fullName') && consult.fullName) {
+          consult.fullName = consult.fullName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+        }
+      }
+    }
+  });
   return Consult;
 };

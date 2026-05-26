@@ -1,7 +1,7 @@
 import React from 'react';
 import '../../styles/InputGroup.css';
 
-const InputGroup = ({ label, value, onChange, type = "text", placeholder, isSearching, maxLength, onBlur, error }) => {
+const InputGroup = ({ label, value, onChange, type = "text", placeholder, isSearching, maxLength, onBlur, error, className = "" }) => {
   return (
     <div className="input-group">
       <label>
@@ -15,7 +15,7 @@ const InputGroup = ({ label, value, onChange, type = "text", placeholder, isSear
         placeholder={placeholder}
         maxLength={maxLength}
         onBlur={onBlur}
-        className={error ? "input-error" : ""}
+        className={`${error ? "input-error" : ""} ${className}`.trim()}
       />
       {error && <span className="error-message">{error}</span>}
     </div>

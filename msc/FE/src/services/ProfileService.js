@@ -92,11 +92,24 @@ async function uploadProfilePhotoBackend(file) {
   }
 }
 
+/**
+ * Cambia la contraseña del usuario.
+ */
+async function changePassword(currentPassword, newPassword) {
+  try {
+    const response = await api.put('/profile/password', { currentPassword, newPassword });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Error al cambiar la contraseña');
+  }
+}
+
 export default {
   getProfile,
   updateProfile,
   updateProfilePhoto,
   uploadToCloudinary,
-  uploadProfilePhotoBackend
+  uploadProfilePhotoBackend,
+  changePassword
 };
 

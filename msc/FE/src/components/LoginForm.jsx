@@ -26,6 +26,7 @@ function LoginForm() {
     e.preventDefault();
 
     const nationalIdRegex = /^[1-9]\d{8}$/;
+    const foreignIdRegex = /^[1-4]\d{10,11}$/;
     const cleanedId = nationalId.replace(/\D/g, '');
 
     if (!nationalId || !password) {
@@ -33,8 +34,15 @@ function LoginForm() {
       return;
     }
 
-    if (!cleanedId || !nationalIdRegex.test(cleanedId)) {
-      Swal.fire({ title: 'Formato Inválido', text: 'Debes colocar la cédula correcta.', icon: 'warning' });
+    if (
+      !cleanedId ||
+      (!nationalIdRegex.test(cleanedId) && !foreignIdRegex.test(cleanedId))
+    ) {
+      Swal.fire({
+        title: 'Formato Inválido',
+        text: 'Debes colocar la cédula correcta.',
+        icon: 'warning'
+      });
       return;
     }
 
@@ -44,20 +52,22 @@ function LoginForm() {
 
       // El rol ya viene normalizado del BE (administrador, funcionario, ciudadano)
       // Solo guardar directamente sin conversiones adicionales
-      
+
       // Guardar datos del usuario y token en sessionStorage
       sessionStorage.setItem('user', JSON.stringify(userData));
-      
+
       // Disparar evento para que otros componentes (como Police-IA) se actualicen
       window.dispatchEvent(new Event('user-login'));
 
+      const capitalizedFullName = userData.fullName ? userData.fullName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()) : '';
+
       let welcomeMessage = '';
       if (userData.role === 'administrador') {
-        welcomeMessage = `Bienvenido Administrador(a) ${userData.fullName}.`;
+        welcomeMessage = `Bienvenido Administrador(a) ${capitalizedFullName}.`;
       } else if (userData.role === 'funcionario') {
-        welcomeMessage = `Bienvenido Oficial ${userData.fullName}.`;
+        welcomeMessage = `Bienvenido Oficial ${capitalizedFullName}.`;
       } else {
-        welcomeMessage = `¡Hola ${userData.fullName}! Gracias por participar.`;
+        welcomeMessage = `¡Hola ${capitalizedFullName}! Gracias por participar.`;
       }
 
       Swal.fire({
@@ -128,7 +138,6 @@ function LoginForm() {
           type="text"
           value={nationalId}
           placeholder="Ingrese su cédula"
-          maxLength={9}
           onChange={(e) => setNationalId(e.target.value.replace(/\D/g, ''))}
         />
 

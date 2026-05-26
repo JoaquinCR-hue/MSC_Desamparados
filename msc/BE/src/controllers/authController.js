@@ -19,16 +19,25 @@ const register = async (req, res) => {
   try {
     const { fullName, email, password, phone, nationalId, roleId } = req.body;
 
-    // Verificar si el usuario ya existe por email o cédula
+    // Verificar si el usuario ya existe por email o cédula o teléfono
+    const orConditions = [{ email }, { nationalId }];
+    if (phone) {
+      orConditions.push({ phone });
+    }
     const existingUser = await User.findOne({ 
       where: {
-        [require('sequelize').Op.or]: [{ email }, { nationalId }]
+        [require('sequelize').Op.or]: orConditions
       } 
     });
     
     if (existingUser) {
-      const field = existingUser.email === email ? 'El correo' : 'La cédula';
-      return res.status(400).json({ message: `${field} ya está registrado en el sistema.` });
+      if (existingUser.email === email) {
+        return res.status(400).json({ message: 'El correo ya está registrado en el sistema.' });
+      } else if (phone && existingUser.phone === phone) {
+        return res.status(400).json({ message: 'El número de teléfono ya está registrado en el sistema.' });
+      } else {
+        return res.status(400).json({ message: 'La cédula ya está registrada en el sistema.' });
+      }
     }
     if (!regex.test(password)) {
       return res.status(400).json({ 

@@ -70,3 +70,7 @@
 .border-secondary {
     border-color: var(--border-strong) !important;
 }
+
+.capitalize-name {
+    text-transform: capitalize !important;
+}

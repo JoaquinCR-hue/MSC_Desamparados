@@ -46,7 +46,7 @@ exports.getProfile = async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 nationalId: user.nationalId,
-                profilePhoto: user.profilePhoto,
+                profilePhoto: user.imageUrl,
                 role: roleName,
                 reports: mappedReports
             }
@@ -92,7 +92,7 @@ exports.updateProfilePhoto = async (req, res) => {
         const user = await User.findByPk(req.user.id);
         if (!user) return res.status(404).json({ status: 'error', message: 'Usuario no encontrado' });
 
-        await user.update({ profilePhoto });
+        await user.update({ imageUrl: profilePhoto });
 
         res.status(200).json({ status: 'success', message: 'Foto actualizada correctamente', photoUrl: profilePhoto });
     } catch (error) {
@@ -120,11 +120,45 @@ exports.uploadProfilePhoto = async (req, res) => {
             resource_type: 'image'
         });
 
-        await user.update({ profilePhoto: uploadResult.secure_url });
+        await user.update({ imageUrl: uploadResult.secure_url });
 
         res.status(200).json({ status: 'success', message: 'Foto subida y actualizada', photoUrl: uploadResult.secure_url });
     } catch (error) {
         console.error('Error uploading profile photo:', error);
+        res.status(500).json({ status: 'error', message: error.message });
+    }
+};
+
+// Cambiar la contraseña del usuario autenticado
+exports.changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ status: 'error', message: 'Faltan datos requeridos.' });
+        }
+        
+        if (!regex.test(newPassword)) {
+            return res.status(400).json({ 
+                status: 'error',
+                message: 'La nueva contraseña debe tener al menos 6 caracteres, incluyendo una mayúscula, una minúscula y un número.' 
+            });
+        }
+
+        const user = await User.findByPk(req.user.id);
+        if (!user) return res.status(404).json({ status: 'error', message: 'Usuario no encontrado.' });
+
+        const isMatch = await user.validatePassword(currentPassword);
+        if (!isMatch) {
+            return res.status(400).json({ status: 'error', message: 'La contraseña actual es incorrecta.' });
+        }
+
+        // El hook beforeUpdate se encargará de hashear la nueva contraseña
+        await user.update({ password: newPassword });
+
+        res.status(200).json({ status: 'success', message: 'Contraseña actualizada correctamente.' });
+    } catch (error) {
         res.status(500).json({ status: 'error', message: error.message });
     }
 };
