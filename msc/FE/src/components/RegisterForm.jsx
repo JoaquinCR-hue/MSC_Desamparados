@@ -19,6 +19,7 @@ const RegisterForm = () => {
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [nationalId, setNationalId] = useState('');
+  const [idType, setIdType] = useState('nacional');
   
   const [isSearching, setIsSearching] = useState(false);
   const [errors, setErrors] = useState({});
@@ -29,8 +30,10 @@ const RegisterForm = () => {
   // Valida la cédula consultando la API de Hacienda
   useEffect(() => {
     const validateNationalId = async () => {
-      const nationalIdRegex = /^[1-9]\d{8}$/;
-      if (nationalIdRegex.test(nationalId)) {
+      const isNacional = idType === 'nacional';
+      const isValidLength = isNacional ? nationalId.length === 9 : (nationalId.length === 11 || nationalId.length === 12);
+      
+      if (isValidLength) {
         setIsSearching(true);
         try {
           const response = await fetch(`https://api.hacienda.go.cr/fe/ae?identificacion=${nationalId}`);
@@ -49,8 +52,12 @@ const RegisterForm = () => {
         }
       }
     };
-    if (nationalId.length === 9) validateNationalId();
-  }, [nationalId]);
+
+    const targetLength = idType === 'nacional' ? 9 : 11;
+    if (nationalId.length >= targetLength) {
+      validateNationalId();
+    }
+  }, [nationalId, idType]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -103,8 +110,31 @@ const RegisterForm = () => {
       <AuthHeader title="Unirse a la Comunidad" subtitle="Crea tu cuenta oficial" />
 
       <form onSubmit={handleSubmit}>
-        <InputGroup label="Cédula" value={nationalId} isSearching={isSearching} maxLength="9" onChange={(e) => setNationalId(e.target.value.replace(/\D/g, ''))} error={errors.nationalId} />
-        <InputGroup label="Nombre Completo" value={fullName} onChange={(e) => setFullName(e.target.value)} error={errors.fullName} />
+        <div className="input-group mb-3 custom-input-group">
+          <label className="input-label w-100 mb-1">Tipo de Identificación</label>
+          <select 
+            className="form-select custom-input text-white" 
+            style={{ backgroundColor: '#1a1d24', border: '1px solid #334155' }}
+            value={idType} 
+            onChange={(e) => {
+              setIdType(e.target.value);
+              setNationalId('');
+            }}
+          >
+            <option value="nacional">Cédula Nacional</option>
+            <option value="dimex">DIMEX</option>
+          </select>
+        </div>
+
+        <InputGroup 
+          label={idType === 'nacional' ? "Cédula" : "DIMEX"} 
+          value={nationalId} 
+          isSearching={isSearching} 
+          maxLength={idType === 'nacional' ? "9" : "12"} 
+          onChange={(e) => setNationalId(e.target.value.replace(/\D/g, ''))} 
+          error={errors.nationalId} 
+        />
+        <InputGroup label="Nombre Completo" value={fullName} onChange={(e) => setFullName(e.target.value)} error={errors.fullName} className="capitalize-name" />
         <InputGroup label="Teléfono" value={phone} onChange={(e) => setPhone(e.target.value)} error={errors.phone} />
         <InputGroup label="Correo Electrónico" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
         <PasswordInput label="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} error={errors.password} />

@@ -296,3 +296,32 @@
         transform: translateY(0);
     }
 }
+
+/* ── EFECTOS DE SIRENA DE EMERGENCIA (WAZE EMERGENCY) ── */
+
+@keyframes emergencyRedBlue {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.4) inset, 0 0 5px rgba(220, 38, 38, 0.2);
+    border-color: rgba(220, 38, 38, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 15px rgba(37, 99, 235, 0.4) inset, 0 0 5px rgba(37, 99, 235, 0.2);
+    border-color: rgba(37, 99, 235, 0.8);
+  }
+}
+
+.emergency-siren-flashing {
+  animation: emergencyRedBlue 1.2s infinite ease-in-out;
+  border: 2px solid rgba(220, 38, 38, 0.5) !important;
+}
+
+.btn-emergencia-sim {
+  transition: all 0.2s ease !important;
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.3);
+}
+
+.btn-emergencia-sim:hover {
+  transform: translateY(-1px);
+  background-color: #b91c1c !important;
+  box-shadow: 0 6px 14px rgba(220, 38, 38, 0.5);
+}

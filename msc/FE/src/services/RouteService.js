@@ -198,6 +198,152 @@ function generateRecommendations(nearbyIncidents, riskLevel) {
   return recommendations;
 }
 
+/**
+ * Calcula 3 rutas alternativas entre origen y destino, analizando el riesgo de cada una.
+ * @param {[number, number]} origin
+ * @param {[number, number]} destination
+ * @param {string} mode
+ * @param {object[]} reports
+ */
+async function calculateAlternativeRoutes(origin, destination, mode = 'Auto', reports = []) {
+  // 1. Obtener la ruta base (Rápida)
+  const baseRoute = await calculateRoute(origin, destination, false, mode);
+  
+  // Generar coordenadas alternativas usando curvas
+  const coordsBase = baseRoute.coordinates;
+  const numPoints = coordsBase.length;
+  
+  if (numPoints < 2) {
+    throw new Error('No se pudieron obtener suficientes puntos de ruta.');
+  }
+
+  // Encontrar el vector perpendicular de Origen a Destino
+  const latStart = origin[0];
+  const lngStart = origin[1];
+  const latEnd = destination[0];
+  const lngEnd = destination[1];
+  
+  const dLat = latEnd - latStart;
+  const dLng = lngEnd - lngStart;
+  
+  // Vector perpendicular normalizado [perpLat, perpLng]
+  const len = Math.sqrt(dLat * dLat + dLng * dLng) || 0.001;
+  const perpLat = -dLng / len;
+  const perpLng = dLat / len;
+
+  // Calcular el centroide de los reportes en la zona general
+  let avgReportLat = 0;
+  let avgReportLng = 0;
+  let reportsInArea = 0;
+  
+  for (const rep of reports) {
+    if (!rep.lat || !rep.lng) continue;
+    const distToStart = Math.sqrt((rep.lat - latStart)**2 + (rep.lng - lngStart)**2);
+    if (distToStart < 0.08) { // Filtramos reportes a menos de ~8km de la zona
+      avgReportLat += rep.lat;
+      avgReportLng += rep.lng;
+      reportsInArea++;
+    }
+  }
+
+  let curveDirection = 1; // 1 = izquierda, -1 = derecha de la trayectoria
+  if (reportsInArea > 0) {
+    avgReportLat /= reportsInArea;
+    avgReportLng /= reportsInArea;
+    
+    // Punto medio del trayecto
+    const midLat = (latStart + latEnd) / 2;
+    const midLng = (lngStart + lngEnd) / 2;
+    
+    // Determinar si los incidentes están predominantemente en el lado positivo o negativo del perpendicular
+    const side = (avgReportLat - midLat) * perpLat + (avgReportLng - midLng) * perpLng;
+    if (side > 0) {
+      // Los incidentes están en el lado positivo, curveamos hacia el lado negativo
+      curveDirection = -1;
+    } else {
+      curveDirection = 1;
+    }
+  }
+
+  // Generar Ruta 1: Rápida (Directa) - Usar coords base
+  const coordsFast = coordsBase.map(p => [...p]);
+  
+  // Generar Ruta 2: Segura (Desvío en sentido contrario a los crímenes)
+  // Usamos una desviación en arco senoidal
+  const offsetSafe = curveDirection * 0.006 * (mode === 'Peatón' ? 0.65 : 1); // Desviación en grados
+  const coordsSafe = coordsBase.map((p, idx) => {
+    const factor = Math.sin((Math.PI * idx) / (numPoints - 1));
+    return [
+      p[0] + perpLat * offsetSafe * factor,
+      p[1] + perpLng * offsetSafe * factor
+    ];
+  });
+
+  // Generar Ruta 3: Alternativa (Desvío en el sentido opuesto al desvío seguro)
+  const offsetAlt = -curveDirection * 0.008 * (mode === 'Peatón' ? 0.65 : 1); // Desviación mayor
+  const coordsAlt = coordsBase.map((p, idx) => {
+    const factor = Math.sin((Math.PI * idx) / (numPoints - 1));
+    return [
+      p[0] + perpLat * offsetAlt * factor,
+      p[1] + perpLng * offsetAlt * factor
+    ];
+  });
+
+  // Analizar riesgos para cada una
+  const riskFast = analyzeRouteRisk(coordsFast, reports, 250);
+  const riskSafe = analyzeRouteRisk(coordsSafe, reports, 250);
+  const riskAlt = analyzeRouteRisk(coordsAlt, reports, 250);
+
+  // Crear los objetos de ruta
+  const distBase = parseFloat(baseRoute.distanceKm);
+  const timeBase = parseInt(baseRoute.durationMin);
+
+  return [
+    {
+      id: 'route_fast',
+      name: 'Ruta Rápida',
+      tag: 'Más Directa',
+      coordinates: coordsFast,
+      distanceKm: distBase.toFixed(2),
+      durationMin: timeBase,
+      riskLevel: riskFast.riskLevel,
+      riskColor: riskFast.riskColor,
+      riskIcon: riskFast.riskIcon,
+      totalIncidents: riskFast.total,
+      nearbyIncidents: riskFast.nearbyIncidents,
+      simulated: baseRoute.simulated
+    },
+    {
+      id: 'route_safe',
+      name: 'Ruta Segura',
+      tag: 'Mayor Seguridad',
+      coordinates: coordsSafe,
+      distanceKm: (distBase * 1.15).toFixed(2),
+      durationMin: Math.round(timeBase * 1.2),
+      riskLevel: riskSafe.riskLevel,
+      riskColor: riskSafe.riskColor,
+      riskIcon: riskSafe.riskIcon,
+      totalIncidents: riskSafe.total,
+      nearbyIncidents: riskSafe.nearbyIncidents,
+      simulated: baseRoute.simulated
+    },
+    {
+      id: 'route_alt',
+      name: 'Ruta Alternativa',
+      tag: 'Avenidas Principales',
+      coordinates: coordsAlt,
+      distanceKm: (distBase * 1.28).toFixed(2),
+      durationMin: Math.round(timeBase * 1.3),
+      riskLevel: riskAlt.riskLevel,
+      riskColor: riskAlt.riskColor,
+      riskIcon: riskAlt.riskIcon,
+      totalIncidents: riskAlt.total,
+      nearbyIncidents: riskAlt.nearbyIncidents,
+      simulated: baseRoute.simulated
+    }
+  ];
+}
+
 // ─── Utilidad: decodifica polyline en formato Google/ORS a coordenadas ─────────
 function decodePolyline(encoded) {
   const coords = [];
@@ -274,4 +420,4 @@ async function searchAddress(text) {
   }
 }
 
-export default { calculateRoute, analyzeRouteRisk, generateRecommendations, searchAddress };
+export default { calculateRoute, calculateAlternativeRoutes, analyzeRouteRisk, generateRecommendations, searchAddress };

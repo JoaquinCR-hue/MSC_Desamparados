@@ -27,7 +27,7 @@ const PatrolLog = ({ refreshTrigger, onGlobalUpdate }) => {
   // Verificación sincrónica de permisos (RBAC)
   const userStr = sessionStorage.getItem('user');
   const currentUser = userStr ? JSON.parse(userStr) : {};
-  const isAdmin = currentUser.role === 'admin';
+  const isAdmin = currentUser.role === 'administrador';
 
   // Función para obtener los datos de patrullaje del servicio
   const fetchData = async () => {

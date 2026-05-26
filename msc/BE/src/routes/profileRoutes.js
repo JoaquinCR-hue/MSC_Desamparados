@@ -12,4 +12,7 @@ router.put('/photo', profileController.updateProfilePhoto);
 // Subir foto al backend y a Cloudinary
 router.post('/photo/upload', upload.single('avatar'), profileController.uploadProfilePhoto);
 
+// Cambiar contraseña
+router.put('/password', profileController.changePassword);
+
 module.exports = router;

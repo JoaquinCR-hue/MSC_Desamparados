@@ -23,8 +23,8 @@ module.exports = (sequelize) => {
     password: { type: DataTypes.STRING(255), allowNull: false },
     phone: { type: DataTypes.STRING(20) },
     nationalId: { type: DataTypes.STRING(25) },
-    profilePhoto: { type: DataTypes.STRING(500) },
-    roleId: { type: DataTypes.INTEGER }
+    roleId: { type: DataTypes.INTEGER },
+    imageUrl: { type: DataTypes.STRING(500) }
   }, { 
     sequelize, 
     modelName: 'User', 
@@ -32,12 +32,18 @@ module.exports = (sequelize) => {
     timestamps: false,
     hooks: {
       beforeCreate: async (user) => {
+        if (user.fullName) {
+          user.fullName = user.fullName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+        }
         if (user.password) {
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(user.password, salt);
         }
       },
       beforeUpdate: async (user) => {
+        if (user.changed('fullName') && user.fullName) {
+          user.fullName = user.fullName.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+        }
         if (user.changed('password')) {
           const salt = await bcrypt.genSalt(10);
           user.password = await bcrypt.hash(user.password, salt);

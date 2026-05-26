@@ -6,7 +6,7 @@ async function setup() {
     // Asegurar que existe el rol Admin
     const [adminRole] = await Role.findOrCreate({
       where: { id: 1 },
-      defaults: { name: 'admin', description: 'Administrador del sistema' }
+      defaults: { name: 'administrador', description: 'Administrador del sistema' }
     });
 
     // Crear usuario admin de prueba

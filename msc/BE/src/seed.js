@@ -6,7 +6,7 @@ const seedDatabase = async () => {
     if (rolesCount === 0) {
       console.log('🌱 Sembrando roles iniciales...');
       await Role.bulkCreate([
-        { id: 1, name: 'admin', description: 'Administrador del sistema' },
+        { id: 1, name: 'administrador', description: 'Administrador del sistema' },
         { id: 2, name: 'funcionario', description: 'Oficial de policía o funcionario municipal' },
         { id: 3, name: 'ciudadano', description: 'Ciudadano de Desamparados' }
       ]);

@@ -98,21 +98,21 @@ const Routing = () => {
 
         {/* ── Rutas Ciudadano ────────────────────────────── */}
         <Route path="/citizen-view" element={<RoleRoute element={<CitizenView />} allowedRoles={['ciudadano']} />} />
-        <Route path="/report-incident" element={<RoleRoute element={<ReportIncident />} allowedRoles={['ciudadano', 'funcionario', 'admin', 'administrador']} />} />
-        <Route path="/safe-routes" element={<RoleRoute element={<SafeRoutesPage />} allowedRoles={['ciudadano', 'funcionario', 'admin', 'administrador']} />} />
+        <Route path="/report-incident" element={<RoleRoute element={<ReportIncident />} allowedRoles={['ciudadano', 'funcionario', 'administrador']} />} />
+        <Route path="/safe-routes" element={<RoleRoute element={<SafeRoutesPage />} allowedRoles={['ciudadano', 'funcionario', 'administrador']} />} />
 
         {/* ── Rutas Funcionario ──────────────────────────── */}
-        <Route path="/officer-view" element={<RoleRoute element={<OfficerDashboardPage />} allowedRoles={['funcionario', 'admin', 'administrador']} />} />
-        <Route path="/manage-reports" element={<RoleRoute element={<ManageReports />} allowedRoles={['funcionario', 'admin', 'administrador']} />} />
-        <Route path="/statistics" element={<RoleRoute element={<Statistics />} allowedRoles={['funcionario', 'admin', 'administrador']} />} />
-        <Route path="/patrol-map" element={<RoleRoute element={<PatrolMapPage />} allowedRoles={['funcionario', 'admin', 'administrador']} />} />
+        <Route path="/officer-view" element={<RoleRoute element={<OfficerDashboardPage />} allowedRoles={['funcionario', 'administrador']} />} />
+        <Route path="/manage-reports" element={<RoleRoute element={<ManageReports />} allowedRoles={['funcionario', 'administrador']} />} />
+        <Route path="/statistics" element={<RoleRoute element={<Statistics />} allowedRoles={['funcionario', 'administrador']} />} />
+        <Route path="/patrol-map" element={<RoleRoute element={<PatrolMapPage />} allowedRoles={['funcionario', 'administrador']} />} />
 
         {/* ── Rutas Admin ────────────────────────────────── */}
-        <Route path="/manage-users" element={<RoleRoute element={<ManageUsers />} allowedRoles={['admin', 'administrador']} />} />
-        <Route path="/manage-consults" element={<RoleRoute element={<ManageConsults />} allowedRoles={['admin', 'administrador']} />} />
+        <Route path="/manage-users" element={<RoleRoute element={<ManageUsers />} allowedRoles={['administrador']} />} />
+        <Route path="/manage-consults" element={<RoleRoute element={<ManageConsults />} allowedRoles={['administrador']} />} />
 
         {/* ── Rutas Comunes Protegidas ───────────────────── */}
-        <Route path="/profile" element={<RoleRoute element={<ProfilePage />} allowedRoles={['ciudadano', 'funcionario', 'admin', 'administrador']} />} />
+        <Route path="/profile" element={<RoleRoute element={<ProfilePage />} allowedRoles={['ciudadano', 'funcionario', 'administrador']} />} />
 
         {/* ── Ruta no encontrada → redirige al inicio ────── */}
         <Route path="*" element={<Navigate to="/" replace />} />
