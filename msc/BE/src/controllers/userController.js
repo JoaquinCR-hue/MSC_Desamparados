@@ -83,10 +83,6 @@ exports.getAll = async (req, res) => {
                 }
             ]
         });
-<<<<<<< HEAD
-        
-=======
->>>>>>> 2f6f554ef7440a1317bc6048266f4d116c4000c9
         // Mapeo al formato esperado por el Frontend
         const mappedUsers = rows.map(mapUserToFE);
         

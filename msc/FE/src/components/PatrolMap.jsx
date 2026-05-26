@@ -160,7 +160,6 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
     try {
       const dataRep = await ReportService.getReports();
       const dataPol = await PoliceService.getPatrols();
-<<<<<<< HEAD
 
       // Solo los administradores pueden ver la lista de usuarios.
       // Si el usuario es funcionario, esta llamada devolverá 403 y se ignora silenciosamente.
@@ -171,8 +170,6 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
         // Funcionarios no tienen permiso para listar usuarios — es normal, no es un error de sesión.
         console.info('Lista de usuarios no disponible para este rol.');
       }
-=======
->>>>>>> 2f6f554ef7440a1317bc6048266f4d116c4000c9
 
       const now = new Date();
       const oneWeekAgo = new Date();
@@ -189,13 +186,10 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       
       setReports(filteredReports);
       setPatrols(validPatrols);
-<<<<<<< HEAD
 
       if (dataUsu && dataUsu.length > 0) {
         setAvailableOfficers(dataUsu.filter(u => u.role === 'admin' || u.role === 'funcionario'));
       }
-=======
->>>>>>> 2f6f554ef7440a1317bc6048266f4d116c4000c9
       
       // Limpiar rutas huérfanas si la patrulla o el incidente han sido eliminados
       setActiveRoutes(prev => prev.filter(route => 
