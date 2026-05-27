@@ -1,11 +1,12 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   MapContainer, TileLayer, CircleMarker, Popup,
-  Polyline, Marker, Rectangle, useMapEvents, GeoJSON, ZoomControl, useMap
+  Polyline, Marker, Rectangle, useMapEvents, GeoJSON, ZoomControl, useMap, Circle
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import '../styles/SafeRoutes.css';
+import Swal from 'sweetalert2';
 import desamparadosGeo from '../data/desamparados.json';
 import distritosGeo from '../data/distritos.json';
 
@@ -84,7 +85,7 @@ const originIcon = makeIcon('A', '#00C853');
 const destinationIcon = makeIcon('B', '#FF1744');
 
 const liveIcon = L.divIcon({
-  className: 'waze-live-icon-wrapper',
+  className: 'gps-live-icon-wrapper',
   html: `
     <div style="position: relative; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
       <div class="gps-pulse" style="
@@ -130,11 +131,112 @@ const MapClickHandler = ({ onClick }) => {
 const MapRefresher = () => {
   const map = useMap();
   React.useEffect(() => {
+    let resizeTimer = null;
+    const doInvalidate = (animate = false) => {
+      try {
+        // animating sometimes helps on mobile when chrome/ui chrome changes
+        map.invalidateSize(animate);
+      } catch (err) {
+        // no-op but keep debugging info
+        // console.warn('Map invalidate error', err);
+      }
+    };
+
+    // initial delayed invalidate (give layout a moment)
+    const timer = setTimeout(() => {
+      // debug
+      // console.debug('MapRefresher: initial invalidate');
+      doInvalidate(true);
+    }, 600);
+
+    // debounce handler for window resize/orientation changes
+    const onResize = () => {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => doInvalidate(true), 250);
+    };
+
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+
+    // Also observe the wrapper element size changes
+    let ro;
+    try {
+      const el = document.querySelector('.safe-route-map-wrapper');
+      if (el && typeof ResizeObserver !== 'undefined') {
+        ro = new ResizeObserver(() => doInvalidate(false));
+        ro.observe(el);
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    return () => {
+      clearTimeout(timer);
+      if (resizeTimer) clearTimeout(resizeTimer);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+      if (ro) ro.disconnect();
+    };
+  }, [map]);
+
+  return null;
+};
+
+// Diagnostic control rendered inside MapContainer when `?debug_map=true` is present
+const MapDebugControls = () => {
+  const map = useMap();
+  const params = new URLSearchParams(window.location.search);
+  const debug = params.get('debug_map') === 'true';
+  if (!debug) return null;
+
+  const handleForce = () => {
+    try {
+      console.info('MapDebugControls: forcing invalidateSize()');
+      map.invalidateSize(true);
+    } catch (e) {
+      console.error('MapDebugControls error', e);
+    }
+  };
+
+  return (
+    <div style={{ position: 'absolute', zIndex: 4000, right: 12, bottom: 12 }}>
+      <button
+        onClick={handleForce}
+        style={{ padding: '8px 10px', borderRadius: 8, background: '#00C853', color: '#fff', border: 'none', boxShadow: '0 6px 18px rgba(0,0,0,0.25)' }}
+      >Forzar map.invalidateSize()</button>
+    </div>
+  );
+};
+
+/**
+ * Sub-componente para controlar la vista del mapa y centrar al navegar.
+ * Solo autocentra en la ubicación en vivo cuando el modo navegación está activo.
+ */
+const MapViewController = ({ liveLocation, origin, destination, navigationMode }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    // Solo seguir automáticamente al usuario cuando el modo navegación está activado
+    if (navigationMode && liveLocation) {
+      map.setView([liveLocation[0], liveLocation[1]], Math.max(map.getZoom(), 16), { animate: true, duration: 0.8 });
+    }
+  }, [liveLocation, navigationMode, map]);
+
+  useEffect(() => {
+    // Centrar en el origen solo cuando se establece por primera vez (sin navegación activa)
+    if (!navigationMode && origin && !liveLocation) {
+      map.setView([origin[0], origin[1]], 15, { animate: true });
+    }
+  }, [origin, map]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    // Forzar a Leaflet a recalcular el tamaño cuando cambia el modo de navegación
     const timer = setTimeout(() => {
       map.invalidateSize();
-    }, 400);
+    }, 350);
     return () => clearTimeout(timer);
-  }, [map]);
+  }, [navigationMode, map]);
+
   return null;
 };
 
@@ -154,9 +256,84 @@ const SafeRouteMap = ({
   reports = [],
   selectionMode = null,
   onOutOfBounds,
+  externalHeading = null, // Rumbo externo provisto por el GPS real del dispositivo
+  liveLocationAccuracy = null, // Precisión de geolocalización en metros
 }) => {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const [mapUnlocked, setMapUnlocked] = useState(false);
   const [mapMode, setMapMode] = useState('night'); // 'night' | 'day'
   const [outOfBoundsAlert, setOutOfBoundsAlert] = useState(false);
+
+  // Estados de navegación y orientación
+  const [navigationMode, setNavigationMode] = useState(false);
+  const [compassActive, setCompassActive] = useState(false);
+  const [deviceHeading, setDeviceHeading] = useState(0); // Rumbo del sensor del dispositivo
+
+  // El rumbo efectivo: si el GPS provee rumbo externo de movimiento real, lo usamos;
+  // de lo contrario usamos el sensor de orientación del dispositivo
+  const heading = (externalHeading !== null && externalHeading !== 0) ? externalHeading : deviceHeading;
+
+  const handleOrientation = useCallback((e) => {
+    // Solo usar el sensor de orientación si no hay rumbo GPS externo
+    if (externalHeading) return;
+    let compass = e.webkitCompassHeading || e.alpha;
+    if (compass !== null && compass !== undefined) {
+      let headingVal = e.webkitCompassHeading;
+      if (headingVal === undefined || headingVal === null) {
+        headingVal = e.alpha ? 360 - e.alpha : 0;
+      }
+      setDeviceHeading(headingVal);
+    }
+  }, [externalHeading]);
+
+  useEffect(() => {
+    if (compassActive) {
+      window.addEventListener('deviceorientation', handleOrientation);
+    } else {
+      window.removeEventListener('deviceorientation', handleOrientation);
+      setDeviceHeading(0);
+    }
+    return () => {
+      window.removeEventListener('deviceorientation', handleOrientation);
+    };
+  }, [compassActive, handleOrientation]);
+
+  const toggleCompass = async () => {
+    if (compassActive) {
+      setCompassActive(false);
+    } else {
+      if (
+        typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission === 'function'
+      ) {
+        try {
+          const response = await DeviceOrientationEvent.requestPermission();
+          if (response === 'granted') {
+            setNavigationMode(true); // Auto-activar modo navegación si se activa brújula
+            setCompassActive(true);
+          } else {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Permiso Denegado',
+              text: 'Se requiere acceso a los sensores para activar la brújula.',
+              background: '#1f2937',
+              color: '#fff'
+            });
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      } else {
+        setNavigationMode(true); // Auto-activar modo navegación si se activa brújula
+        setCompassActive(true);
+      }
+    }
+  };
+
+  const resetCompass = () => {
+    setCompassActive(false);
+    setDeviceHeading(0);
+  };
 
   /**
    * Determina el color del incidente según la gravedad.
@@ -195,7 +372,7 @@ const SafeRouteMap = ({
 
   return (
     <>
-      <div className={`safe-route-map-wrapper ${cursorClass}`}>
+      <div className={`safe-route-map-wrapper ${cursorClass}`} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden' }}>
         {/* Toggle de Modo Día/Noche */}
         <div className="map-mode-toggle cont-temas" style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 1000, background: 'rgba(26, 28, 34, 0.9)', padding: '5px', borderRadius: '10px' }}>
           <button
@@ -232,118 +409,269 @@ const SafeRouteMap = ({
           </div>
         )}
 
-        <MapContainer
-          center={[9.892, -84.05]}
-          zoom={13}
-          scrollWheelZoom={true}
-          className="safe-map-instance"
-          maxBounds={BOUNDS_RECT}
-          maxBoundsViscosity={0.85}
-          zoomControl={false}
+        {/* Controles de Vista y Brújula */}
+        <div className="nav-controls-container" style={{ position: 'absolute', top: '70px', right: '10px', zIndex: 1000, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <button
+            type="button"
+            className={`nav-control-btn ${navigationMode ? 'active' : ''}`}
+            onClick={() => setNavigationMode(!navigationMode)}
+            title="Modo Navegación (Autocentrar)"
+            style={{
+              background: navigationMode ? 'var(--primary-color)' : 'rgba(26, 28, 34, 0.9)',
+              color: 'white',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+              fontSize: '16px',
+              transition: 'all 0.2s'
+            }}
+          >
+            <i className="fa-solid fa-location-crosshairs"></i>
+          </button>
+          <button
+            type="button"
+            className={`nav-control-btn ${compassActive ? 'active' : ''}`}
+            onClick={toggleCompass}
+            title="Brújula / Giroscopio"
+            style={{
+              background: compassActive ? '#00C853' : 'rgba(26, 28, 34, 0.9)',
+              color: 'white',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: '50%',
+              width: '40px',
+              height: '40px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+              fontSize: '16px',
+              transition: 'all 0.2s'
+            }}
+          >
+            <i className={`fa-solid ${compassActive ? 'fa-compass fa-spin-pulse' : 'fa-compass'}`}></i>
+          </button>
+        </div>
+
+        {/* Brújula Flotante */}
+        <div
+          className="nav-compass-widget"
+          onClick={resetCompass}
+          title="Hacer clic para reorientar al Norte"
+          style={{
+            position: 'absolute',
+            top: '10px',
+            left: '10px',
+            zIndex: 1000,
+            width: '60px',
+            height: '60px',
+            borderRadius: '50%',
+            background: 'rgba(26, 28, 34, 0.75)',
+            backdropFilter: 'blur(10px)',
+            border: '2px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            transition: 'transform 0.2s ease',
+          }}
         >
-          <MapRefresher />
-          <ZoomControl position="bottomright" />
-          <TileLayer url={tileLayer.url} attribution={ATTR} />
+          <div style={{
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <span style={{ position: 'absolute', top: '2px', fontSize: '9px', fontWeight: 'bold', color: '#ff4444' }}>N</span>
+            <span style={{ position: 'absolute', right: '4px', fontSize: '8px', color: '#94a3b8' }}>E</span>
+            <span style={{ position: 'absolute', bottom: '2px', fontSize: '8px', color: '#94a3b8' }}>S</span>
+            <span style={{ position: 'absolute', left: '4px', fontSize: '8px', color: '#94a3b8' }}>O</span>
+            
+            <div
+              style={{
+                width: '0',
+                height: '0',
+                borderLeft: '5px solid transparent',
+                borderRight: '5px solid transparent',
+                borderBottom: '20px solid #ff4444',
+                position: 'absolute',
+                transform: `rotate(${-heading}deg)`,
+                transformOrigin: '50% 100%',
+                top: '10px',
+                transition: 'transform 0.1s ease-out'
+              }}
+            />
+            <div
+              style={{
+                width: '0',
+                height: '0',
+                borderLeft: '5px solid transparent',
+                borderRight: '5px solid transparent',
+                borderTop: '20px solid #94a3b8',
+                position: 'absolute',
+                transform: `rotate(${-heading}deg)`,
+                transformOrigin: '50% 0%',
+                bottom: '10px',
+                transition: 'transform 0.1s ease-out'
+              }}
+            />
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: '#ffffff',
+              zIndex: 2,
+              boxShadow: '0 0 4px rgba(0,0,0,0.5)'
+            }} />
+          </div>
+        </div>
 
-          {/* GeoJSON del cantón y distritos */}
-          <GeoJSON 
-            data={desamparadosGeo} 
-            pathOptions={{ color: '#00FFFF', weight: 4, fillOpacity: 0.0, opacity: 0.8 }} 
-          />
-          <GeoJSON 
-            data={distritosGeo} 
-            pathOptions={{ color: mapMode === 'day' ? '#000000' : '#FFFFFF', weight: 1.5, dashArray: '5, 5', fillOpacity: 0.05, opacity: 0.6 }} 
-          />
-          <MapClickHandler onClick={handleClick} />
+        <div className={`nav-perspective-container ${navigationMode ? 'nav-active' : ''}`} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, '--map-rotation': `${-heading}deg` }}>
+          <MapContainer
+            center={[9.892, -84.05]}
+            zoom={13}
+            scrollWheelZoom={true}
+            className="safe-map-instance"
+            style={{ width: '100%', height: '100%' }}
+            maxBounds={BOUNDS_RECT}
+            maxBoundsViscosity={0.85}
+            dragging={true}
+            touchZoom={true}
+            doubleClickZoom={true}
+            zoomControl={true}
+          >
+            <MapViewController liveLocation={liveLocation} origin={origin} destination={destination} navigationMode={navigationMode} />
+            <MapRefresher />
+            <ZoomControl position="bottomright" />
+            <TileLayer url={tileLayer.url} attribution={ATTR} />
 
-          {/* Visualización de incidentes históricos recientes */}
-          {reports.map(report => {
-            if (!report.lat || !report.lng) return null;
-            return (
-              <CircleMarker
-                key={report.id}
-                center={[report.lat, report.lng]}
-                pathOptions={{
-                  color: 'rgba(255,255,255,0.3)',
-                  fillColor: getIncidentColor(1),
-                  fillOpacity: 0.35,
-                  weight: 1,
-                }}
-                radius={9}
-              >
-                <Popup className="premium-popup">
-                  <div className="popup-banner">
-                    <span className="popup-type">{report.tipo}</span>
-                    <span className="popup-date">
-                      {report.fecha ? new Date(report.fecha).toLocaleDateString('es-CR', { day: 'numeric', month: 'short' }) : ''}
-                    </span>
-                  </div>
-                  <div className="popup-info">
-                    <span className="info-dist">{report.distrito}</span>
-                    <div className="info-loc">
-                      <i className="fa-solid fa-location-crosshairs"></i> {report.barrio}
+            {/* GeoJSON del cantón y distritos */}
+            <GeoJSON 
+              data={desamparadosGeo} 
+              pathOptions={{ color: '#00FFFF', weight: 4, fillOpacity: 0.0, opacity: 0.8 }} 
+            />
+            <GeoJSON 
+              data={distritosGeo} 
+              pathOptions={{ color: mapMode === 'day' ? '#000000' : '#FFFFFF', weight: 1.5, dashArray: '5, 5', fillOpacity: 0.05, opacity: 0.6 }} 
+            />
+            <MapClickHandler onClick={handleClick} />
+
+            {/* Visualización de incidentes históricos recientes */}
+            {reports.map(report => {
+              if (!report.lat || !report.lng) return null;
+              return (
+                <CircleMarker
+                  key={report.id}
+                  center={[report.lat, report.lng]}
+                  pathOptions={{
+                    color: 'rgba(255,255,255,0.3)',
+                    fillColor: getIncidentColor(1),
+                    fillOpacity: 0.35,
+                    weight: 1,
+                  }}
+                  radius={9}
+                >
+                  <Popup className="premium-popup">
+                    <div className="popup-banner">
+                      <span className="popup-type">{report.tipo}</span>
+                      <span className="popup-date">
+                        {report.fecha ? new Date(report.fecha).toLocaleDateString('es-CR', { day: 'numeric', month: 'short' }) : ''}
+                      </span>
                     </div>
-                  </div>
-                </Popup>
-              </CircleMarker>
-            );
-          })}
+                    <div className="popup-info">
+                      <span className="info-dist">{report.distrito}</span>
+                      <div className="info-loc">
+                        <i className="fa-solid fa-location-crosshairs"></i> {report.barrio}
+                      </div>
+                    </div>
+                  </Popup>
+                </CircleMarker>
+              );
+            })}
 
-          {/* Dibujo de las múltiples rutas calculadas */}
-          {routes.map(route => {
-            const isSelected = route.id === selectedRouteId;
-            return (
-              <React.Fragment key={route.id}>
-                {/* Contorno interactivo */}
-                <Polyline
-                  positions={route.coordinates}
-                  pathOptions={{
-                    color: isSelected ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.15)',
-                    weight: isSelected ? 12 : 8,
-                    opacity: isSelected ? 0.95 : 0.4
-                  }}
-                  eventHandlers={{
-                    click: () => onSelectRoute && onSelectRoute(route.id)
-                  }}
-                />
-                {/* Línea principal */}
-                <Polyline
-                  positions={route.coordinates}
-                  pathOptions={{
-                    color: isSelected ? route.riskColor : '#78909c',
-                    weight: isSelected ? 6 : 4,
-                    opacity: isSelected ? 0.95 : 0.6,
-                    dashArray: isSelected ? null : '6, 12'
-                  }}
-                  eventHandlers={{
-                    click: () => onSelectRoute && onSelectRoute(route.id)
-                  }}
-                />
-              </React.Fragment>
-            );
-          })}
+            {/* Dibujo de las múltiples rutas calculadas */}
+            {routes.map(route => {
+              const isSelected = route.id === selectedRouteId;
+              return (
+                <React.Fragment key={route.id}>
+                  {/* Contorno interactivo */}
+                  <Polyline
+                    positions={route.coordinates}
+                    pathOptions={{
+                      color: isSelected ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.15)',
+                      weight: isSelected ? 12 : 8,
+                      opacity: isSelected ? 0.95 : 0.4
+                    }}
+                    eventHandlers={{
+                      click: () => onSelectRoute && onSelectRoute(route.id)
+                    }}
+                  />
+                  {/* Línea principal */}
+                  <Polyline
+                    positions={route.coordinates}
+                    pathOptions={{
+                      color: isSelected ? route.riskColor : '#78909c',
+                      weight: isSelected ? 6 : 4,
+                      opacity: isSelected ? 0.95 : 0.6,
+                      dashArray: isSelected ? null : '6, 12'
+                    }}
+                    eventHandlers={{
+                      click: () => onSelectRoute && onSelectRoute(route.id)
+                    }}
+                  />
+                </React.Fragment>
+              );
+            })}
 
-          {/* Marcador de Ubicación en Vivo (GPS Waze-style) */}
-          {liveLocation && (
-            <Marker position={liveLocation} icon={liveIcon}>
-              <Popup><strong>📍 Mi ubicación actual</strong><br />Navegación GPS Waze activa</Popup>
-            </Marker>
-          )}
+            {/* Círculo de Precisión del GPS (Accuracy Ring) */}
+            {liveLocation && liveLocationAccuracy && (
+              <Circle
+                center={liveLocation}
+                radius={liveLocationAccuracy}
+                pathOptions={{
+                  color: '#00B0FF',
+                  fillColor: '#00B0FF',
+                  fillOpacity: 0.15,
+                  weight: 1,
+                  dashArray: '5, 5'
+                }}
+              />
+            )}
 
-          {/* Marcador del Punto A (Origen) */}
-          {origin && (
-            <Marker position={origin} icon={originIcon}>
-              <Popup><strong>📍 Origen</strong><br />{origin[0].toFixed(5)}, {origin[1].toFixed(5)}</Popup>
-            </Marker>
-          )}
+            {/* Marcador de Ubicación en Vivo */}
+            {liveLocation && (
+              <Marker position={liveLocation} icon={liveIcon}>
+                <Popup><strong>📍 Mi ubicación actual</strong><br />Navegación GPS activa</Popup>
+              </Marker>
+            )}
 
-          {/* Marcador del Punto B (Destino) */}
-          {destination && (
-            <Marker position={destination} icon={destinationIcon}>
-              <Popup><strong>🏁 Destino</strong><br />{destination[0].toFixed(5)}, {destination[1].toFixed(5)}</Popup>
-            </Marker>
-          )}
-        </MapContainer>
+            {/* Marcador del Punto A (Origen) */}
+            {origin && (
+              <Marker position={origin} icon={originIcon}>
+                <Popup><strong>📍 Origen</strong><br />{origin[0].toFixed(5)}, {origin[1].toFixed(5)}</Popup>
+              </Marker>
+            )}
+
+            {/* Marcador del Punto B (Destino) */}
+            {destination && (
+              <Marker position={destination} icon={destinationIcon}>
+                <Popup><strong>🏁 Destino</strong><br />{destination[0].toFixed(5)}, {destination[1].toFixed(5)}</Popup>
+              </Marker>
+            )}
+            
+            {/* Debug controls (only when ?debug_map=true) */}
+            <MapDebugControls />
+          </MapContainer>
+        </div>
       </div>
     </>
   );

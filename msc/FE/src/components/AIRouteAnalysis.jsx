@@ -4,7 +4,7 @@ import '../styles/SafeRoutes.css';
 
 /**
  * AIRouteAnalysis – Panel lateral de análisis de seguridad asistido.
- * Proporciona pestañas tipo Waze para seleccionar rutas, asesoramiento
+ * Proporciona pestañas de navegación para seleccionar rutas, asesoramiento
  * personalizado de Gemini, y controles de navegación en vivo/simulada.
  */
 const AIRouteAnalysis = ({
@@ -34,7 +34,7 @@ const AIRouteAnalysis = ({
           <div className="ai-badge">
             <i className="fa-solid fa-robot"></i> Asistente de Seguridad Vial
           </div>
-          <h2>Planificador de Rutas Waze</h2>
+          <h2>Planificador de Rutas Inteligentes</h2>
           <p className="ai-subtitle">Selecciona tu origen y destino en Desamparados para analizar y asesorarte con la IA.</p>
         </div>
 
@@ -146,7 +146,7 @@ const AIRouteAnalysis = ({
           <div className="ai-badge analyzing">
             <i className="fa-solid fa-spinner fa-spin"></i> Analizando…
           </div>
-          <h2>Procesando Rutas Waze</h2>
+          <h2>Procesando Rutas Seguras</h2>
         </div>
         <div className="analyzing-steps">
           {[
@@ -174,17 +174,17 @@ const AIRouteAnalysis = ({
 
     return (
       <aside className="ai-panel resultado">
-        {/* Selector de Rutas Estilo Waze */}
+        {/* Selector de Rutas */}
         {!navigationActive && (
-          <div className="waze-route-selector mb-4">
+          <div className="nav-route-selector mb-4">
             <h4 className="text-white fs-6 mb-3"><i className="fa-solid fa-layer-group"></i> Selecciona una ruta:</h4>
-            <div className="waze-route-cards-container d-flex flex-column gap-2">
+            <div className="route-cards-container d-flex flex-column gap-2">
               {routes.map(r => {
                 const active = r.id === selectedRouteId;
                 return (
                   <button
                     key={r.id}
-                    className={`waze-route-card ${active ? 'active' : ''}`}
+                    className={`route-card ${active ? 'active' : ''}`}
                     onClick={() => onSelectRoute(r.id)}
                     style={{ borderLeftColor: r.riskColor }}
                   >
@@ -261,9 +261,9 @@ const AIRouteAnalysis = ({
           )}
         </div>
 
-        {/* Botones de Navegación Tipo Waze */}
+        {/* Botones de Navegación */}
         {!navigationActive ? (
-          <div className="waze-action-navigation-buttons d-flex flex-column gap-2 mb-3">
+          <div className="nav-action-navigation-buttons d-flex flex-column gap-2 mb-3">
             <button className="btn btn-success w-100 fw-bold py-2 fs-6 d-flex align-items-center justify-content-center gap-2"
               onClick={() => onStartNavigation(false)}
               style={{ backgroundColor: '#00C853', borderColor: '#00C853' }}
@@ -273,13 +273,13 @@ const AIRouteAnalysis = ({
             <button className="btn btn-outline-info w-100 fw-bold py-2 d-flex align-items-center justify-content-center gap-2"
               onClick={() => onStartNavigation(true)}
             >
-              <i className="fa-solid fa-play"></i> Simular Recorrido (Waze Demo)
+              <i className="fa-solid fa-play"></i> Simular Recorrido (GPS Demo)
             </button>
           </div>
         ) : (
           <div className="active-nav-panel-alert p-3 rounded text-center mb-3" style={{ backgroundColor: 'rgba(0,200,83,0.1)', border: '1px dashed #00C853' }}>
             {simulating ? (
-              <span className="badge bg-success fa-fade mb-2"><i className="fa-solid fa-truck-moving"></i> Simulando Movimiento Waze</span>
+              <span className="badge bg-success fa-fade mb-2"><i className="fa-solid fa-truck-moving"></i> Simulando Movimiento GPS</span>
             ) : (
               <span className="badge bg-info mb-2"><i className="fa-solid fa-satellite-dish"></i> GPS en Vivo Conectado</span>
             )}

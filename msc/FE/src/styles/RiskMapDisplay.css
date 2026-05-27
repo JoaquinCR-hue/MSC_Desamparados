@@ -10,6 +10,21 @@
     border: 1px solid var(--border-main);
 }
 
+@media (max-width: 768px) {
+    .risk-map-display-wrapper {
+        grid-template-columns: 1fr;
+        min-height: 600px;
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .risk-map-display-wrapper {
+        min-height: 500px;
+        padding: 0;
+    }
+}
+
 .map-section {
     position: relative;
 }
@@ -27,6 +42,25 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .sidebar-section {
+        border-left: none;
+        border-top: 1px solid var(--border-main);
+        padding: 1.25rem;
+        gap: 1.5rem;
+        max-height: 50vh;
+        overflow-y: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar-section {
+        padding: 1rem;
+        gap: 1rem;
+        max-height: 45vh;
+    }
 }
 
 .sidebar-section h3 {

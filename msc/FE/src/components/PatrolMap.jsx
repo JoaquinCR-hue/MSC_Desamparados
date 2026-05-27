@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Popup, Marker, useMapEvents, GeoJSON, ZoomControl, useMap, Polyline, LayerGroup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -7,7 +7,7 @@ import ReportService from '../services/ReportService';
 import PoliceService from '../services/PoliceService';
 import RouteService from '../services/RouteService';
 import UserService from '../services/UserService';
-import { getUserLocation } from '../services/gpsService';
+import { getUserLocation, watchLocation, stopWatchLocation } from '../services/gpsService';
 import Swal from 'sweetalert2';
 import '../styles/PatrolMap.css';
 import desamparadosGeo from '../data/desamparados.json';
@@ -128,8 +128,53 @@ function MapRefresher() {
   return null;
 }
 
+/**
+ * Sub-componente para controlar la vista del mapa y centrar/inclinar al navegar.
+ */
+const MapViewController = ({ activePatrol, navigationMode }) => {
+  const map = useMap();
+
+  useEffect(() => {
+    if (activePatrol) {
+      // Centrar directamente en la patrulla activa sin desfase 3D
+      map.setView([activePatrol.lat, activePatrol.lng], 15, { animate: true });
+    }
+  }, [activePatrol, map]);
+
+  useEffect(() => {
+    // Forzar a Leaflet a recalcular el tamaño cuando cambia el modo de navegación
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [navigationMode, map]);
+
+  return null;
+};
+
+/**
+ * Calcula el rumbo (bearing) matemático entre dos coordenadas en grados (0-360).
+ */
+const calculateBearing = (lat1, lon1, lat2, lon2) => {
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const lat1Rad = lat1 * Math.PI / 180;
+  const lat2Rad = lat2 * Math.PI / 180;
+  
+  const y = Math.sin(dLon) * Math.cos(lat2Rad);
+  const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+            Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+            
+  let brng = Math.atan2(y, x) * 180 / Math.PI;
+  return (brng + 360) % 360;
+};
+
 const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const [mapUnlocked, setMapUnlocked] = useState(false);
   const [mapMode, setMapMode] = useState('night');
+
+  // Estados para la experiencia móvil de navegación
+  const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
   const [reports, setReports] = useState([]);
   const [patrols, setPatrols] = useState([]);
   const [availableOfficers, setAvailableOfficers] = useState([]);
@@ -140,6 +185,91 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
   const [activeRoutes, setActiveRoutes] = useState([]);
   const [isCalculatingRoute, setIsCalculatingRoute] = useState(false);
   const [emergencyActive, setEmergencyActive] = useState(false);
+
+  // Estados de navegación y orientación
+  const [navigationMode, setNavigationMode] = useState(false);
+  const [compassActive, setCompassActive] = useState(false);
+  const [heading, setHeading] = useState(0);
+  const [simulatingPatrolId, setSimulatingPatrolId] = useState(null);
+  const [trackingPatrolId, setTrackingPatrolId] = useState(null);
+  const [gpsErrorMsg, setGpsErrorMsg] = useState(null);
+  
+  const simulationRef = useRef(null);
+  const watchIdRef = useRef(null);
+  const lastRecalculateTimeRef = useRef(0);
+  const lastLocationRef = useRef(null);
+
+  const handleOrientation = useCallback((e) => {
+    // Si no está corriendo una simulación, usar sensores móviles
+    if (!emergencyActive) {
+      let compass = e.webkitCompassHeading || e.alpha;
+      if (compass !== null && compass !== undefined) {
+        let headingVal = e.webkitCompassHeading;
+        if (headingVal === undefined || headingVal === null) {
+          headingVal = e.alpha ? 360 - e.alpha : 0;
+        }
+        setHeading(headingVal);
+      }
+    }
+  }, [emergencyActive]);
+
+  useEffect(() => {
+    if (compassActive) {
+      window.addEventListener('deviceorientation', handleOrientation);
+    } else {
+      window.removeEventListener('deviceorientation', handleOrientation);
+      if (!emergencyActive) setHeading(0);
+    }
+    return () => {
+      window.removeEventListener('deviceorientation', handleOrientation);
+    };
+  }, [compassActive, handleOrientation, emergencyActive]);
+
+  // Limpiar simulación y GPS al desmontar
+  useEffect(() => {
+    return () => {
+      if (simulationRef.current) clearInterval(simulationRef.current);
+      if (watchIdRef.current) stopWatchLocation(watchIdRef.current);
+    };
+  }, []);
+
+  const toggleCompass = async () => {
+    if (compassActive) {
+      setCompassActive(false);
+    } else {
+      if (
+        typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof DeviceOrientationEvent.requestPermission === 'function'
+      ) {
+        try {
+          const response = await DeviceOrientationEvent.requestPermission();
+          if (response === 'granted') {
+            setNavigationMode(true);
+            setCompassActive(true);
+          } else {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Permiso Denegado',
+              text: 'Se requiere acceso a los sensores para activar la brújula.',
+              background: '#1f2937',
+              color: '#fff'
+            });
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      } else {
+        setNavigationMode(true);
+        setCompassActive(true);
+      }
+    }
+  };
+
+  const resetCompass = () => {
+    setCompassActive(false);
+    setNavigationMode(false);
+    if (!emergencyActive) setHeading(0);
+  };
 
   // Desplegar patrulla en ubicación GPS real
   const handleDeployMyGPS = async () => {
@@ -168,7 +298,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
     }
   };
 
-  // Simular recorrido de emergencia en ruta más corta (Waze-style)
+  // Simular recorrido de emergencia en ruta más corta
   const handleSimulateEmergency = (route) => {
     const patrol = patrols.find(p => p.id === route.patrolId);
     if (!patrol) return;
@@ -176,7 +306,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
     Swal.fire({
       icon: 'success',
       title: '🚨 Código Rojo Activado',
-      text: `Unidad ${patrol.unidad} en ruta de emergencia hacia ${route.destinoTipo}. Navegación Waze activa por ruta más corta.`,
+      text: `Unidad ${patrol.unidad} en ruta de emergencia hacia ${route.destinoTipo}. Navegación GPS activa por ruta más corta.`,
       toast: true,
       position: 'top-end',
       showConfirmButton: false,
@@ -185,16 +315,23 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       color: '#fff'
     });
 
+    setSimulatingPatrolId(patrol.id);
+    setNavigationMode(true);
     setEmergencyActive(true);
 
     let step = 0;
     const coords = route.coordenadas;
     const totalSteps = coords.length;
 
-    const animInterval = setInterval(async () => {
+    if (simulationRef.current) clearInterval(simulationRef.current);
+
+    simulationRef.current = setInterval(async () => {
       if (step >= totalSteps - 1) {
-        clearInterval(animInterval);
+        clearInterval(simulationRef.current);
+        simulationRef.current = null;
         setEmergencyActive(false);
+        setSimulatingPatrolId(null);
+        setHeading(0);
 
         const finalLat = coords[totalSteps - 1][0];
         const finalLng = coords[totalSteps - 1][1];
@@ -229,6 +366,14 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       const currentLat = coords[step][0];
       const currentLng = coords[step][1];
 
+      // Calcular rumbo (bearing) hacia el siguiente punto de la ruta
+      if (step < totalSteps - 1) {
+        const nextLat = coords[step + 1][0];
+        const nextLng = coords[step + 1][1];
+        const bearing = calculateBearing(currentLat, currentLng, nextLat, nextLng);
+        setHeading(bearing);
+      }
+
       // Mover patrulla localmente
       setPatrols(prevPatrols => prevPatrols.map(p => {
         if (p.id === patrol.id) {
@@ -251,6 +396,232 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       }));
 
     }, 450); // Avanzar rápido
+  };
+
+  // Iniciar navegación GPS real para misión de emergencia (Oficial en vivo)
+  const handleStartEmergencyGPS = (route) => {
+    const patrol = patrols.find(p => p.id === route.patrolId);
+    if (!patrol) return;
+
+    Swal.fire({
+      icon: 'success',
+      title: '🚨 Código Rojo Activado',
+      text: `Unidad ${patrol.unidad} en ruta de emergencia física hacia ${route.destinoTipo}. GPS en vivo activo.`,
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3500,
+      background: '#7f1d1d',
+      color: '#fff'
+    });
+
+    setTrackingPatrolId(patrol.id);
+    setNavigationMode(true);
+    setEmergencyActive(true);
+    setGpsErrorMsg(null);
+
+    if (simulationRef.current) {
+      clearInterval(simulationRef.current);
+      simulationRef.current = null;
+    }
+    setSimulatingPatrolId(null);
+
+    if (watchIdRef.current) {
+      stopWatchLocation(watchIdRef.current);
+    }
+
+    watchIdRef.current = watchLocation(async (position) => {
+      const currentLoc = [position.lat, position.lng];
+      setGpsErrorMsg(null);
+
+      // Buscar ruta activa
+      const currentRoute = activeRoutes.find(r => r.id === route.id);
+      if (!currentRoute) return;
+
+      const coords = currentRoute.coordenadas;
+      const totalPoints = coords.length;
+      if (totalPoints === 0) return;
+
+      // 1. Detección de desvío (> 40 metros)
+      let minDistance = Infinity;
+      let closestIdx = 0;
+      for (let i = 0; i < totalPoints; i++) {
+        const dist = RouteService.getDistanceMeters(currentLoc, coords[i]);
+        if (dist < minDistance) {
+          minDistance = dist;
+          closestIdx = i;
+        }
+      }
+
+      // Si se desvía más de 40 metros de la ruta trazada y la precisión es buena (< 25 metros)
+      if (minDistance > 40 && position.accuracy < 25) {
+        const now = Date.now();
+        if (now - lastRecalculateTimeRef.current > 8000) {
+          lastRecalculateTimeRef.current = now;
+          console.log(`Oficial desviado por ${Math.round(minDistance)}m. Recalculando ruta más rápida en background...`);
+          
+          try {
+            const incident = reports.find(r => r.id === route.incidentId);
+            if (incident) {
+              const recalculated = await RouteService.calculateRoute(
+                currentLoc,
+                [incident.lat, incident.lng],
+                true,
+                patrol.tipo_unidad
+              );
+
+              // Actualizar coordenadas de ruta
+              setActiveRoutes(prev => prev.map(r => {
+                if (r.id === route.id) {
+                  return {
+                    ...r,
+                    coordenadas: recalculated.coordinates,
+                    distanciaKm: recalculated.distanceKm,
+                    duracionMin: recalculated.durationMin,
+                    simulada: recalculated.simulated
+                  };
+                }
+                return r;
+              }));
+
+              Swal.fire({
+                icon: 'info',
+                title: 'Ruta Recalculada',
+                text: `Trazando una nueva ruta más rápida hacia el incidente para U-${patrol.unidad}.`,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                background: '#1f2937',
+                color: '#fff'
+              });
+            }
+          } catch (err) {
+            console.warn('Error recalculando ruta de emergencia:', err);
+          }
+          return;
+        }
+      }
+
+      // 2. Mover patrulla localmente y en el backend
+      setPatrols(prevPatrols => prevPatrols.map(p => {
+        if (p.id === patrol.id) {
+          return {
+            ...p,
+            lat: position.lat,
+            lng: position.lng,
+            estado: 'En Incidente',
+            zona: getDistrictByLatLng(position.lat, position.lng)
+          };
+        }
+        return p;
+      }));
+
+      try {
+        const updatedPatrol = {
+          ...patrol,
+          lat: position.lat,
+          lng: position.lng,
+          estado: 'En Incidente',
+          zona: getDistrictByLatLng(position.lat, position.lng)
+        };
+        await PoliceService.updatePatrol(updatedPatrol, patrol.id);
+      } catch (err) {
+        console.warn('Error syncing live patrol GPS:', err);
+      }
+
+      // 3. Orientar brújula/bearing según rumbo nativo o desplazamiento
+      let headingVal = 0;
+      if (position.heading !== null && position.heading !== undefined && !isNaN(position.heading)) {
+        headingVal = position.heading;
+      } else if (lastLocationRef.current) {
+        let speedKmh = 0;
+        if (position.speed !== null && position.speed !== undefined) {
+          speedKmh = position.speed * 3.6;
+        } else {
+          const distPrev = RouteService.getDistanceMeters(lastLocationRef.current.coords, currentLoc);
+          const timeDelta = (Date.now() - lastLocationRef.current.time) / 1000;
+          if (timeDelta > 0 && distPrev > 1.5) {
+            speedKmh = (distPrev / timeDelta) * 3.6;
+          }
+        }
+
+        if (speedKmh > 3) {
+          headingVal = calculateBearing(
+            lastLocationRef.current.coords[0],
+            lastLocationRef.current.coords[1],
+            position.lat,
+            position.lng
+          );
+        } else {
+          headingVal = heading; // Mantener rumbo anterior
+        }
+      }
+      setHeading(headingVal);
+
+      lastLocationRef.current = { coords: currentLoc, time: Date.now() };
+
+      // 4. Actualizar ETA y distancia
+      const pctRemaining = 1 - (closestIdx / (totalPoints - 1 || 1));
+      setActiveRoutes(prevRoutes => prevRoutes.map(r => {
+        if (r.id === route.id) {
+          return {
+            ...r,
+            distanciaKm: (currentRoute.distanciaKm * pctRemaining).toFixed(2),
+            duracionMin: Math.ceil(currentRoute.duracionMin * pctRemaining)
+          };
+        }
+        return r;
+      }));
+
+      // 5. Llegada a escena (< 20 metros)
+      const destPoint = coords[totalPoints - 1];
+      const distToDest = RouteService.getDistanceMeters(currentLoc, destPoint);
+
+      if (distToDest < 20) {
+        if (watchIdRef.current) {
+          stopWatchLocation(watchIdRef.current);
+          watchIdRef.current = null;
+        }
+        setEmergencyActive(false);
+        setTrackingPatrolId(null);
+        setHeading(0);
+
+        try {
+          const finalLat = destPoint[0];
+          const finalLng = destPoint[1];
+          const updatedPatrol = {
+            ...patrol,
+            lat: finalLat,
+            lng: finalLng,
+            estado: 'En Incidente',
+            zona: getDistrictByLatLng(finalLat, finalLng)
+          };
+
+          await PoliceService.updatePatrol(updatedPatrol, patrol.id);
+          await ReportService.updateReport({ estado: 'En Proceso' }, route.incidentId);
+        } catch (err) {
+          console.warn(err);
+        }
+
+        Swal.fire({
+          icon: 'success',
+          title: '🚨 ¡Llegada a Escena!',
+          text: `La unidad U-${patrol.unidad} ha arribado al incidente de emergencia. Sector bajo resguardo operativo.`,
+          background: '#1f2937',
+          color: '#fff',
+          confirmButtonColor: '#00C853'
+        });
+
+        handleClearRoute(route.id);
+        fetchData();
+        if (onPatrolUpdate) onPatrolUpdate();
+      }
+
+    }, (error) => {
+      console.warn("GPS Patrol Error:", error);
+      setGpsErrorMsg(error.message || "Señal de GPS inestable o permisos desactivados.");
+    });
   };
 
   // Estados para el control de modales
@@ -291,9 +662,8 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       setReports(filteredReports);
       setPatrols(validPatrols);
 
-      if (dataUsu) {
-        setAvailableOfficers(dataUsu.filter(u => u.role === 'administrador' || u.role === 'funcionario' || u.role === 'admin'));
-      }
+      // Los funcionarios disponibles se cargan de forma separada en fetchOfficers()
+      // para no bloquear el mapa si el servicio de usuarios falla.
       
       // Limpiar rutas huérfanas si la patrulla o el incidente han sido eliminados
       setActiveRoutes(prev => prev.filter(route => 
@@ -492,11 +862,35 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
 
   const handleClearRoute = (id) => {
     setActiveRoutes(prev => prev.filter(r => r.id !== id));
+    if (emergencyActive) {
+      if (simulationRef.current) clearInterval(simulationRef.current);
+      simulationRef.current = null;
+      if (watchIdRef.current) {
+        stopWatchLocation(watchIdRef.current);
+        watchIdRef.current = null;
+      }
+      setEmergencyActive(false);
+      setSimulatingPatrolId(null);
+      setTrackingPatrolId(null);
+      setHeading(0);
+    }
   };
 
   const handleClearAllRoutes = () => {
     setActiveRoutes([]);
     setRoutingSource(null);
+    if (emergencyActive) {
+      if (simulationRef.current) clearInterval(simulationRef.current);
+      simulationRef.current = null;
+      if (watchIdRef.current) {
+        stopWatchLocation(watchIdRef.current);
+        watchIdRef.current = null;
+      }
+      setEmergencyActive(false);
+      setSimulatingPatrolId(null);
+      setTrackingPatrolId(null);
+      setHeading(0);
+    }
   };
 
   const handleChange = (e) => {
@@ -526,7 +920,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
           fontSize: '14px',
           boxShadow: '0 4px 15px rgba(220, 38, 38, 0.4)'
         }}>
-          <i className="fa-solid fa-lightbulb fa-beat me-2"></i> 🚨 MISIÓN DE EMERGENCIA EN CURSO - CÓDIGO ROJO WAZE 🚨
+          <i className="fa-solid fa-lightbulb fa-beat me-2"></i> 🚨 MISIÓN DE EMERGENCIA EN CURSO - CÓDIGO ROJO 🚨
         </div>
       )}
       <div className="alert-banner-info mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -540,7 +934,7 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
 
       <div className="patrol-main-layout">
         <div className="patrol-map-col">
-          <div className="map-glass-container">
+          <div className="map-glass-container" style={{ position: 'relative' }}>
             <div className="map-mode-toggle cont-temas">
               <button
                 className={`boton-n map-mode-btn ${mapMode === 'night' ? 'active' : ''}`}
@@ -560,21 +954,159 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
               </button>
             </div>
 
-            <MapContainer
-              center={[9.892, -84.05]}
-              zoom={13}
-              scrollWheelZoom={true}
-              className="functional-map-instance"
-              zoomControl={false}
-              maxBounds={BOUNDS_RECT}
-              maxBoundsViscosity={0.85}
+            {/* Controles de Vista y Brújula */}
+            <div className="nav-controls-container" style={{ position: 'absolute', top: '70px', right: '10px', zIndex: 1000, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button
+                type="button"
+                className={`nav-control-btn ${navigationMode ? 'active' : ''}`}
+                onClick={() => setNavigationMode(!navigationMode)}
+                title="Modo Navegación (Autocentrar)"
+                style={{
+                  background: navigationMode ? 'var(--primary-color)' : 'rgba(26, 28, 34, 0.9)',
+                  color: 'white',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '50%',
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 10px rgba(0, 0, 0, 0.3)',
+                  fontSize: '16px',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <i className="fa-solid fa-location-crosshairs"></i>
+              </button>
+              <button
+                type="button"
+                className={`nav-control-btn ${compassActive ? 'active' : ''}`}
+                onClick={toggleCompass}
+                title="Brújula / Giroscopio"
+                style={{
+                  background: compassActive ? '#00C853' : 'rgba(26, 28, 34, 0.9)',
+                  color: 'white',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  borderRadius: '50%',
+                  width: '40px',
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.3)',
+                  fontSize: '16px',
+                  transition: 'all 0.2s'
+                }}
+              >
+                <i className={`fa-solid ${compassActive ? 'fa-compass fa-spin-pulse' : 'fa-compass'}`}></i>
+              </button>
+            </div>
+
+            {/* Brújula Flotante */}
+            <div
+              className="nav-compass-widget"
+              onClick={resetCompass}
+              title="Hacer clic para reorientar al Norte"
+              style={{
+                position: 'absolute',
+                top: '10px',
+                left: '10px',
+                zIndex: 1000,
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                background: 'rgba(26, 28, 34, 0.75)',
+                backdropFilter: 'blur(10px)',
+                border: '2px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease',
+              }}
             >
-              <MapRefresher />
-              <ZoomControl position="bottomright" />
-              <TileLayer
-                url={TILE_LAYERS[mapMode].url}
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-              />
+              <div style={{
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}>
+                <span style={{ position: 'absolute', top: '2px', fontSize: '9px', fontWeight: 'bold', color: '#ff4444' }}>N</span>
+                <span style={{ position: 'absolute', right: '4px', fontSize: '8px', color: '#94a3b8' }}>E</span>
+                <span style={{ position: 'absolute', bottom: '2px', fontSize: '8px', color: '#94a3b8' }}>S</span>
+                <span style={{ position: 'absolute', left: '4px', fontSize: '8px', color: '#94a3b8' }}>O</span>
+                
+                <div
+                  style={{
+                    width: '0',
+                    height: '0',
+                    borderLeft: '5px solid transparent',
+                    borderRight: '5px solid transparent',
+                    borderBottom: '20px solid #ff4444',
+                    position: 'absolute',
+                    transform: `rotate(${-heading}deg)`,
+                    transformOrigin: '50% 100%',
+                    top: '10px',
+                    transition: 'transform 0.1s ease-out'
+                  }}
+                />
+                <div
+                  style={{
+                    width: '0',
+                    height: '0',
+                    borderLeft: '5px solid transparent',
+                    borderRight: '5px solid transparent',
+                    borderTop: '20px solid #94a3b8',
+                    position: 'absolute',
+                    transform: `rotate(${-heading}deg)`,
+                    transformOrigin: '50% 0%',
+                    bottom: '10px',
+                    transition: 'transform 0.1s ease-out'
+                  }}
+                />
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: '#ffffff',
+                  zIndex: 2,
+                  boxShadow: '0 0 4px rgba(0,0,0,0.5)'
+                }} />
+              </div>
+            </div>
+
+            {gpsErrorMsg && (
+              <div className="gps-error-banner alert alert-danger position-absolute w-100 text-center fw-bold" style={{ zIndex: 1050, top: '0', left: '0', borderRadius: '0', margin: '0' }}>
+                <i className="fa-solid fa-triangle-exclamation fa-beat me-2"></i>
+                {gpsErrorMsg}
+              </div>
+            )}
+
+            <div className={`nav-perspective-container ${navigationMode ? 'nav-active' : ''}`} style={{ width: '100%', height: '100%', '--map-rotation': `${-heading}deg` }}>
+              <MapContainer
+                center={[9.892, -84.05]}
+                zoom={13}
+                scrollWheelZoom={true}
+                className="functional-map-instance"
+                dragging={true}
+                touchZoom={true}
+                doubleClickZoom={true}
+                zoomControl={true}
+                maxBounds={BOUNDS_RECT}
+                maxBoundsViscosity={0.85}
+              >
+                <MapViewController activePatrol={patrols.find(p => p.id === simulatingPatrolId || p.id === trackingPatrolId)} navigationMode={navigationMode} />
+                <MapRefresher />
+                <ZoomControl position="bottomright" />
+                <TileLayer
+                  url={TILE_LAYERS[mapMode].url}
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                />
               <GeoJSON
                 data={desamparadosGeo}
                 pathOptions={{ color: '#00FFFF', weight: 4, fillOpacity: 0.0, opacity: 0.8 }}
@@ -653,14 +1185,14 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
                         
                         // Validar límites del cantón
                         if (!withinDesamparados(position.lat, position.lng)) {
-                          marker.setLatLng([patrol.lat, patrol.lng]); 
-                          Swal.fire({
-                            icon: 'warning',
-                            title: 'Fuera de Límites',
-                            text: 'Las unidades no pueden abandonar el cantón de Desamparados.',
-                            background: '#1f2937', color: '#fff'
-                          });
-                          return;
+                           marker.setLatLng([patrol.lat, patrol.lng]); 
+                           Swal.fire({
+                             icon: 'warning',
+                             title: 'Fuera de Límites',
+                             text: 'Las unidades no pueden abandonar el cantón de Desamparados.',
+                             background: '#1f2937', color: '#fff'
+                           });
+                           return;
                         }
 
                         const newZone = getDistrictByLatLng(position.lat, position.lng);
@@ -733,13 +1265,31 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
                   </LayerGroup>
                 );
               })}
-            </MapContainer>
+              </MapContainer>
+            </div>
           </div>
         </div>
 
         {/* Panel lateral de Misiones Activas */}
-        <div className="patrol-sidebar-col">
-          <div className="route-info-panel-static cont-temas h-100">
+        <div 
+          className={`patrol-sidebar-col ${bottomSheetExpanded ? 'bottom-sheet-expanded' : 'bottom-sheet-collapsed'}`}
+          onClick={() => {
+            if (window.innerWidth <= 768 && !bottomSheetExpanded) {
+              setBottomSheetExpanded(true);
+            }
+          }}
+        >
+          <div className="route-info-panel-static cont-temas h-100 position-relative">
+            {/* Handle para móvil */}
+            {window.innerWidth <= 768 && bottomSheetExpanded && (
+              <button 
+                className="btn btn-sm text-secondary position-absolute top-0 end-0 m-2 d-lg-none" 
+                onClick={(e) => { e.stopPropagation(); setBottomSheetExpanded(false); }}
+                style={{ zIndex: 1050 }}
+              >
+                <i className="fa-solid fa-chevron-down fs-5"></i>
+              </button>
+            )}
             <div className="route-info-content h-100 d-flex flex-column">
               <h5 className="route-panel-title"><i className="fa-solid fa-route"></i> Misiones Activas ({activeRoutes.length})</h5>
               
@@ -765,15 +1315,26 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
                               <span className="badge bg-success opacity-75 fw-normal"><i className="fa-solid fa-clock"></i> {route.duracionMin} m</span>
                               <span className="badge bg-info text-dark opacity-100 fw-normal"><i className="fa-solid fa-ruler-horizontal"></i> {route.distanciaKm} km</span>
                             </div>
-                            <Button 
-                              variant="danger" 
-                              size="sm" 
-                              className="mt-2 py-1 w-100 fw-bold d-flex align-items-center justify-content-center gap-1 btn-emergencia-sim"
-                              onClick={() => handleSimulateEmergency(route)}
-                              style={{ fontSize: '11px', background: '#dc2626', border: 'none', borderRadius: '4px' }}
-                            >
-                              <i className="fa-solid fa-truck-medical"></i> Código Rojo (Waze Emergency)
-                            </Button>
+                            <div className="d-flex gap-2 mt-2">
+                              <Button 
+                                variant="outline-danger" 
+                                size="sm" 
+                                className="py-1 flex-grow-1 fw-bold d-flex align-items-center justify-content-center gap-1"
+                                onClick={() => handleSimulateEmergency(route)}
+                                style={{ fontSize: '10px', borderRadius: '4px' }}
+                              >
+                                <i className="fa-solid fa-play"></i> Simular
+                              </Button>
+                              <Button 
+                                variant="danger" 
+                                size="sm" 
+                                className="py-1 flex-grow-1 fw-bold d-flex align-items-center justify-content-center gap-1 btn-emergencia-sim"
+                                onClick={() => handleStartEmergencyGPS(route)}
+                                style={{ fontSize: '10px', background: '#dc2626', border: 'none', borderRadius: '4px' }}
+                              >
+                                <i className="fa-solid fa-location-arrow"></i> GPS Real
+                              </Button>
+                            </div>
                           </div>
                           <button className="btn btn-sm btn-link text-danger p-0 ms-2" onClick={() => handleClearRoute(route.id)} title="Cancelar Misión">
                             <i className="fa-solid fa-xmark fs-5"></i>

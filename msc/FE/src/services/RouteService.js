@@ -420,4 +420,26 @@ async function searchAddress(text) {
   }
 }
 
-export default { calculateRoute, calculateAlternativeRoutes, analyzeRouteRisk, generateRecommendations, searchAddress };
+/**
+ * Calcula la distancia en metros entre dos puntos geográficos usando la fórmula de Haversine.
+ * @param {[number, number]} p1 Coordenada 1 [lat, lng]
+ * @param {[number, number]} p2 Coordenada 2 [lat, lng]
+ * @returns {number} Distancia en metros
+ */
+function getDistanceMeters(p1, p2) {
+  if (!p1 || !p2) return 0;
+  const R = 6371000; // Radio de la Tierra en metros
+  const phi1 = p1[0] * Math.PI / 180;
+  const phi2 = p2[0] * Math.PI / 180;
+  const deltaPhi = (p2[0] - p1[0]) * Math.PI / 180;
+  const deltaLambda = (p2[1] - p1[1]) * Math.PI / 180;
+
+  const a = Math.sin(deltaPhi / 2) * Math.sin(deltaPhi / 2) +
+            Math.cos(phi1) * Math.cos(phi2) *
+            Math.sin(deltaLambda / 2) * Math.sin(deltaLambda / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+}
+
+export default { calculateRoute, calculateAlternativeRoutes, analyzeRouteRisk, generateRecommendations, searchAddress, getDistanceMeters };

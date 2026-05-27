@@ -34,6 +34,8 @@ const MapRefresher = () => {
  * @param {Object} aggregatedStats - Estadísticas de conteo por distrito.
  */
 const RiskMapDisplay = ({ reports, aggregatedStats }) => {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const [mapUnlocked, setMapUnlocked] = React.useState(false);
   const [mapMode, setMapMode] = React.useState('night');
   
   /**
@@ -60,7 +62,7 @@ const RiskMapDisplay = ({ reports, aggregatedStats }) => {
 
   return (
     <div className="risk-map-display-wrapper">
-      <div className="map-section">
+      <div className="map-section" style={{ position: 'relative' }}>
         {/* Selector de modo del mapa (Día/Noche) */}
         <div className="map-mode-toggle cont-temas" style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 1000, background: 'rgba(26, 28, 34, 0.9)', padding: '5px', borderRadius: '10px' }}>
           <button
@@ -86,7 +88,10 @@ const RiskMapDisplay = ({ reports, aggregatedStats }) => {
           zoom={13} 
           scrollWheelZoom={true} 
           className="map-instance"
-          zoomControl={false}
+          dragging={!isMobile || mapUnlocked}
+          touchZoom={!isMobile || mapUnlocked}
+          doubleClickZoom={!isMobile || mapUnlocked}
+          zoomControl={!isMobile || mapUnlocked}
         >
           <MapRefresher />
           <ZoomControl position="bottomright" />
@@ -143,6 +148,61 @@ const RiskMapDisplay = ({ reports, aggregatedStats }) => {
             );
           })}
         </MapContainer>
+        {isMobile && !mapUnlocked && (
+          <div 
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.7)',
+              zIndex: 1000,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              borderRadius: '12px',
+              cursor: 'pointer',
+              textAlign: 'center',
+              padding: '20px',
+              backdropFilter: 'blur(3px)'
+            }}
+            onClick={() => setMapUnlocked(true)}
+          >
+            <i className="fa-solid fa-map-location-dot fs-1 mb-3 text-warning"></i>
+            <span style={{ fontSize: '15px', fontWeight: 'bold' }}>Mapa bloqueado para permitir el scroll</span>
+            <span style={{ fontSize: '12px', marginTop: '8px', opacity: 0.8, background: 'rgba(255,255,255,0.1)', padding: '6px 12px', borderRadius: '20px' }}>
+              Toca una vez para interactuar
+            </span>
+          </div>
+        )}
+        {isMobile && mapUnlocked && (
+          <button 
+            type="button"
+            style={{
+              position: 'absolute',
+              bottom: '10px',
+              left: '10px',
+              zIndex: 1000,
+              backgroundColor: '#ef4444',
+              color: 'white',
+              border: 'none',
+              padding: '8px 16px',
+              borderRadius: '8px',
+              fontWeight: 'bold',
+              fontSize: '12px',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.3)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+            onClick={() => setMapUnlocked(false)}
+          >
+            <i className="fa-solid fa-lock"></i> Bloquear scroll del mapa
+          </button>
+        )}
       </div>
 
       {/* Barra lateral con leyenda y estadísticas por distrito */}

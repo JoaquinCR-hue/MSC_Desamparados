@@ -20,6 +20,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 // Componente para la gestión y visualización de reportes de incidentes
 const ReportManager = () => {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState(null);
@@ -376,6 +377,10 @@ const ReportManager = () => {
                   center={[selectedReport.lat || 9.892, selectedReport.lng || -84.05]} 
                   zoom={15} 
                   scrollWheelZoom={false}
+                  dragging={!isMobile}
+                  touchZoom={!isMobile}
+                  doubleClickZoom={!isMobile}
+                  zoomControl={!isMobile}
                   style={{ height: '100%', width: '100%' }}
                 >
                   <TileLayer

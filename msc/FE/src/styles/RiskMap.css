@@ -11,6 +11,18 @@
     margin: 0 auto;
 }
 
+@media (max-width: 768px) {
+    .mapa-riesgo-content {
+        padding: 1.25rem 3%;
+    }
+}
+
+@media (max-width: 480px) {
+    .mapa-riesgo-content {
+        padding: 0.85rem 2%;
+    }
+}
+
 .page-header-premium {
     margin-bottom: 2.5rem;
     position: relative;
@@ -37,6 +49,18 @@
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+}
+
+@media (max-width: 768px) {
+    .page-header-premium h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header-premium h1 {
+        font-size: 1.5rem;
+    }
 }
 
 .page-header-premium p {

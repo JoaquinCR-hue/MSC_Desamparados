@@ -8,6 +8,14 @@
     border: 1px solid var(--border-main);
 }
 
+@media (max-width: 768px) {
+    .patrol-map-wrapper {
+        padding: 0.75rem;
+        min-height: auto;
+        border-radius: 12px;
+    }
+}
+
 .alert-banner-info {
     background: var(--bg-secondary) !important;
     border: 1.5px solid var(--primary-color) !important;
@@ -33,6 +41,16 @@
     border: 1px solid var(--border-main);
     display: flex;
     gap: 5px;
+}
+
+@media (max-width: 480px) {
+    .map-mode-toggle {
+        top: 5px;
+        right: 5px;
+        padding: 3px;
+        flex-direction: column;
+        gap: 3px;
+    }
 }
 
 .map-mode-btn {
@@ -77,6 +95,14 @@
     flex-direction: column;
 }
 
+@media (max-width: 768px) {
+    .patrol-sidebar-col {
+        width: 100%;
+        max-height: 40vh;
+        border-radius: 16px 16px 0 0;
+    }
+}
+
 .map-glass-container {
     border-radius: 16px;
     overflow: hidden;
@@ -96,6 +122,20 @@
     }
     .map-glass-container {
         height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .map-glass-container {
+        height: 50vh;
+        margin-bottom: 10px;
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .map-glass-container {
+        height: 45vh;
     }
 }
 
@@ -297,7 +337,7 @@
     }
 }
 
-/* ── EFECTOS DE SIRENA DE EMERGENCIA (WAZE EMERGENCY) ── */
+/* ── EFECTOS DE SIRENA DE EMERGENCIA ── */
 
 @keyframes emergencyRedBlue {
   0%, 100% {
@@ -325,3 +365,128 @@
   background-color: #b91c1c !important;
   box-shadow: 0 6px 14px rgba(220, 38, 38, 0.5);
 }
+
+/* =====================================================================
+   Modo Navegación 2D & Brújula (legacy – clases .waze-* eliminadas)
+   ===================================================================== */
+
+/* =====================================================================
+   Mejoras Móviles (Bottom Sheet para PatrolMap)
+   ===================================================================== */
+@media (max-width: 991px) {
+  .patrol-main-layout {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    background: var(--bg-main);
+  }
+
+  .alert-banner-info {
+    display: none !important;
+  }
+
+  .patrol-map-col {
+    flex: 1;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .map-glass-container {
+    height: 100% !important;
+    border-radius: 0 !important;
+    border: none !important;
+  }
+
+  /* Panel Inferior Plegable (Bottom Sheet) */
+  .patrol-sidebar-col {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    background: transparent;
+    pointer-events: none; /* Para que el mapa sea interactuable detrás */
+  }
+
+  .route-info-panel-static {
+    border-radius: 24px 24px 0 0 !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4) !important;
+    background: rgba(18, 20, 26, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    padding-top: 2rem !important;
+    pointer-events: auto; /* Reactivar clics en el panel */
+  }
+
+  .patrol-sidebar-col.bottom-sheet-collapsed {
+    transform: translateY(calc(100% - 60px));
+  }
+
+  .patrol-sidebar-col.bottom-sheet-expanded {
+    transform: translateY(0);
+    height: 60vh;
+  }
+
+  /* Handle del bottom sheet */
+  .patrol-sidebar-col::before {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 45px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+    z-index: 1050;
+    pointer-events: none;
+  }
+
+  /* Ajuste de controles de mapa */
+  .nav-controls-container {
+    top: auto !important;
+    bottom: 80px !important;
+    right: 15px !important;
+    transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .patrol-main-layout:has(.bottom-sheet-expanded) .nav-controls-container {
+    bottom: calc(60vh + 20px) !important;
+  }
+
+  .map-mode-toggle {
+    top: auto !important;
+    bottom: 180px !important;
+    right: 15px !important;
+    flex-direction: column;
+    transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .patrol-main-layout:has(.bottom-sheet-expanded) .map-mode-toggle {
+    bottom: calc(60vh + 120px) !important;
+  }
+}
+
+/* Banner de alerta de mala señal / permisos GPS */
+.gps-error-banner {
+  background: rgba(220, 38, 38, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  color: white !important;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35);
+  font-size: 0.9rem;
+  padding: 10px;
+  animation: slideDown 0.3s ease-out;
+}
+
