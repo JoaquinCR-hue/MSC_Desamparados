@@ -30,7 +30,7 @@ exports.getAll = async (req, res) => {
 
         // Construir condiciones de búsqueda para el Reporte (Filtros y Búsqueda por texto)
         const reportWhere = {};
-        
+
         if (status) {
             reportWhere.status = status;
         }
@@ -70,13 +70,13 @@ exports.getAll = async (req, res) => {
             distinct: true,
             subQuery: false,
             include: [
-                { 
-                    model: Location, 
+                {
+                    model: Location,
                     as: 'location',
                     where: distrito ? { district: distrito } : undefined
                 },
-                { 
-                    model: IncidentType, 
+                {
+                    model: IncidentType,
                     as: 'incidentType',
                     where: Object.keys(typeWhere).length > 0 ? typeWhere : undefined
                 },
@@ -87,10 +87,10 @@ exports.getAll = async (req, res) => {
         const mappedReports = rows.map(r => {
             const tipo = r.incidentType ? r.incidentType.name : 'Desconocido';
             const desc = r.description || '';
-            const isEmergency = tipo.toUpperCase().includes('EMERG') || 
-                               tipo.toUpperCase().includes('SOS') || 
-                               desc.toUpperCase().includes('SOS');
-            
+            const isEmergency = tipo.toUpperCase().includes('EMERG') ||
+                tipo.toUpperCase().includes('SOS') ||
+                desc.toUpperCase().includes('SOS');
+
             return {
                 id: r.id,
                 tipo: tipo,
@@ -109,8 +109,8 @@ exports.getAll = async (req, res) => {
             };
         });
 
-        res.status(200).json({ 
-            status: 'success', 
+        res.status(200).json({
+            status: 'success',
             data: mappedReports,
             meta: {
                 total: count,
@@ -157,7 +157,7 @@ exports.create = async (req, res) => {
         }, { transaction: t });
 
         await t.commit();
-        
+
         // Preparar respuesta con bandera de emergencia
         const responseData = {
             ...report.toJSON(),
@@ -183,12 +183,12 @@ exports.update = async (req, res) => {
             ]
         });
         if (!report) return res.status(404).json({ status: 'error', message: 'Not found' });
-        
+
         // Permite actualizar solo el estado por ahora
         if (req.body.estado) {
             const currentStatus = report.status || 'Pendiente';
             const newStatus = req.body.estado;
-            
+
             // Validar transiciones de estado
             const validTransitions = {
                 'Pendiente': ['En Proceso'],
@@ -197,20 +197,20 @@ exports.update = async (req, res) => {
             };
 
             const allowed = validTransitions[currentStatus] || [];
-            
+
             if (allowed.includes(newStatus)) {
                 await report.update({ status: newStatus });
             } else if (currentStatus !== newStatus) {
                 return res.status(400).json({ status: 'error', message: `Transición de estado no válida: de ${currentStatus} a ${newStatus}` });
             }
         }
-        
+
         // Mapear al formato del frontend
         const tipo = report.incidentType ? report.incidentType.name : 'Desconocido';
         const desc = report.description || '';
-        const isEmergency = tipo.toUpperCase().includes('EMERG') || 
-                           tipo.toUpperCase().includes('SOS') || 
-                           desc.toUpperCase().includes('SOS');
+        const isEmergency = tipo.toUpperCase().includes('EMERG') ||
+            tipo.toUpperCase().includes('SOS') ||
+            desc.toUpperCase().includes('SOS');
 
         const mappedReport = {
             id: report.id,

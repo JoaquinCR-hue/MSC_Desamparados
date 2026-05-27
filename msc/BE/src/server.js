@@ -13,7 +13,7 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log('✅ Conexion a la base de datos establecida exitosamente.');
 
-    // Sincronizar modelos con la BD (crea tablas si no existen)
+    // Sincronizar modelos con la BD y ajustar la estructura si hay columnas nuevas
     await sequelize.sync({ alter: true });
     console.log('✅ Modelos sincronizados con la base de datos.');
 

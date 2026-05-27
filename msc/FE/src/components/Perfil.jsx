@@ -86,6 +86,59 @@ const Perfil = () => {
     }
   };
 
+  const handleChangePassword = async () => {
+    const { value: formValues } = await Swal.fire({
+      title: 'Cambiar Contraseña',
+      html:
+        '<input id="swal-input1" class="swal2-input" type="password" placeholder="Contraseña actual" style="margin-bottom: 10px;">' +
+        '<input id="swal-input2" class="swal2-input" type="password" placeholder="Nueva contraseña" style="margin-bottom: 10px;">' +
+        '<input id="swal-input3" class="swal2-input" type="password" placeholder="Confirmar nueva contraseña">',
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Guardar',
+      cancelButtonText: 'Cancelar',
+      customClass: { popup: 'premium-swal-popup' },
+      preConfirm: () => {
+        const currentPassword = document.getElementById('swal-input1').value;
+        const newPassword = document.getElementById('swal-input2').value;
+        const confirmPassword = document.getElementById('swal-input3').value;
+        
+        if (!currentPassword || !newPassword || !confirmPassword) {
+          Swal.showValidationMessage('Todos los campos son obligatorios');
+          return false;
+        }
+        if (newPassword !== confirmPassword) {
+          Swal.showValidationMessage('Las contraseñas nuevas no coinciden');
+          return false;
+        }
+        
+        return { currentPassword, newPassword };
+      }
+    });
+
+    if (formValues) {
+      try {
+        setSaving(true);
+        await ProfileService.changePassword(formValues.currentPassword, formValues.newPassword);
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Contraseña actualizada correctamente',
+          icon: 'success',
+          customClass: { popup: 'premium-swal-popup' }
+        });
+      } catch (error) {
+        Swal.fire({
+          title: 'Error',
+          text: error.message || 'No se pudo cambiar la contraseña',
+          icon: 'error',
+          customClass: { popup: 'premium-swal-popup' }
+        });
+      } finally {
+        setSaving(false);
+      }
+    }
+  };
+
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -216,10 +269,10 @@ const Perfil = () => {
               <input 
                 type="text" 
                 name="fullName"
-                className="form-input-premium" 
+                className="form-input-premium capitalize-name" 
                 value={formData.fullName} 
                 onChange={handleInputChange}
-                disabled={!isCiudadano}
+                disabled={true}
                 required
               />
             </div>
@@ -260,21 +313,43 @@ const Perfil = () => {
             </div>
 
             {isCiudadano ? (
-              <button 
-                type="submit" 
-                className="btn-premium-save"
-                disabled={saving}
-              >
-                {saving ? (
-                  <><i className="fa-solid fa-spinner fa-spin"></i> Guardando...</>
-                ) : (
-                  <><i className="fa-solid fa-floppy-disk"></i> Guardar Cambios</>
-                )}
-              </button>
+              <div className="d-flex flex-column gap-2 mt-3">
+                <button 
+                  type="submit" 
+                  className="btn-premium-save w-100"
+                  disabled={saving}
+                >
+                  {saving ? (
+                    <><i className="fa-solid fa-spinner fa-spin"></i> Guardando...</>
+                  ) : (
+                    <><i className="fa-solid fa-floppy-disk"></i> Guardar Cambios</>
+                  )}
+                </button>
+                <button 
+                  type="button" 
+                  className="btn btn-outline-light w-100 p-2"
+                  onClick={handleChangePassword}
+                  disabled={saving}
+                  style={{ borderRadius: '8px', border: '1px solid #475569' }}
+                >
+                  <i className="fa-solid fa-key"></i> Cambiar Contraseña
+                </button>
+              </div>
             ) : (
-              <div className="alert alert-info mt-3" style={{ fontSize: '0.85rem' }}>
-                <i className="fa-solid fa-circle-info me-2"></i>
-                Como funcionario, no puedes editar tus datos personales desde aquí.
+              <div className="d-flex flex-column gap-2 mt-3">
+                <div className="alert alert-info" style={{ fontSize: '0.85rem', marginBottom: 0 }}>
+                  <i className="fa-solid fa-circle-info me-2"></i>
+                  Como funcionario, no puedes editar tus datos personales desde aquí.
+                </div>
+                <button 
+                  type="button" 
+                  className="btn btn-outline-light w-100 p-2"
+                  onClick={handleChangePassword}
+                  disabled={saving}
+                  style={{ borderRadius: '8px', border: '1px solid #475569' }}
+                >
+                  <i className="fa-solid fa-key"></i> Cambiar Contraseña
+                </button>
               </div>
             )}
           </form>

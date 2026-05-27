@@ -646,6 +646,16 @@ const PatrolMap = ({ refreshTrigger, onPatrolUpdate }) => {
       const dataRep = await ReportService.getReports();
       const dataPol = await PoliceService.getPatrols();
 
+      // Solo los administradores pueden ver la lista de usuarios.
+      // Si el usuario es funcionario, esta llamada devolverá 403 y se ignora silenciosamente.
+      let dataUsu = [];
+      try {
+        dataUsu = await UserService.getUsers();
+      } catch (userError) {
+        // Funcionarios no tienen permiso para listar usuarios — es normal, no es un error de sesión.
+        console.info('Lista de usuarios no disponible para este rol.');
+      }
+
       const now = new Date();
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(now.getDate() - 7);

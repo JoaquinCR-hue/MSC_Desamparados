@@ -14,8 +14,9 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response && (error.response.status === 401 || error.response.status === 403)) {
-      // Sesión expirada o no autorizado
+    if (error.response && error.response.status === 401) {
+      // Solo expulsar si el token expiró o no existe (401)
+      // Un 403 significa que el usuario SÍ está autenticado, pero no tiene permiso
       sessionStorage.removeItem('user');
       // Redirigir al login si no estamos ya en él
       if (window.location.pathname !== '/login' && window.location.pathname !== '/' && window.location.pathname !== '/register') {

@@ -134,7 +134,7 @@ const RegisterForm = () => {
           onChange={(e) => setNationalId(e.target.value.replace(/\D/g, ''))} 
           error={errors.nationalId} 
         />
-        <InputGroup label="Nombre Completo" value={fullName} onChange={(e) => setFullName(e.target.value)} error={errors.fullName} />
+        <InputGroup label="Nombre Completo" value={fullName} onChange={(e) => setFullName(e.target.value)} error={errors.fullName} className="capitalize-name" />
         <InputGroup label="Teléfono" value={phone} onChange={(e) => setPhone(e.target.value)} error={errors.phone} />
         <InputGroup label="Correo Electrónico" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
         <PasswordInput label="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} error={errors.password} />
