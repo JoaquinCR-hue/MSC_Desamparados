@@ -72,3 +72,47 @@ This document contains all the available endpoints in the MSC Desamparados API (
 ## Notes for Postman configuration:
 1. **Authentication**: After calling `POST /auth/login`, the API typically sets a cookie with the JWT token. Ensure Postman is configured to store and send cookies for `localhost`. If using Bearer tokens in headers, add `Authorization: Bearer <token>`.
 2. **File Uploads**: For `/reports/upload` and `/profile/photo/upload`, use the `Body` -> `form-data` tab in Postman. Create a key (e.g., `image`), set the type from `Text` to `File`, and select an image file.
+
+Autenticación (/auth) - Públicos
+
+POST /auth/register
+POST /auth/login
+POST /auth/logout
+POST /auth/recover-password
+GET /auth/check-status
+Perfil (/profile) - Protegidos
+
+GET /profile/
+PUT /profile/
+PUT /profile/photo
+POST /profile/photo/upload
+PUT /profile/password
+Usuarios (/users) - Protegidos (requiere rol administrador)
+[13:25]
+GET /users/
+POST /users/
+PUT /users/:id
+DELETE /users/:id
+Reportes (/reports) - Protegidos
+
+GET /reports/
+POST /reports/
+POST /reports/upload
+PUT /reports/:id
+DELETE /reports/:id
+Consultas (/consults) - Protegidos
+[13:25]
+GET /consults/getAllConsults
+POST /consults/createConsult
+PUT /consults/updateConsult/:id
+Patrullas (/patrols) - Protegidos (requiere rol admin/administrador/funcionario)
+
+GET /patrols/
+POST /patrols/
+PUT /patrols/:id
+DELETE /patrols/:id
+Police-IA (/police-ia) - Protegidos
+
+POST /police-ia/chat
+GET /police-ia/incidents-nearby
+POST /police-ia/report

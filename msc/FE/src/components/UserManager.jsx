@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import UserService from '../services/UserService';
 import OfficerList from './OfficerList';
 import UserList from './UserList';
@@ -8,6 +9,11 @@ import '../styles/UserManager.css';
 const UserManager = () => {
     const [activeTab, setActiveTab] = useState('officers'); // 'officers' or 'users'
     const [stats, setStats] = useState({ total: 0, officers: 0, citizens: 0 });
+    // Leer parámetros de consulta ?page=1&limit=10
+    const location = useLocation();
+    const query = new URLSearchParams(location.search);
+    const initialPage = parseInt(query.get('page')) || 1;
+    const initialLimit = parseInt(query.get('limit')) || 10;
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -85,7 +91,11 @@ const UserManager = () => {
                 </div>
 
                 {/* Renderizado del componente activo según la pestaña */}
-                {activeTab === 'officers' ? <OfficerList /> : <UserList />}
+                {activeTab === 'officers' ? (
+                    <OfficerList initialPage={initialPage} initialLimit={initialLimit} />
+                ) : (
+                    <UserList initialPage={initialPage} initialLimit={initialLimit} />
+                )}
 
             </div>
         </div>

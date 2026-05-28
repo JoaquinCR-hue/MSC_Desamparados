@@ -64,7 +64,7 @@ exports.getAll = async (req, res) => {
 
         // Paginación
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 1000;
         const offset = (page - 1) * limit;
 
         // Ejecutar la consulta con Sequelize usando las condiciones construidas y paginación

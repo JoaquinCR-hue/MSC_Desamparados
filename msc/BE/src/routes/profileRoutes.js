@@ -5,6 +5,7 @@ const multer = require('multer');
 
 const upload = multer({ storage: multer.memoryStorage() });
 
+// Endpoints preferidos: base '/' y subpaths para compatibilidad con el frontend/tests
 router.get('/', profileController.getProfile);
 router.put('/', profileController.updateProfile);
 router.put('/photo', profileController.updateProfilePhoto);
@@ -14,5 +15,10 @@ router.post('/photo/upload', upload.single('avatar'), profileController.uploadPr
 
 // Cambiar contraseña
 router.put('/password', profileController.changePassword);
+
+// Rutas legacy/alias (mantener compatibilidad)
+router.get('/getProfile', profileController.getProfile);
+router.put('/updateProfile', profileController.updateProfile);
+router.put('/updateProfilePhoto', profileController.updateProfilePhoto);
 
 module.exports = router;

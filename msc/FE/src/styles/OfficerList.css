@@ -207,6 +207,31 @@
     background-color: rgba(0, 163, 255, 0.1);
 }
 
+.btn-pagination {
+    background-color: transparent;
+    border: 1px solid #334155;
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 600;
+}
+
+.btn-pagination:hover:not(:disabled) {
+    color: #ffffff;
+    border-color: var(--primary-color);
+    background-color: rgba(0, 163, 255, 0.1);
+}
+
+.btn-pagination:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .btn-delete {
     border-color: #ef4444;
     color: #ef4444;

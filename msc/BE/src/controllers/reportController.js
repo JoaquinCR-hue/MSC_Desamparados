@@ -16,12 +16,12 @@ const cloudinary = require('../config/cloudinary');
  */
 exports.getAll = async (req, res) => {
     try {
-        // Limpieza automática: Borrar reportes de más de 3 días (72 horas)
-        const tresDiasAtras = new Date(Date.now() - 3 * 24 * 60 * 60 * 1000);
+        // Limpieza automática: Borrar reportes de más de 7 días (168 horas)
+        const sieteDiasAtras = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
         await Report.destroy({
             where: {
                 date: {
-                    [Op.lt]: tresDiasAtras
+                    [Op.lt]: sieteDiasAtras
                 }
             }
         });
@@ -59,7 +59,7 @@ exports.getAll = async (req, res) => {
 
         // Paginación
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 1000;
         const offset = (page - 1) * limit;
 
         const { count, rows } = await Report.findAndCountAll({

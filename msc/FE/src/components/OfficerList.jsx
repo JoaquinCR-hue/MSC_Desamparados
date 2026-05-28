@@ -1,31 +1,85 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import UserService from '../services/UserService';
 import '../styles/OfficerList.css';
 
-const OfficerList = () => {
+const OfficerList = ({ initialPage = 1, initialLimit = 10 }) => {
   const [officers, setOfficers] = useState([]);
+  const [allOfficers, setAllOfficers] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newOfficer, setNewOfficer] = useState({ nombre: '', cedula: '', email: '', telefono: '', role: 'administrador', pass: '' });
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(initialPage);
+  const [limit] = useState(initialLimit);
+  const [totalPages, setTotalPages] = useState(1);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Estado para la edición
   const [editingId, setEditingId] = useState(null);
   const [editOfficer, setEditOfficer] = useState(null);
 
   const loadData = async (search = '') => {
-    const query = search ? `?search=${encodeURIComponent(search)}` : '';
-    const data = await UserService.getUsers(query);
-    if (data) {
-      // Filtrar para mostrar solo aquellos que no son ciudadanos
-      const filtered = Array.isArray(data) ? data : (data.data || []);
-      setOfficers(filtered.filter(u => u.role !== 'ciudadano'));
+    // Traer TODOS los funcionarios sin paginación en backend, paginar localmente
+    const params = { limit: 1000 };
+    if (search) params.search = search;
+    try {
+      const response = await UserService.getUsers(params);
+      let filtered = [];
+      if (response && response.data) {
+        const allData = Array.isArray(response.data) ? response.data : response.data;
+        filtered = allData.filter(u => u.role !== 'ciudadano');
+      } else {
+        const data = Array.isArray(response) ? response : (response?.data || []);
+        filtered = data.filter(u => u.role !== 'ciudadano');
+      }
+      setAllOfficers(filtered);
+      const pages = Math.ceil(filtered.length / limit) || 1;
+      setTotalPages(pages);
+      setPage(1); // Reset to page 1 on search
+    } catch (err) {
+      console.error('Error loading officers', err);
     }
   };
+
+  // Paginar localmente cuando cambia page
+  useEffect(() => {
+    const start = (page - 1) * limit;
+    const end = start + limit;
+    setOfficers(allOfficers.slice(start, end));
+    // Actualizar URL
+    try {
+      const params = new URLSearchParams(location.search);
+      params.set('page', String(page));
+      params.set('limit', String(limit));
+      if (searchTerm) params.set('search', searchTerm);
+      else params.delete('search');
+      navigate(`${location.pathname}?${params.toString()}`, { replace: false });
+    } catch (err) {
+      // ignore
+    }
+  }, [page, allOfficers]);
+
+  // Cargar datos al montar o cambiar búsqueda
+  useEffect(() => {
+    loadData(''); // Cargar todos los funcionarios al montar
+  }, []);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       loadData(searchTerm);
     }, 500); // 500ms debounce
+    // actualizar URL con búsqueda y paginación (si aplica)
+    try {
+      const params = new URLSearchParams(location.search);
+      params.set('page', String(page));
+      params.set('limit', String(limit));
+      if (searchTerm) params.set('search', searchTerm);
+      else params.delete('search');
+      navigate(`${location.pathname}?${params.toString()}`, { replace: false });
+    } catch (err) {
+      // ignore
+    }
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
@@ -229,6 +283,27 @@ const OfficerList = () => {
           </tbody>
         </table>
       </div>
+
+      {/* Controles de Paginación */}
+      {totalPages > 1 && (
+        <div className="pagination-controls" style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '1rem', alignItems: 'center' }}>
+          <button 
+            className="btn-pagination" 
+            disabled={page === 1} 
+            onClick={() => setPage(page - 1)}
+          >
+            ← Anterior
+          </button>
+          <span style={{ whiteSpace: 'nowrap', color: '#fff', fontWeight: 'bold' }}>Página {page} de {totalPages}</span>
+          <button 
+            className="btn-pagination" 
+            disabled={page === totalPages} 
+            onClick={() => setPage(page + 1)}
+          >
+            Siguiente →
+          </button>
+        </div>
+      )}
     </div>
   );
 };

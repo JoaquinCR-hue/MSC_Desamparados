@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import UserService from '../services/UserService';
 import '../styles/UserList.css';
 
-const UserList = () => {
+const UserList = ({ initialPage = 1, initialLimit = 10 }) => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   
   // Paginación
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const [page, setPage] = useState(initialPage);
+  const [limit] = useState(initialLimit);
   const [totalPages, setTotalPages] = useState(1);
+  const navigate = useNavigate();
+  const location = useLocation();
   
   // Estado para la edición
   const [editingId, setEditingId] = useState(null);
@@ -47,16 +50,37 @@ const UserList = () => {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      setPage(1); // Reset page on new search
-      loadData(searchTerm, 1);
+      setPage(initialPage); // Reset page on new search
+      loadData(searchTerm, initialPage);
+      // Actualizar la URL con los parámetros de búsqueda y paginación
+      try {
+        const params = new URLSearchParams(location.search);
+        params.set('page', String(initialPage));
+        params.set('limit', String(limit));
+        if (searchTerm) params.set('search', searchTerm);
+        else params.delete('search');
+        navigate(`${location.pathname}?${params.toString()}`, { replace: false });
+      } catch (err) {
+        // ignore
+      }
     }, 500); // 500ms debounce
     return () => clearTimeout(timeoutId);
   }, [searchTerm]);
 
   useEffect(() => {
     // Si cambia de página (y no es por búsqueda)
-    if (page > 1 || !searchTerm) {
+    if (page > 0) {
       loadData(searchTerm, page);
+      try {
+        const params = new URLSearchParams(location.search);
+        params.set('page', String(page));
+        params.set('limit', String(limit));
+        if (searchTerm) params.set('search', searchTerm);
+        else params.delete('search');
+        navigate(`${location.pathname}?${params.toString()}`, { replace: false });
+      } catch (err) {
+        // ignore
+      }
     }
   }, [page]);
 
@@ -217,21 +241,21 @@ const UserList = () => {
 
       {/* Controles de Paginación */}
       {!loading && totalPages > 1 && (
-        <div className="pagination-controls" style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '1rem' }}>
+        <div className="pagination-controls" style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '1rem', alignItems: 'center' }}>
           <button 
-            className="btn-action" 
+            className="btn-pagination" 
             disabled={page === 1} 
             onClick={() => setPage(page - 1)}
           >
-            Anterior
+            ← Anterior
           </button>
-          <span style={{ alignSelf: 'center' }}>Página {page} de {totalPages}</span>
+          <span style={{ whiteSpace: 'nowrap', color: '#fff', fontWeight: 'bold' }}>Página {page} de {totalPages}</span>
           <button 
-            className="btn-action" 
+            className="btn-pagination" 
             disabled={page === totalPages} 
             onClick={() => setPage(page + 1)}
           >
-            Siguiente
+            Siguiente →
           </button>
         </div>
       )}
