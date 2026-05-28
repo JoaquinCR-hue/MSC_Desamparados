@@ -1,0 +1,37 @@
+.auth-footer {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.auth-footer a {
+  color: var(--primary-color);
+  text-decoration: none;
+  font-weight: 700;
+  margin-left: 5px;
+  transition: color 0.3s ease;
+}
+
+.auth-footer a:hover {
+ 
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+.forgot-password {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9rem;
+}
+
+.forgot-password-link {
+  color: var(--primary-color);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.forgot-password-link:hover {
+  
+  text-decoration: underline;
+}

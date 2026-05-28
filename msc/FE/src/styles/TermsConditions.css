@@ -1,0 +1,68 @@
+/* src/styles/Terminos.css */
+
+.terms-conditions-page-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--bg-darker);
+    color: var(--text-main);
+}
+
+.terms-conditions-content-wrapper {
+    padding: 40px 20px;
+    max-width: 800px;
+    margin: 40px auto;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    flex: 1;
+}
+
+.terminos-content-wrapper h1 {
+    text-align: center;
+    margin-bottom: 25px;
+    background: var(--title-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2.2rem;
+    font-weight: 800;
+}
+
+.terminos-content-wrapper p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.terminos-content-wrapper strong {
+    color: var(--primary-color);
+}
+
+.terms-conditions-last-update {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 25px;
+    display: block;
+}
+
+.terms-conditions-footer-note {
+    margin-top: 30px;
+    font-weight: bold;
+    color: var(--text-main);
+    text-align: center;
+    padding: 15px;
+    border-top: 1px dashed var(--border-main);
+}
+
+@media (max-width: 768px) {
+    .terms-conditions-content-wrapper {
+        margin: 20px;
+        padding: 25px;
+    }
+    
+    .terminos-content-wrapper h1 {
+        font-size: 1.8rem;
+    }
+}

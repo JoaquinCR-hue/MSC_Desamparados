@@ -1,0 +1,473 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Outfit:wght@300;400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+.emergencias-dashboard {
+    min-height: 100vh;
+    background: var(--bg-darker);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+}
+
+.dashboard-layout {
+    display: flex;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+    gap: 20px;
+}
+
+/* Sidebar Styling */
+.dashboard-sidebar {
+    width: 260px;
+    background: var(--bg-main);
+    border-radius: 20px;
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: calc(100vh - 120px);
+    position: sticky;
+    top: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    border-radius: 12px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.sidebar-item:hover {
+    background: var(--border-main);
+    color: var(--primary-color);
+}
+
+.sidebar-item.active {
+    background: #fff0e6;
+    color: var(--primary-color);
+}
+
+.sidebar-item i {
+    width: 20px;
+    font-size: 1.1rem;
+}
+
+.sidebar-status-card {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 20px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+}
+
+.status-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #22c55e;
+}
+
+.status-text {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.sidebar-status-card p {
+    color: var(--text-muted);
+    margin-bottom: 5px;
+}
+
+/* Main Content Styling */
+.dashboard-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 10px;
+}
+
+.header-title h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    background: var(--title-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+.header-title p {
+    color: #64748b;
+    font-size: 1.1rem;
+}
+
+.header-filters {
+    display: flex;
+    background: #e2e8f0;
+    padding: 4px;
+    border-radius: 12px;
+    gap: 4px;
+}
+
+.filter-btn {
+    padding: 8px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 9px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filter-btn.active {
+    background: var(--bg-main);
+    color: var(--text-main);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Featured Card */
+.featured-emergency {
+    width: 100%;
+}
+
+.featured-card {
+    background: var(--bg-secondary);
+    color: var(--text-main);
+    padding: 30px;
+    border-radius: 24px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 30px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.featured-card::before {
+    content: '';
+    position: absolute;
+    right: -50px;
+    bottom: -50px;
+    width: 250px;
+    height: 250px;
+    background: radial-gradient(circle, rgba(0, 163, 255, 0.15) 0%, transparent 70%);
+    z-index: 0;
+}
+
+.featured-icon {
+    width: 80px;
+    height: 80px;
+    background: #334155;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    z-index: 1;
+    overflow: hidden;
+}
+
+.institution-logo-main {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 5px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+.featured-info {
+    z-index: 1;
+}
+
+.featured-info h2 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.featured-info p {
+    color: #94a3b8;
+    max-width: 500px;
+    line-height: 1.5;
+}
+
+.featured-number-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 15px;
+    z-index: 1;
+}
+
+.featured-number-display {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.btn-call-now {
+    background: linear-gradient(135deg, var(--primary-color), #ea580c);
+    color: white;
+    padding: 14px 28px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.3s;
+}
+
+.btn-call-now:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px rgba(0, 163, 255, 0.3);
+}
+
+/* Directory Grid */
+.directory-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.directory-card {
+    background: var(--bg-main);
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    border: 1px solid transparent;
+    transition: all 0.3s;
+}
+
+.directory-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.card-top {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.card-icon-container {
+    width: 60px;
+    height: 60px;
+    background: #f8fafc;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: var(--primary-color);
+    overflow: hidden;
+}
+
+.institution-logo-card {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 8px;
+    filter: grayscale(0.2) contrast(1.1);
+    transition: all 0.3s ease;
+}
+
+.directory-card:hover .institution-logo-card {
+    filter: grayscale(0) contrast(1.2) scale(1.05);
+}
+
+.card-titles h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.card-titles span {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.card-number-top {
+    margin-left: auto;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.card-description {
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    flex-grow: 1;
+}
+
+.card-actions-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btn-card-action {
+    background: #0f172a;
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.3s;
+}
+
+.btn-card-action:hover {
+    background: #1e293b;
+}
+
+/* Footer Info Styling */
+.dashboard-footer-info {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 30px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: center;
+    margin-top: 20px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.footer-info-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+}
+
+.footer-info-content p {
+    color: #64748b;
+    margin-bottom: 25px;
+    max-width: 600px;
+    line-height: 1.6;
+}
+
+.footer-actions {
+    display: flex;
+    gap: 30px;
+}
+
+.footer-actions a {
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.footer-map-preview {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    width: 300px;
+    height: 150px;
+    border: 1px solid #e2e8f0;
+}
+
+.footer-map-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.map-marker {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    font-size: 2rem;
+    color: #0f172a;
+}
+
+@media (max-width: 1024px) {
+    .dashboard-layout {
+        flex-direction: column;
+    }
+    .dashboard-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        top: 0;
+    }
+    .sidebar-nav {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+    .sidebar-status-card {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .directory-grid {
+        grid-template-columns: 1fr;
+    }
+    .header-filters {
+        display: none;
+    }
+    .featured-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+    .featured-icon {
+        margin: 0 auto;
+    }
+    .featured-number-action {
+        align-items: center;
+    }
+    .dashboard-footer-info {
+        grid-template-columns: 1fr;
+    }
+    .footer-map-preview {
+        width: 100%;
+    }
+}

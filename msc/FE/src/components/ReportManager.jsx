@@ -1,0 +1,471 @@
+import React, { useState, useEffect } from 'react';
+import { useLocation, useSearchParams } from 'react-router-dom';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import ReportService from '../services/ReportService';
+import '../styles/ReportManager.css';
+import Swal from 'sweetalert2';
+import L from 'leaflet';
+
+// Corrección para el icono predeterminado de Leaflet
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: markerIcon,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+L.Marker.prototype.options.icon = DefaultIcon;
+
+// Componente para la gestión y visualización de reportes de incidentes
+const ReportManager = () => {
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedReport, setSelectedReport] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Paginación
+  const initialPage = parseInt(searchParams.get('page')) || 1;
+  const initialLimit = parseInt(searchParams.get('limit')) || 10;
+  const [page, setPage] = useState(initialPage);
+  const [limit] = useState(initialLimit);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Estados para el filtrado de datos
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('');
+  const [filterDistrict, setFilterDistrict] = useState('');
+
+  const userStr = sessionStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  const canDelete = user && (user.role === 'administrador' || user.role === 'funcionario');
+
+  const EXPIRY_TIME = 3 * 24 * 60 * 60 * 1000; // Tiempo de expiración: 3 días
+  const locationState = useLocation().state;
+
+  // Carga los reportes desde el servicio
+  const loadReports = async (searchQuery = '', currentPage = 1) => {
+    setLoading(true);
+    try {
+      const params = { page: currentPage, limit };
+      if (searchQuery) params.search = searchQuery;
+      if (filterType) params.tipo = filterType;
+      if (filterDistrict) params.distrito = filterDistrict;
+
+      const response = await ReportService.getReports(params);
+      
+      let fetchedReports = [];
+      
+      if (response && response.meta) {
+        fetchedReports = response.data || [];
+        setTotalPages(response.meta.totalPages || 1);
+      } else {
+        fetchedReports = Array.isArray(response) ? response : (response?.data || []);
+        setTotalPages(1);
+      }
+      
+      setReports(fetchedReports);
+
+      // Si venimos de la campana de notificaciones con un ID específico
+      if (locationState?.openReportId && currentPage === 1) {
+        const reportToOpen = fetchedReports.find(r => r.id === locationState.openReportId);
+        if (reportToOpen) {
+          setSelectedReport(reportToOpen);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading reports", error);
+      import('sweetalert2').then(Swal => Swal.default.fire('Error', 'No se pudieron cargar los reportes', 'error'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (page !== 1) {
+        setPage(1);
+      } else {
+        loadReports(searchTerm, 1);
+      }
+    }, 500); // 500ms debounce
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, filterType, filterDistrict]);
+
+  useEffect(() => {
+    const queryParams = {
+      page,
+      limit,
+    };
+    if (searchTerm) queryParams.search = searchTerm;
+    if (filterType) queryParams.tipo = filterType;
+    if (filterDistrict) queryParams.distrito = filterDistrict;
+    setSearchParams(queryParams, { replace: true });
+  }, [page, limit, searchTerm, filterType, filterDistrict]);
+
+  useEffect(() => {
+    loadReports(searchTerm, page);
+  }, [page]);
+
+  // Maneja la eliminación manual de un reporte
+  const handleDelete = (id) => {
+    Swal.fire({
+      title: '¿Eliminar Reporte?',
+      text: "Esta acción no se puede deshacer.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      customClass: {
+        confirmButton: 'btn-premium-danger',
+        cancelButton: 'btn-premium-secondary',
+        popup: 'premium-swal-popup'
+      }
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const previousReports = [...reports];
+        setReports(reports.filter(r => r.id !== id));
+        
+        try {
+          await ReportService.deleteReport(id);
+          Swal.fire({
+            title: 'Eliminado',
+            text: 'El reporte ha sido borrado.',
+            icon: 'success',
+            customClass: { popup: 'premium-swal-popup' }
+          });
+        } catch (error) {
+          setReports(previousReports);
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo eliminar el reporte',
+            icon: 'error',
+            customClass: { popup: 'premium-swal-popup' }
+          });
+        }
+      }
+    });
+  };
+
+  // Calcula el tiempo restante antes de que el reporte expire
+  const calculateTimeLeft = (dateStr) => {
+    const expiresAt = new Date(dateStr).getTime() + EXPIRY_TIME;
+    const timeLeft = expiresAt - Date.now();
+    if (timeLeft <= 0) return "Expirando...";
+    const days = Math.floor(timeLeft / (24 * 60 * 60 * 1000));
+    const hours = Math.floor((timeLeft % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    if (days > 0) return `${days}d ${hours}h`;
+    return `${hours}h restantes`;
+  };
+
+  // Determina la clase CSS según la urgencia del tiempo restante
+  const getTimeLeftClass = (dateStr) => {
+    const expiresAt = new Date(dateStr).getTime() + EXPIRY_TIME;
+    const timeLeft = expiresAt - Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    if (timeLeft < oneDay) return 'time-critical';
+    if (timeLeft < oneDay * 1.5) return 'time-warning';
+    return 'time-ok';
+  };
+
+  const handleStatusChange = async (reportId, newStatus) => {
+    try {
+      await ReportService.updateReport({ estado: newStatus }, reportId);
+      // Update local state
+      setReports(reports.map(r => r.id === reportId ? { ...r, estado: newStatus } : r));
+      if (selectedReport && selectedReport.id === reportId) {
+        setSelectedReport({ ...selectedReport, estado: newStatus });
+      }
+      Swal.fire({
+        title: 'Estado Actualizado',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false,
+        customClass: { popup: 'premium-swal-popup' }
+      });
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: error.message || 'No se pudo actualizar el estado',
+        icon: 'error',
+        customClass: { popup: 'premium-swal-popup' }
+      });
+    }
+  };
+
+  const getStatusBadgeClass = (status) => {
+    switch (status) {
+      case 'Pendiente': return 'status-pendiente';
+      case 'En Proceso': return 'status-en-proceso';
+      case 'Resuelto': return 'status-resuelto';
+      default: return 'status-pendiente';
+    }
+  };
+  
+  const getStatusIcon = (status) => {
+    switch (status) {
+      case 'Pendiente': return 'fa-clock';
+      case 'En Proceso': return 'fa-spinner fa-spin';
+      case 'Resuelto': return 'fa-check-circle';
+      default: return 'fa-clock';
+    }
+  };
+
+  const distritosDesamparados = [
+    'Desamparados', 'San Miguel', 'San Juan de Dios', 'San Rafael Arriba', 
+    'San Antonio', 'Frailes', 'Patarrá', 'San Cristóbal', 'Rosario', 
+    'Damas', 'San Rafael Abajo', 'Gravilias', 'Los Guido'
+  ];
+
+  const tiposComunes = [
+    'Robo', 'Asalto', 'Vandalismo', 'Persona Sospechosa', 'Disturbio',
+    'Accidente de Tránsito', 'Emergencia Médica', 'Incendio', 'Otro'
+  ];
+
+  return (
+    <div className="management-container">
+      <header className="page-header-premium">
+        <h1>Gestión de Reportes</h1>
+        <p className="text-secondary">Historial detallado de incidentes comunitarios registrados en el nodo central</p>
+      </header>
+
+      <section className="filters-section">
+        <div className="filter-group">
+          <label>Búsqueda</label>
+          <input 
+            type="text" 
+            placeholder="Buscar palabra clave..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+        <div className="filter-group">
+          <label>Categoría</label>
+          <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+            <option value="">Todas las categorías</option>
+            {tiposComunes.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
+        </div>
+        <div className="filter-group">
+          <label>Distrito</label>
+          <select value={filterDistrict} onChange={(e) => setFilterDistrict(e.target.value)}>
+            <option value="">Todos los distritos</option>
+            {distritosDesamparados.map(d => <option key={d} value={d}>{d}</option>)}
+          </select>
+        </div>
+      </section>
+
+      {loading && reports.length === 0 ? (
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary mb-3" role="status"></div>
+          <p className="text-secondary">Cargando reportes...</p>
+        </div>
+      ) : (
+        <div className="table-container-premium">
+          <div className="table-responsive">
+            <table className="custom-table">
+              <thead>
+                <tr>
+                  <th>Incidente</th>
+                  <th>Ubicación</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                  <th>Vigencia</th>
+                  <th className="text-end">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reports.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="text-center py-5 text-muted">No se encontraron reportes.</td>
+                  </tr>
+                ) : (
+                  reports.map((rep) => {
+                    const isEmerg = Boolean(rep.isEmergency);
+                    const rowColor = isEmerg ? '#ff0000' : '#ff8800';
+                    return (
+                      <tr key={rep.id}>
+                        <td>
+                          <span 
+                            className="fw-bold" 
+                            style={{ color: rowColor }}
+                          >
+                            <i className={`fa-solid ${isEmerg ? 'fa-circle-exclamation fa-beat' : 'fa-triangle-exclamation'} me-2`}></i>
+                            {rep.tipo}
+                          </span>
+                        </td>
+                        <td>
+                          <div className="loc-info">
+                            <strong>{rep.distrito}</strong>
+                            <small>{rep.barrio}</small>
+                          </div>
+                        </td>
+                      <td>{new Date(rep.fecha).toLocaleDateString()}</td>
+                      <td>
+                        <span className={`status-badge ${getStatusBadgeClass(rep.estado)}`}>
+                          <i className={`fa-solid ${getStatusIcon(rep.estado)}`}></i> {rep.estado || 'Pendiente'}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`time-badge ${getTimeLeftClass(rep.fecha)}`}>
+                          <i className="fa-regular fa-clock"></i> {calculateTimeLeft(rep.fecha)}
+                        </span>
+                      </td>
+                      <td className="text-end">
+                        <div className="d-flex justify-content-end gap-2">
+                          <button 
+                            className="btn-action btn-view" 
+                            onClick={() => setSelectedReport(rep)}
+                            title="Ver detalles"
+                          >
+                            <i className="fa-solid fa-eye"></i>
+                          </button>
+                          {canDelete && (
+                            <button 
+                              className="btn-action btn-delete" 
+                              onClick={() => handleDelete(rep.id)}
+                              title="Eliminar reporte"
+                            >
+                              <i className="fa-solid fa-trash-can"></i>
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* Controles de Paginación */}
+          {!loading && totalPages > 1 && (
+            <div className="pagination-controls" style={{ display: 'flex', justifyContent: 'center', gap: '10px', padding: '1rem' }}>
+              <button 
+                className="pagination-button" 
+                disabled={page === 1} 
+                onClick={() => setPage(page - 1)}
+              >
+                Anterior
+              </button>
+              <span style={{ alignSelf: 'center' }}>Página {page} de {totalPages}</span>
+              <button 
+                className="pagination-button" 
+                disabled={page === totalPages} 
+                onClick={() => setPage(page + 1)}
+              >
+                Siguiente
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Modal de Detalle */}
+      {selectedReport && (
+        <div className="modal-overlay" onClick={() => setSelectedReport(null)}>
+          <div className="modal-content-premium" onClick={e => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setSelectedReport(null)} aria-label="Cerrar modal">
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+            <div className="modal-body-premium">
+              <div className="modal-map-side">
+                <MapContainer 
+                  center={[selectedReport.lat || 9.892, selectedReport.lng || -84.05]} 
+                  zoom={15} 
+                  scrollWheelZoom={false}
+                  dragging={!isMobile}
+                  touchZoom={!isMobile}
+                  doubleClickZoom={!isMobile}
+                  zoomControl={!isMobile}
+                  style={{ height: '100%', width: '100%' }}
+                >
+                  <TileLayer
+                    url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                    attribution='&copy; CARTO'
+                  />
+                  {selectedReport.lat && (
+                    <Marker position={[selectedReport.lat, selectedReport.lng]}>
+                      <Popup>{selectedReport.tipo}</Popup>
+                    </Marker>
+                  )}
+                </MapContainer>
+              </div>
+              <div className="modal-info-side">
+                <span 
+                  className="modal-badge"
+                  style={{ backgroundColor: Boolean(selectedReport.isEmergency) ? '#ff0000' : '#ff8800', color: 'white' }}
+                >
+                  {selectedReport.tipo}
+                </span>
+                <h2 className="modal-title">{selectedReport.distrito}</h2>
+                <div className="modal-description">
+                  {selectedReport.descripcion || "Sin descripción adicional proporcionada por el usuario."}
+                </div>
+                <div className="modal-details-grid">
+                  <div className="detail-item">
+                    <span className="detail-label">Fecha del Suceso</span>
+                    <span className="detail-value">{new Date(selectedReport.fecha).toLocaleDateString()}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Barrio/Punto</span>
+                    <span className="detail-value">{selectedReport.barrio}</span>
+                  </div>
+                  <div className="detail-item" style={{ gridColumn: 'span 2' }}>
+                    <span className="detail-label">Dirección Exacta</span>
+                    <span className="detail-value">{selectedReport.direccion_exacta || "No especificada"}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Reportado por</span>
+                    <span className="detail-value">{selectedReport.nombre_creador || "Anónimo"}</span>
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">Estado</span>
+                    {canDelete ? (
+                      <select 
+                        className="status-select-premium"
+                        value={selectedReport.estado || 'Pendiente'}
+                        onChange={(e) => handleStatusChange(selectedReport.id, e.target.value)}
+                        disabled={selectedReport.estado === 'Resuelto'}
+                      >
+                        <option value="Pendiente" disabled>Pendiente</option>
+                        <option value="En Proceso" disabled={selectedReport.estado !== 'Pendiente' && selectedReport.estado !== 'En Proceso'}>En Proceso</option>
+                        <option value="Resuelto" disabled={selectedReport.estado !== 'En Proceso' && selectedReport.estado !== 'Resuelto'}>Resuelto</option>
+                      </select>
+                    ) : (
+                      <span className={`status-badge ${getStatusBadgeClass(selectedReport.estado)}`}>
+                        <i className={`fa-solid ${getStatusIcon(selectedReport.estado)}`}></i> {selectedReport.estado || 'Pendiente'}
+                      </span>
+                    )}
+                  </div>
+                  <div className="detail-item">
+                    <span className="detail-label">ID de Reporte</span>
+                    <span className="detail-value">#{selectedReport.id.toString().slice(0, 8)}</span>
+                  </div>
+                </div>
+                
+                {selectedReport.imageUrl && (
+                  <div className="modal-evidence-container mt-3">
+                    <span className="detail-label d-block mb-2">Evidencia Fotográfica</span>
+                    <img 
+                      src={selectedReport.imageUrl} 
+                      alt="Evidencia" 
+                      style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', borderRadius: '8px', cursor: 'pointer' }}
+                      onClick={() => window.open(selectedReport.imageUrl, '_blank')}
+                      title="Clic para ver tamaño completo"
+                    />
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default ReportManager;

@@ -1,0 +1,211 @@
+.consult-manager-container {
+    padding: 20px 0;
+    color: var(--text-main);
+}
+
+/* Premium Header */
+.page-header-premium {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-main);
+}
+
+.page-header-premium h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    background: var(--title-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+    display: inline-block;
+}
+
+.header-badge {
+    background: rgba(224, 123, 0, 0.1);
+    color: var(--primary-color);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1rem;
+}
+
+/* Info Banner */
+.info-banner-v2 {
+    background: var(--bg-card);
+    border: 1px solid var(--border-main);
+    border-left: 4px solid var(--primary-color);
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.info-banner-v2 i {
+    font-size: 1.4rem;
+    color: var(--primary-color);
+}
+
+/* Cards Grid */
+.consults-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.consult-card-premium {
+    background: var(--bg-card);
+    border: 1px solid var(--border-main);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.05);
+}
+
+.consult-card-premium:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary-color);
+}
+
+/* Card Header Status */
+.card-premium-header {
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.status-pending { background: rgba(234, 179, 8, 0.1); color: #eab308; }
+.status-resolved { background: rgba(224, 123, 0, 0.1); color: var(--primary-color); }
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Card Body */
+.card-premium-body {
+    padding: 1.5rem;
+}
+
+.citizen-name {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.citizen-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+.citizen-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.message-content {
+    background: var(--bg-main);
+    padding: 1.25rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-main);
+    margin-bottom: 1.25rem;
+}
+
+.message-text {
+    font-style: italic;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.response-box {
+    background: rgba(224, 123, 0, 0.03);
+    border: 1px solid rgba(224, 123, 0, 0.15);
+    padding: 1.25rem;
+    border-radius: 12px;
+    margin-top: 1rem;
+}
+
+.response-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* Footer Actions */
+.card-premium-footer {
+    padding: 1rem 1.5rem;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-main);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-premium-respond {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-premium-respond:hover {
+    background: var(--primary-hover);
+    transform: scale(1.02);
+}
+
+.btn-premium-disabled {
+    background: rgba(224, 123, 0, 0.05);
+    color: var(--primary-color);
+    border: 1px solid rgba(224, 123, 0, 0.2);
+    padding: 8px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: default;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--bg-card);
+    border-radius: 16px;
+    border: 2px dashed var(--border-main);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--border-strong);
+    margin-bottom: 1.5rem;
+}

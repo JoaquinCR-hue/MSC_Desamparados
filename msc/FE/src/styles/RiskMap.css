@@ -1,0 +1,125 @@
+.mapa-riesgo-page {
+    min-height: 100vh;
+    background: var(--bg-darker);
+    color: var(--text-main);
+    font-family: 'Inter', sans-serif;
+}
+
+.mapa-riesgo-content {
+    padding: 2rem 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .mapa-riesgo-content {
+        padding: 1.25rem 3%;
+    }
+}
+
+@media (max-width: 480px) {
+    .mapa-riesgo-content {
+        padding: 0.85rem 2%;
+    }
+}
+
+.page-header-premium {
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+
+.header-badge {
+    display: inline-block;
+    background: rgba(0, 163, 255, 0.1);
+    color: var(--primary-color);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    border: 1px solid rgba(0, 163, 255, 0.2);
+    margin-bottom: 1rem;
+}
+
+.page-header-premium h1 {
+    font-size: 2.8rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(90deg, var(--primary-color), var(--text-main));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@media (max-width: 768px) {
+    .page-header-premium h1 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-header-premium h1 {
+        font-size: 1.5rem;
+    }
+}
+
+.page-header-premium p {
+    color: var(--text-secondary);
+    font-size: 1.15rem;
+    max-width: 700px;
+}
+
+.alert-banner-v2 {
+    background: var(--bg-main);
+    border: 1px solid var(--border-main);
+    border-left: 4px solid var(--primary-color);
+    border-radius: 12px;
+    padding: 1.25rem 2rem;
+    margin-bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    color: var(--text-main);
+}
+
+.alert-content i {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+.premium-loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 2rem;
+}
+
+.pulse-loader {
+    width: 60px;
+    height: 60px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(0.33); opacity: 0.8; }
+    80%, 100% { transform: scale(1); opacity: 0; }
+}
+
+.map-view-integrated {
+    animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
